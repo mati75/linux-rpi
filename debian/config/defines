@@ -1,5 +1,5 @@
 [abi]
-abiname: 1
+abiname: 2
 ignore-changes:
  __cpuhp_*
  module:drivers/iio/common/st_sensors/**
@@ -35,7 +35,6 @@ arches:
 # mipsn32r6el
 # mips64r6
 # mips64r6el
- or1k
  powerpc
  powerpcspe
  ppc64
@@ -56,10 +55,10 @@ featuresets:
 [build]
 debug-info: true
 # Enable module signing by default (implemented in the linux-signed package)
-signed-modules: false
+signed-modules: true
 
 [featureset-rt_base]
-enabled: false
+enabled: true
 
 [description]
 part-long-up: This kernel is not suitable for SMP (multi-processor,
@@ -77,6 +76,3 @@ gcc-6: gcc-6 <!stage1 !cross>, gcc-6-@gnu-type-package@:native <!stage1 cross>
 # initramfs-generators
 initramfs-fallback: linux-initramfs-tool
 initramfs-tools: initramfs-tools (>= 0.120+deb8u2)
-
-[packages]
-installer: false
