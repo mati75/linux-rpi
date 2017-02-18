@@ -1,0 +1,18 @@
+commit bd355cf113597c0bdad79ebf8ffc1b3f80cde38f
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Tue Sep 16 15:10:10 2014 +0100
+
+    config: Add module SND_SIMPLE_CARD
+
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 742548f..73fcb9d 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -755,6 +755,7 @@ CONFIG_SND_SOC_I2C_AND_SPI=m
+ CONFIG_SND_SOC_PCM5102A=m
+ CONFIG_SND_SOC_PCM1794A=m
+ CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC=m
++CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SOUND_PRIME=m
+ CONFIG_HIDRAW=y
+ CONFIG_HID_A4TECH=m

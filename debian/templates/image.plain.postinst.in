@@ -35,6 +35,10 @@ my $CONF_LOC        = '/etc/kernel-img.conf';
 # Ignore all invocations except when called on to configure.
 exit 0 unless $ARGV[0] =~ /configure/;
 
+system("dpkg-divert --package rpikernelhack --remove --rename /boot/$kimage-$version");
+system("dpkg-divert --package rpikernelhack --remove --rename /boot/config-$version");
+system("dpkg-divert --package rpikernelhack --remove --rename /boot/System.map-$version"); 
+
 my $DEBUG = 0;
 
 # Do some preliminary sanity checks here to ensure we actually have an

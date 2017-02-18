@@ -1,0 +1,26 @@
+commit 52a6bd88d5e34f3227da24ed1eb882f296e9ee32
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Wed Jun 18 13:42:01 2014 +0100
+
+    vmstat: Workaround for issue where dirty page count goes negative
+    
+    See:
+    https://github.com/raspberrypi/linux/issues/617
+    http://www.spinics.net/lists/linux-mm/msg72236.html
+
+diff --git a/include/linux/vmstat.h b/include/linux/vmstat.h
+index 82e7db7..f87d16d 100644
+--- a/include/linux/vmstat.h
++++ b/include/linux/vmstat.h
+@@ -241,7 +241,11 @@ static inline void __inc_zone_state(struct zone *zone, enum zone_stat_item item)
+ static inline void __dec_zone_state(struct zone *zone, enum zone_stat_item item)
+ {
+ 	atomic_long_dec(&zone->vm_stat[item]);
++	if (item == NR_FILE_DIRTY && unlikely(atomic_long_read(&zone->vm_stat[item]) < 0))
++		atomic_long_set(&zone->vm_stat[item], 0);
+ 	atomic_long_dec(&vm_stat[item]);
++	if (item == NR_FILE_DIRTY && unlikely(atomic_long_read(&vm_stat[item]) < 0))
++		atomic_long_set(&vm_stat[item], 0);
+ }
+ 
+ static inline void __inc_zone_page_state(struct page *page,

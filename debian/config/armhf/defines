@@ -1,7 +1,6 @@
 [base]
 flavours:
- armmp
- armmp-lpae
+ rpi
 kernel-arch: arm
 
 [build]
@@ -33,4 +32,12 @@ hardware-long: ARMv7 multiplatform kernel supporting LPAE. See
 configs:
  armhf/config.armmp
  armhf/config.lpae
+
+[rpi_build]
+image-file: arch/arm/boot/zImage
+
+[rpi_description]
+hardware: RaspberryPI
+hardware-long: Raspberry PI
+
 

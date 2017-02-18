@@ -1,0 +1,25 @@
+commit 8de3c3d9fa41c2a0ed3be63962783c54bd3abc73
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Wed Sep 17 22:23:21 2014 +0100
+
+    tas5713: snd_soc_codec_set_cache_io has gone in 3.16
+
+diff --git a/sound/soc/codecs/tas5713.c b/sound/soc/codecs/tas5713.c
+index ee96a12..90accc2 100644
+--- a/sound/soc/codecs/tas5713.c
++++ b/sound/soc/codecs/tas5713.c
+@@ -180,14 +180,6 @@ static int tas5713_probe(struct snd_soc_codec *codec)
+ 
+ 	tas5713 = snd_soc_codec_get_drvdata(codec);
+ 
+-	codec->control_data = tas5713->regmap;
+-
+-	ret = snd_soc_codec_set_cache_io(codec, 8, 8, SND_SOC_REGMAP);
+-	if (ret < 0) {
+-		dev_err(codec->dev, "Failed to set cache i/o: %d\n", ret);
+-		return ret;
+-	}
+-
+ 	// Reset error
+ 	ret = snd_soc_write(codec, TAS5713_ERROR_STATUS, 0x00);
+ 

@@ -1,0 +1,26 @@
+commit 56f577fe950e11bde4ec67105c5f6ce43d6ac0b9
+Author: Florian Meier <florian.meier@koalo.de>
+Date:   Mon Aug 4 16:47:36 2014 +0200
+
+    ASoC: BCM: Typo in RPi-DAC driver
+    
+    This patch corrects a typo that originated from
+    inattentive copy and paste.
+    
+    Signed-off-by: Florian Meier <florian.meier@koalo.de>
+
+diff --git a/sound/soc/bcm/rpi-dac.c b/sound/soc/bcm/rpi-dac.c
+index ef3cd93..6d6e0ba 100644
+--- a/sound/soc/bcm/rpi-dac.c
++++ b/sound/soc/bcm/rpi-dac.c
+@@ -44,8 +44,8 @@ static struct snd_soc_ops snd_rpi_rpi_dac_ops = {
+ 
+ static struct snd_soc_dai_link snd_rpi_rpi_dac_dai[] = {
+ {
+-	.name		= "HifiBerry Mini",
+-	.stream_name	= "HifiBerry Mini HiFi",
++	.name		= "RPi-DAC",
++	.stream_name	= "RPi-DAC HiFi",
+ 	.cpu_dai_name	= "bcm2708-i2s.0",
+ 	.codec_dai_name	= "pcm1794a-hifi",
+ 	.platform_name	= "bcm2708-i2s.0",

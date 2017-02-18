@@ -114,6 +114,13 @@ if (-d "/etc/kernel/preinst.d/$version") {
             die "Failed to process /etc/kernel/preinst.d/$version";
 }
 
+# Rpi diversion hack
+system("mkdir -p /usr/share/rpikernelhack");
+system("dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/$kimage-$version --rename /boot/$kimage-$version");
+system("dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/config-$version --rename /boot/config-$version");
+system("dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/System.map-$version --rename /boot/System.map-$version");
+
+
 exit 0;
 
 __END__

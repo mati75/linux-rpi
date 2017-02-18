@@ -1,0 +1,28 @@
+i2c crash fix manually copied from 3.12 tree since the raspberry
+pi foundation are not currently maintaining their 3.16 tree.
+see https://bugs.launchpad.net/raspbian/+bug/1406037
+
+commit e713fba24ffcb2748d0ac463039c631b8f0f874d
+Author: jeanleflambeur <catalin.vasile@gmail.com>
+Date:   Sat Dec 20 12:20:39 2014 +0100
+
+    Update i2c-bcm2708.c
+
+Index: linux-3.16.7-ckt4/drivers/i2c/busses/i2c-bcm2708.c
+===================================================================
+--- linux-3.16.7-ckt4.orig/drivers/i2c/busses/i2c-bcm2708.c
++++ linux-3.16.7-ckt4/drivers/i2c/busses/i2c-bcm2708.c
+@@ -266,10 +266,11 @@ static int bcm2708_i2c_master_xfer(struc
+ 	bi->nmsgs = num;
+ 	bi->error = false;
+ 
+-	spin_unlock_irqrestore(&bi->lock, flags);
+-
+ 	bcm2708_bsc_setup(bi);
+ 
++	/* unlockig _after_ the setup to avoid races with the interrupt routine */
++	spin_unlock_irqrestore(&bi->lock, flags);
++
+ 	ret = wait_for_completion_timeout(&bi->done,
+ 			msecs_to_jiffies(I2C_TIMEOUT_MS));
+ 	if (ret == 0) {

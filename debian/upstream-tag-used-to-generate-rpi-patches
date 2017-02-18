@@ -1,0 +1,44 @@
+tag v3.16.7-ckt25
+Tagger: Luis Henriques <luis.henriques@canonical.com>
+Date:   Wed Mar 2 10:31:48 2016 +0000
+
+v3.16.7-ckt25
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAABAgAGBQJW1sEUAAoJENt0rrj9ziT8BAoQAJ90H2ufUfCWWVauVQWna2ca
+yL9aKggrzyDVkScfuBtTH9mO72cAjD/7CLM0KL06gcos1tTwaBIkfR2HXekCMNAL
+OTPA+8AT/G9JFxBah2tyuuNkRo+1SPS3ZYujZDn9mnnUSPp7y5cMtxed1NG1XaMd
+3LGjY3KPMe97TRIkBCoeOQeC1E5LtdFWy7zinignzJGif5T4KIYmGpvCPVsRSSa1
+d2lXUGJUmqSuFzGMk48UBmgThjtzadLVmQZ/TYcKjb1XpEqZx1TeApm0PvF3nfU7
+kBsg92isP4tdwdeqjibQJo1mp1Ay4t8m51yY7ZBVu2Y+sA2vZ/f4Bnoxw1FznEqV
+68UcJZJQasZZxbG8VgTk1OxYFqQuXQ4EuhfhfBA/ap+2+qVcd45jbwEJw2x0AF9Y
+fdfpbJSPHdtIQyjzWCqy/cgWNnZ3SOt1Z2/OuVdlwh+9lPW1k4J0XNmYNGrV7apZ
+b4Pt+K8XPT1Fy009cxUitOof5sK/3cUBNXhAW2d2zYDTKtrvvWn2Qwp4CB5AwOjg
+CuzhCI9uAVAq9CptNIGxXL6JtkP25KK0wLMqW7y/qAFmKEmU4k1ZFIwb1e+NXN+i
+ftcC0klSCc3I/Y6lgHzFsOVgnhilO0ThjszfyBTH4nafAf9gsqHBEJ4IpkkMMZiP
+o3CxTQgLVS0TC17/EDBP
+=7Z4J
+-----END PGP SIGNATURE-----
+
+commit 7f2a8840d127c8d5c59a5d79235e1205aba2e102
+Author: Luis Henriques <luis.henriques@canonical.com>
+Date:   Wed Mar 2 10:31:21 2016 +0000
+
+    Linux 3.16.7-ckt25
+    
+    Signed-off-by: Luis Henriques <luis.henriques@canonical.com>
+
+diff --git a/Makefile b/Makefile
+index acd6dae..932a800 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ VERSION = 3
+ PATCHLEVEL = 16
+ SUBLEVEL = 7
+-EXTRAVERSION =-ckt24
++EXTRAVERSION =-ckt25
+ NAME = Museum of Fishiegoodies
+ 
+ # *DOCUMENTATION*

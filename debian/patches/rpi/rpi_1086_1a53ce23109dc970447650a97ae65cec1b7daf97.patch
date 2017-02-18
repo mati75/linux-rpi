@@ -1,0 +1,26 @@
+commit 1a53ce23109dc970447650a97ae65cec1b7daf97
+Author: Serge Schneider <serge@raspberrypi.org>
+Date:   Wed Sep 3 17:28:53 2014 +0100
+
+    power: Add defines for contolling DSI power through mailbox interface
+
+diff --git a/arch/arm/mach-bcm2708/include/mach/arm_power.h b/arch/arm/mach-bcm2708/include/mach/arm_power.h
+index aae9136..d3bf245 100644
+--- a/arch/arm/mach-bcm2708/include/mach/arm_power.h
++++ b/arch/arm/mach-bcm2708/include/mach/arm_power.h
+@@ -38,6 +38,7 @@ enum {
+ 	PREFIX(POWER_I2C2_BIT),
+ 	PREFIX(POWER_SPI_BIT),
+ 	PREFIX(POWER_CCP2TX_BIT),
++	PREFIX(POWER_DSI_BIT),
+ 
+ 	PREFIX(POWER_MAX)
+ };
+@@ -52,6 +53,7 @@ enum {
+ 	PREFIX(POWER_I2C2_MASK) = (1 << PREFIX(POWER_I2C2_BIT)),
+ 	PREFIX(POWER_SPI_MASK) = (1 << PREFIX(POWER_SPI_BIT)),
+ 	PREFIX(POWER_CCP2TX_MASK) = (1 << PREFIX(POWER_CCP2TX_BIT)),
++	PREFIX(POWER_DSI) = (1 << PREFIX(POWER_DSI_BIT)),
+ 
+ 	PREFIX(POWER_MASK) = (1 << PREFIX(POWER_MAX)) - 1,
+ 	PREFIX(POWER_NONE) = 0
