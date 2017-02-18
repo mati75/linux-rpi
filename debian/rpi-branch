@@ -1,283 +1,38 @@
-commit f5ecad4a646f2c06d1e54f3bd52f7bc30004380d
-Author: Scott Ellis <scott@jumpnowtek.com>
-Date:   Fri Jan 27 06:42:42 2017 -0500
+commit 535dec8970840ffb76d55e8d5bb5d7b68585d584
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Feb 17 15:26:13 2017 +0000
 
-    Add overlay for mcp3008 adc (#1818)
+    brcmfmac: Mute expected startup 'errors'
     
-    Some example usage:
+    The brcmfmac WiFi driver always complains about the '00' country code
+    and the firmware version is reported as an error. Modify the driver to
+    ignore '00' silently and display firmware version at INFO level.
     
-    SPI0.0
-    dtparam=spi=on
-    dtoverlay=mcp3008:spi0-0-present
-    
-    SPI0.1
-    dtparam=spi=on
-    dtoverlay=mcp3008:spi0-1-present
-    
-    SPI0.0 and SPI0.1
-    dtparam=spi=on
-    dtoverlay=mcp3008:spi0-0-present,spi0-1-present
-    
-    SPI1.0
-    dtparam=spi=on
-    dtoverlay=spi1-1cs
-    dtoverlay=mcp3008:spi1-0-present
-    
-    SPI1.2
-    dtparam=spi=on
-    dtoverlay=spi1-1cs:cs0_pin=16
-    dtoverlay=mcp3008:spi1-0-present
-    
-    SPI1.0 and SPI1.1
-    dtoverlay=spi1-2cs
-    dtoverlay=mcp3008:spi1-0-present,spi1-1-present
-    
-    Changing the speed
-    
-    SPI0.0
-    dtparam=spi=on
-    dtoverlay=mcp3008:spi0-0-present,spi0-0-speed=2000000
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
 
-diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index 842098be7776..e915dff8a4cd 100644
---- a/arch/arm/boot/dts/overlays/Makefile
-+++ b/arch/arm/boot/dts/overlays/Makefile
-@@ -47,6 +47,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
- 	mcp23s17.dtbo \
- 	mcp2515-can0.dtbo \
- 	mcp2515-can1.dtbo \
-+	mcp3008.dtbo \
- 	midi-uart0.dtbo \
- 	mmc.dtbo \
- 	mz61581.dtbo \
-diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
-index 2f542a810c3f..aa9b6128c397 100644
---- a/arch/arm/boot/dts/overlays/README
-+++ b/arch/arm/boot/dts/overlays/README
-@@ -742,6 +742,15 @@ Params: oscillator              Clock frequency for the CAN controller (Hz)
-         interrupt               GPIO for interrupt signal
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index 3fcb1887b2d3..e2a459f7a200 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -6804,6 +6804,8 @@ static void brcmf_cfg80211_reg_notifier(struct wiphy *wiphy,
+ 	/* ignore non-ISO3166 country codes */
+ 	for (i = 0; i < sizeof(req->alpha2); i++)
+ 		if (req->alpha2[i] < 'A' || req->alpha2[i] > 'Z') {
++			if (req->alpha2[0] == '0' && req->alpha2[1] == '0')
++				return;
+ 			brcmf_err("not a ISO3166 code (0x%02x 0x%02x)\n",
+ 				  req->alpha2[0], req->alpha2[1]);
+ 			return;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+index 4051780f64f4..b081673abcb4 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+@@ -161,7 +161,7 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
+ 	strsep(&ptr, "\n");
  
+ 	/* Print fw version info */
+-	brcmf_err("Firmware version = %s\n", buf);
++	pr_info("Firmware version = %s\n", buf);
  
-+Name:   mcp3008
-+Info:   Configures MCP3008 A/D converters
-+        For devices on spi1 or spi2, the interfaces should be enabled
-+        with one of the spi1-1/2/3cs and/or spi2-1/2/3cs overlays.
-+Load:   dtoverlay=mcp3008,<param>[=<val>]
-+Params: spi<n>-<m>-present      boolean, configure device at spi<n>, cs<m>
-+        spi<n>-<m>-speed        integer, set the spi bus speed for this device
-+
-+
- Name:   midi-uart0
- Info:   Configures UART0 (ttyAMA0) so that a requested 38.4kbaud actually gets
-         31.25kbaud, the frequency required for MIDI
-diff --git a/arch/arm/boot/dts/overlays/mcp3008-overlay.dts b/arch/arm/boot/dts/overlays/mcp3008-overlay.dts
-new file mode 100755
-index 000000000000..06bf4264959c
---- /dev/null
-+++ b/arch/arm/boot/dts/overlays/mcp3008-overlay.dts
-@@ -0,0 +1,205 @@
-+/*
-+ * Device tree overlay for Microchip mcp3008 10-Bit A/D Converters
-+ */
-+
-+/dts-v1/;
-+/plugin/;
-+
-+/ {
-+	compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
-+
-+	fragment@0 {
-+		target = <&spidev0>;
-+		__dormant__ {
-+			status = "disabled";
-+		};
-+	};
-+
-+	fragment@1 {
-+		target = <&spidev1>;
-+		__dormant__ {
-+			status = "disabled";
-+		};
-+	};
-+
-+	fragment@2 {
-+		target-path = "spi1/spidev@0";
-+		__dormant__ {
-+			status = "disabled";
-+		};
-+	};
-+
-+	fragment@3 {
-+		target-path = "spi1/spidev@1";
-+		__dormant__ {
-+			status = "disabled";
-+		};
-+	};
-+
-+	fragment@4 {
-+		target-path = "spi1/spidev@2";
-+		__dormant__ {
-+			status = "disabled";
-+		};
-+	};
-+
-+	fragment@5 {
-+		target-path = "spi2/spidev@0";
-+		__dormant__ {
-+			status = "disabled";
-+		};
-+	};
-+
-+	fragment@6 {
-+		target-path = "spi2/spidev@1";
-+		__dormant__ {
-+			status = "disabled";
-+		};
-+	};
-+
-+	fragment@7 {
-+		target-path = "spi2/spidev@2";
-+		__dormant__ {
-+			status = "disabled";
-+		};
-+	};
-+
-+	fragment@8 {
-+		target = <&spi0>;
-+		__dormant__ {
-+			status = "okay";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			mcp3008_00: mcp3008@0 {
-+				compatible = "mcp3008";
-+				reg = <0>;
-+				spi-max-frequency = <1600000>;
-+			};
-+		};
-+	};
-+
-+	fragment@9 {
-+		target = <&spi0>;
-+		__dormant__ {
-+			status = "okay";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			mcp3008_01: mcp3008@1 {
-+				compatible = "mcp3008";
-+				reg = <1>;
-+				spi-max-frequency = <1600000>;
-+			};
-+		};
-+	};
-+
-+	fragment@10 {
-+		target = <&spi1>;
-+		__dormant__ {
-+			status = "okay";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			mcp3008_10: mcp3008@0 {
-+				compatible = "mcp3008";
-+				reg = <0>;
-+				spi-max-frequency = <1600000>;
-+			};
-+		};
-+	};
-+
-+	fragment@11 {
-+		target = <&spi1>;
-+		__dormant__ {
-+			status = "okay";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			mcp3008_11: mcp3008@1 {
-+				compatible = "mcp3008";
-+				reg = <1>;
-+				spi-max-frequency = <1600000>;
-+			};
-+		};
-+	};
-+
-+	fragment@12 {
-+		target = <&spi1>;
-+		__dormant__ {
-+			status = "okay";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			mcp3008_12: mcp3008@2 {
-+				compatible = "mcp3008";
-+				reg = <2>;
-+				spi-max-frequency = <1600000>;
-+			};
-+		};
-+	};
-+
-+	fragment@13 {
-+		target = <&spi2>;
-+		__dormant__ {
-+			status = "okay";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			mcp3008_20: mcp3008@0 {
-+				compatible = "mcp3008";
-+				reg = <0>;
-+				spi-max-frequency = <1600000>;
-+			};
-+		};
-+	};
-+
-+	fragment@14 {
-+		target = <&spi2>;
-+		__dormant__ {
-+			status = "okay";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			mcp3008_21: mcp3008@1 {
-+				compatible = "mcp3008";
-+				reg = <1>;
-+				spi-max-frequency = <1600000>;
-+			};
-+		};
-+	};
-+
-+	fragment@15 {
-+		target = <&spi2>;
-+		__dormant__ {
-+			status = "okay";
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			mcp3008_22: mcp3008@2 {
-+				compatible = "mcp3008";
-+				reg = <2>;
-+				spi-max-frequency = <1600000>;
-+			};
-+		};
-+	};
-+
-+	__overrides__ {
-+		spi0-0-present = <0>, "+0+8";
-+		spi0-1-present = <0>, "+1+9";
-+		spi1-0-present = <0>, "+2+10";
-+		spi1-1-present = <0>, "+3+11";
-+		spi1-2-present = <0>, "+4+12";
-+		spi2-0-present = <0>, "+5+13";
-+		spi2-1-present = <0>, "+6+14";
-+		spi2-2-present = <0>, "+7+15";
-+		spi0-0-speed = <&mcp3008_00>, "spi-max-frequency:0";
-+		spi0-1-speed = <&mcp3008_01>, "spi-max-frequency:0";
-+		spi1-0-speed = <&mcp3008_10>, "spi-max-frequency:0";
-+		spi1-1-speed = <&mcp3008_11>, "spi-max-frequency:0";
-+		spi1-2-speed = <&mcp3008_12>, "spi-max-frequency:0";
-+		spi2-0-speed = <&mcp3008_20>, "spi-max-frequency:0";
-+		spi2-1-speed = <&mcp3008_21>, "spi-max-frequency:0";
-+		spi2-2-speed = <&mcp3008_22>, "spi-max-frequency:0";
-+	};
-+};
+ 	/* locate firmware version number for ethtool */
+ 	ptr = strrchr(buf, ' ') + 1;
