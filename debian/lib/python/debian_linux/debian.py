@@ -143,7 +143,8 @@ class VersionLinux(Version):
         [~+]deb\d+u\d+
     )?
     (?P<revision_backports>
-        ~bpo\d+\+\d+
+#        ~bpo\d+\+\d+
+         rpi\d+\~bpo\d+\+\d+
     )?
     |
     (?P<revision_other>
