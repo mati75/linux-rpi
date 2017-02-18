@@ -2,9 +2,6 @@
 drivers/scsi/**
 DAC960 ?
 cciss ?
-mptfc
-mptsas
-mptspi
 
 # Include iSCSI boot support
 iscsi_ibft ?

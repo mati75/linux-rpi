@@ -1,0 +1,4 @@
+#include <usb-modules>
+ci_hdrc_imx
+dwc2
+dwc3

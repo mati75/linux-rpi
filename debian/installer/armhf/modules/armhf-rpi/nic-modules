@@ -1,0 +1,8 @@
+#include <nic-modules>
+mvmdio
+smsc911x
+stmmac
+stmmac-platform
+dwmac-generic
+dwmac-socfpga
+dwmac-sunxi
