@@ -1,39 +1,23 @@
-linux (3.16.39-1+deb8u1rpi1) jessie-staging; urgency=medium
+linux (3.16.39-1+deb8u2) jessie-security; urgency=high
 
-  [ Raspbian forward porter ]
-  [changes brought forward from 3.16.7-ckt4-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sun, 18 Jan 2015 13:41:28 +0000]
-  [Vagrant Cascadian <vagrant@debian.org>]
-  * disable other armhf variants.
-  * disable other armhf debian-installer variants.
-  * attempt to enable debian-installer udebs for rpi.
-  * try harder to enable debian-installer udebs.
-  [Peter Michael Green]
-  * Include patches to support RaspberryPI from:
-    https://github.com/raspberrypi/linux.git
-    branch: rpi-3.16.y
-  * add script to automatically regenerate rpi patches from git repos
-  * add hack to allow upgrading of kernel located on fat partition to succeed
-  * Fix clean target
-  * Merge config changes from 3.10.11-1+rpi4 packaging.
-  * Build hardware rng module.
-  * Build pps module for gps timeserver support.
-  * Disable fat modules udeb because we are compiling fat support in.
-  * Disable patches that conflict with or duplicate rpi patches
-    - features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
-  * Add various kernel config changes that the raspberry pi foundation made between
-    3.14 and 3.16 kernel series.
-  * Changes forward ported from 3.12 packaging
-    + optimise update-rpi-patches script a bit (reduce the number of calls to
-      quilt refresh).
-    + apply GPIO related configuration changes requested by Diederik
-      (LP: 1403865)
+  [ Salvatore Bonaccorso ]
+  * ipc/shm: Fix shmat mmap nil-page protection (CVE-2017-5669)
+  * sctp: avoid BUG_ON on sctp_wait_for_sndbuf (CVE-2017-5986)
+  * sctp: deny peeloff operation on asocs with threads sleeping on it
+    (CVE-2017-6353)
+  * tcp: avoid infinite loop in tcp_splice_read() (CVE-2017-6214)
+  * net/sock: Add sock_efree() function
+  * net/llc: avoid BUG_ON() in skb_orphan() (CVE-2017-6345)
+  * packet: fix races in fanout_add() (CVE-2017-6346)
+  * TTY: n_hdlc, fix lockdep false positive
+  * tty: n_hdlc: get rid of racy n_hdlc.tbuf (CVE-2017-2636)
 
-  [changes introduced in 3.16.7-ckt11-1+deb8u2+rpi1 by Peter Michael Green in  at Sun, 26 Jul 2015 21:26:49 +0000]
-  * Revert a couple of minor upstream changes in otg-whitelist.h and pcm512x.c
-    which conflicted with the rpi patches.
-  * Add RTC related kernel changes requested by Diederik
+  [ Ben Hutchings ]
+  * [x86] kvm: nVMX: Allow L1 to intercept software exceptions (#BP and #OF)
+    (CVE-2016-9588)
+  * irda: Fix locking in hashbin_delete() (CVE-2017-6348)
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 22 Feb 2017 17:27:12 +0100
+ -- Ben Hutchings <ben@decadent.org.uk>  Tue, 07 Mar 2017 20:13:56 +0000
 
 linux (3.16.39-1+deb8u1) jessie-security; urgency=high
 
