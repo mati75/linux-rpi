@@ -56,6 +56,11 @@ CONFIG_EDAC_OCTEON_LMC=m
 CONFIG_EDAC_OCTEON_PCI=m
 
 ##
+## file: drivers/hwmon/Kconfig
+##
+CONFIG_SENSORS_ADM1031=m
+
+##
 ## file: drivers/i2c/Kconfig
 ##
 CONFIG_I2C=y
@@ -176,5 +181,7 @@ CONFIG_SPARSEMEM_MANUAL=y
 ##
 ## file: unknown
 ##
+#. octeon_mmc driver was requested in #800594, but still hasn't landed
+#. upstream.  Last submitted at: https://lkml.org/lkml/2016/12/19/185
 CONFIG_OCTEON_MMC=m
 
