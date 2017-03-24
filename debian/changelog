@@ -1,3 +1,61 @@
+linux (4.9.16-1rpi1) stretch-staging; urgency=high
+
+  [ Peter Michael Green ]
+  [Changes from 3.18.5-1~exp1rpi1 or earlier]
+  [Vagrant Cascadian <vagrant@debian.org>]
+  * disable other armhf variants.
+  * disable other armhf debian-installer variants.
+  * attempt to enable debian-installer udebs for rpi.
+  * try harder to enable debian-installer udebs.
+  [Peter Michael Green]
+  * Include patches to support RaspberryPI from:
+    https://github.com/raspberrypi/linux.git
+    branch: rpi-3.16.y
+  * add script to automatically regenerate rpi patches from git repos
+  * add hack to allow upgrading of kernel located on fat partition to succeed
+  * Fix clean target
+  * Merge config changes from 3.10.11-1rpi4 packaging.
+  * Build hardware rng module.
+  * Build pps module for gps timeserver support.
+  * Disable fat modules udeb because we are compiling fat support in.
+  * Disable patches that conflict with or duplicate rpi patches
+    - features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
+  * Add various kernel config changes that the raspberry pi foundation made between
+    3.14 and 3.16 kernel series.
+  * Changes forward ported from 3.12 packaging
+     optimise update-rpi-patches script a bit (reduce the number of calls to
+      quilt refresh).
+     apply GPIO related configuration changes requested by Diederik
+      (LP: 1403865)
+  * Rename source package and don't build libc-dev package
+  * Add support for raspberry pi 2
+     also turn on some stuff for pi1 that was noticed during the pi1/pi2
+      config comparison.
+
+  [Changes introduced in 3.18.5-1~exp1rpi10 by Peter Michael Green]
+  * Fix kernel configuration for keyboard
+  * split out config.rpix containing config containing settings that
+    are used for both pi1 and pi2.
+
+  [Changes introduced in 3.18.5-1~exp1rpi11 by Peter Michael Green]
+  * add copyright header to mkknling.
+  * enable I2S modules now we have device tree support.
+
+  [Changes introduced in 3.18.5-1~exp1rpi17 by Peter Micheal Green]
+  * Add RTC drivers requested by Diederik
+  * Update mmc/dma settings to hopefully fix build failure.
+
+  [Changes introduced in 4.4.6-14rpi1 by Peter Michael Green]
+  * Disable patches that conflict or potentially conflict with rpi patches.
+     all patches under features/arm/rpi/
+     features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
+     bugfix/all/uas-fix-high-order-alloc.patch
+     bugfix/all/firmware-remove-redundant-log-messages-from-drivers.patch
+  * Disable rpi_9999_other_changes.patch, it seems to contain only garbage.
+  * add device tree trailer using scripts/mkknlimg (previously we used our own copy of mkknlimg)
+
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 23 Mar 2017 10:19:29 +0100
+
 linux (4.9.16-1) unstable; urgency=medium
 
   * New upstream stable update:
