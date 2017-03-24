@@ -1,3 +1,40 @@
+linux (3.16.39-1+deb8u2rpi1) jessie-staging; urgency=medium
+
+  [ Raspbian forward porter ]
+  [changes brought forward from 3.16.7-ckt4-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sun, 18 Jan 2015 13:41:28 +0000]
+  [Vagrant Cascadian <vagrant@debian.org>]
+  * disable other armhf variants.
+  * disable other armhf debian-installer variants.
+  * attempt to enable debian-installer udebs for rpi.
+  * try harder to enable debian-installer udebs.
+  [Peter Michael Green]
+  * Include patches to support RaspberryPI from:
+    https://github.com/raspberrypi/linux.git
+    branch: rpi-3.16.y
+  * add script to automatically regenerate rpi patches from git repos
+  * add hack to allow upgrading of kernel located on fat partition to succeed
+  * Fix clean target
+  * Merge config changes from 3.10.11-1+rpi4 packaging.
+  * Build hardware rng module.
+  * Build pps module for gps timeserver support.
+  * Disable fat modules udeb because we are compiling fat support in.
+  * Disable patches that conflict with or duplicate rpi patches
+    - features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
+  * Add various kernel config changes that the raspberry pi foundation made between
+    3.14 and 3.16 kernel series.
+  * Changes forward ported from 3.12 packaging
+    + optimise update-rpi-patches script a bit (reduce the number of calls to
+      quilt refresh).
+    + apply GPIO related configuration changes requested by Diederik
+      (LP: 1403865)
+
+  [changes introduced in 3.16.7-ckt11-1+deb8u2+rpi1 by Peter Michael Green in  at Sun, 26 Jul 2015 21:26:49 +0000]
+  * Revert a couple of minor upstream changes in otg-whitelist.h and pcm512x.c
+    which conflicted with the rpi patches.
+  * Add RTC related kernel changes requested by Diederik
+
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 08 Mar 2017 08:14:54 +0100
+
 linux (3.16.39-1+deb8u2) jessie-security; urgency=high
 
   [ Salvatore Bonaccorso ]
