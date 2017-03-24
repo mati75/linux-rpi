@@ -187,6 +187,8 @@ $(STAMPS_DIR)/build_$(ARCH)_$(FEATURESET)_$(FLAVOUR): $(STAMPS_DIR)/setup_$(ARCH
 
 $(STAMPS_DIR)/build_$(ARCH)_$(FEATURESET)_$(FLAVOUR):
 	+$(MAKE_CLEAN) -C '$(DIR)' $(BUILD_TARGET)
+	chmod 755 scripts/mkknlimg
+	scripts/mkknlimg '$(DIR)/arch/arm/boot/zImage' '$(DIR)/arch/arm/boot/zImagerpdt'
 	debian/bin/buildcheck.py $(DIR) $(ARCH) $(FEATURESET) $(FLAVOUR)
 	@$(stamp)
 

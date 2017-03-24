@@ -1,2 +1,3 @@
 # arch version flavour  installedname suffix build-depends
-armhf  -       armmp    -             -      -
+armhf  -       rpi    -             -      -
+armhf  -       rpi2   -             -      -

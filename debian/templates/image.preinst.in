@@ -18,4 +18,10 @@ if [ -d /etc/kernel/preinst.d ]; then
 	      --arg=$image_path /etc/kernel/preinst.d
 fi
 
+# Rpi diversion hack
+mkdir -p /usr/share/rpikernelhack
+dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/@image-stem@-$version --rename $image_path
+dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/config-$version --rename /boot/config-$version
+dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/System.map-$version --rename /boot/System.map-$version
+
 exit 0
