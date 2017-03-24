@@ -56,7 +56,7 @@ featuresets:
  rt
 
 [build]
-debug-info: false
+debug-info: true
 # Enable module signing by default (implemented in the linux-signed package)
 signed-modules: false
 

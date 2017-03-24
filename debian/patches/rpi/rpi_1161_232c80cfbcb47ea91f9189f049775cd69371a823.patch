@@ -1,0 +1,72 @@
+commit 232c80cfbcb47ea91f9189f049775cd69371a823
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Oct 20 16:48:12 2016 -0700
+
+    drm/vc4: Fix termination of the initial scan for branch targets.
+    
+    The loop is scanning until the original max_ip (size of the BO), but
+    we want to not examine any code after the PROG_END's delay slots.
+    There was a block trying to do that, except that we had some early
+    continue statements if the signal wasn't a PROG_END or a BRANCH.
+    
+    The failure mode would be that a valid shader is rejected because some
+    undefined memory after the PROG_END slots is parsed as a branch and
+    the rest of its setup is illegal.  I haven't seen this in the wild,
+    but valgrind was complaining when about this up in the userland
+    simulator mode.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+    (cherry picked from commit 457e67a728696c4f8e6423c64e93def50530db9a)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_validate_shaders.c b/drivers/gpu/drm/vc4/vc4_validate_shaders.c
+index 2543cf5b8b51..917321ce832f 100644
+--- a/drivers/gpu/drm/vc4/vc4_validate_shaders.c
++++ b/drivers/gpu/drm/vc4/vc4_validate_shaders.c
+@@ -608,9 +608,7 @@ static bool
+ vc4_validate_branches(struct vc4_shader_validation_state *validation_state)
+ {
+ 	uint32_t max_branch_target = 0;
+-	bool found_shader_end = false;
+ 	int ip;
+-	int shader_end_ip = 0;
+ 	int last_branch = -2;
+ 
+ 	for (ip = 0; ip < validation_state->max_ip; ip++) {
+@@ -621,8 +619,13 @@ vc4_validate_branches(struct vc4_shader_validation_state *validation_state)
+ 		uint32_t branch_target_ip;
+ 
+ 		if (sig == QPU_SIG_PROG_END) {
+-			shader_end_ip = ip;
+-			found_shader_end = true;
++			/* There are two delay slots after program end is
++			 * signaled that are still executed, then we're
++			 * finished.  validation_state->max_ip is the
++			 * instruction after the last valid instruction in the
++			 * program.
++			 */
++			validation_state->max_ip = ip + 3;
+ 			continue;
+ 		}
+ 
+@@ -676,15 +679,9 @@ vc4_validate_branches(struct vc4_shader_validation_state *validation_state)
+ 		}
+ 		set_bit(after_delay_ip, validation_state->branch_targets);
+ 		max_branch_target = max(max_branch_target, after_delay_ip);
+-
+-		/* There are two delay slots after program end is signaled
+-		 * that are still executed, then we're finished.
+-		 */
+-		if (found_shader_end && ip == shader_end_ip + 2)
+-			break;
+ 	}
+ 
+-	if (max_branch_target > shader_end_ip) {
++	if (max_branch_target > validation_state->max_ip - 3) {
+ 		DRM_ERROR("Branch landed after QPU_SIG_PROG_END");
+ 		return false;
+ 	}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1161_232c80cfbcb47ea91f9189f049775cd69371a823.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1161_232c80cfbcb47ea91f9189f049775cd69371a823.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
