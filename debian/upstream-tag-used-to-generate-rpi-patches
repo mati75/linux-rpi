@@ -1,40 +1,40 @@
-tag v4.9.16
+tag v4.9.18
 Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Sat Mar 18 19:15:36 2017 +0800
+Date:   Sun Mar 26 13:06:28 2017 +0200
 
-This is the 4.9.16 stable release
+This is the 4.9.18 stable release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAljNFtgACgkQONu9yGCS
-aT42sQ/9GvHVlsVDDmgWV3LpZVHWR7ZKS5kbCG0cksOWaxtIlZGEcuvQTlvCaQKP
-qqW9QaMterZLiZug3XBcdW9tMbVXyQz8Nz0EDmiCdNv9BeaeYdkz0Not8K1LYwVE
-Z6W/c3HB9hjZEwHfF3XRcWWIIgPkD6qkyI38J/u8WLto/jG8QzzFU14za4D3pVwo
-+NuHgwQpYYlCp4ig/V4KwvSdWUTZOpaQU/eL+Y1A2oXlwx2dHTdoW+zB3suzrIat
-eZpOX1qEesI2RgYksArIVmN5AKINlVx7zBpcnYHuqLwCXeVPd8oqhrU95M5wK58S
-493yPSN4jfZtwELL8qFA//n9DAGOLYhY7hNpgoQqUr3yoNy5oGnMLFVywevmg6+1
-GFwwQHHif53B8Py5+DR9CpRepgcvcN8am4NZvbqfJRGQ9AJOGdi8j8uv5YZyRGAm
-opuQnCNSU2nlVbHH+0LIz0XZp6futHclET844/2yLNjRTfyicdIj8hy2691oc6aB
-9KIfMNPypdDWq0ikWb6jGzuTmkmgfkhckpRBAdXDATg5DrMnfQeoYtF7/VnsZ2LT
-1tmrEd7LGmwEf7kVumgisdb5bo0BCKTTPLY0v1U3ang/ZwEO32pbgjQYMVFaHwRq
-GRBLyLg8zCwhMzwi2mQqP7gpVsit7g1xq3D3u76JrDxV8222MW8=
-=dT+N
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAljXoLQACgkQONu9yGCS
+aT7F0xAA18J3AhCcqlYhj7OXAgLCtgop4ftDb+tYbUEirbiU3q+M5GtkDTFiI2m/
+z/KUyCbteeYBSzUg3TlFjupbCFlBOs9uVKStDoQoqmMD2gwUmljEpzRqcXHe0vWx
+4YCqwDzizHFzS2LSwWtXDPauP3YqVvuif05x2pz9kPzmYoXSytR+YTtMDHI2sNH4
+1IlXWvJJfYiWhHxhsvQOAuNwZyDfYDNxF1gdLdcNQ8A880VA8DtdZRFypwq6loBW
+r1E3KHPHhpLLJ447rpxJ+ns7gRoCDoj5eDGtvkLTHKIY3Nkf+hfxeTEW7ZmcyJ+f
+4KvxakQnITjY3RkuKA1kU34gl+IWNMHn0a+ETOLGksUqlQUtpkaNe3Br6o2IY8JK
+UaCFCIaOCv0N3t1sCxkisWiLq1y/nSff+dJ2biD4cue9rZZZEi5B0BgrikVx5Ft9
+jvZEO6S8fQUOHLRgb3+ubWQpF8h5ETEXyIsAzg2lcmx5+/c+ql63026fibOamjAQ
+r3ZYI60Uin/SDfDyZ7rxuthgZQnLLJ3xBunja3ccBKscoiffDlF/fFFgNDpKoFu0
+CcqGbiuGi0veocXnTSFj9sehocli8Aor7cbNmTWvkXpZzcd9kyzEl2gW05CGaK2I
+CEcQWde4cRmKrONNSIfyQngeaC84OoyRGECoIcRCvzbkfxRrVSI=
+=s1Fv
 -----END PGP SIGNATURE-----
 
-commit 8a16224b405492bb0ebf450d9f3761580ebe1761
+commit 2a486264b736de1c1d938c9c781efbadbf9fd794
 Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Sat Mar 18 19:15:30 2017 +0800
+Date:   Sun Mar 26 13:06:11 2017 +0200
 
-    Linux 4.9.16
+    Linux 4.9.18
 
 diff --git a/Makefile b/Makefile
-index 03df4fcacdf2..4e0f962eb434 100644
+index 004f90a4e613..c10d0e634e68 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,6 +1,6 @@
  VERSION = 4
  PATCHLEVEL = 9
--SUBLEVEL = 15
-+SUBLEVEL = 16
+-SUBLEVEL = 17
++SUBLEVEL = 18
  EXTRAVERSION =
  NAME = Roaring Lionus
  

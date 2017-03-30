@@ -1,7 +1,18 @@
-commit 8bf13deebd582fd64a6595d23e9c965b652ef7c8
-Merge: a102c13bd969 8a16224b4054
-Author: popcornmix <popcornmix@gmail.com>
-Date:   Sat Mar 18 13:13:46 2017 +0000
+commit 2a486264b736de1c1d938c9c781efbadbf9fd794
+Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date:   Sun Mar 26 13:06:11 2017 +0200
 
-    Merge remote-tracking branch 'stable/linux-4.9.y' into rpi-4.9.y
+    Linux 4.9.18
 
+diff --git a/Makefile b/Makefile
+index 004f90a4e613..c10d0e634e68 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+ VERSION = 4
+ PATCHLEVEL = 9
+-SUBLEVEL = 17
++SUBLEVEL = 18
+ EXTRAVERSION =
+ NAME = Roaring Lionus
+ 
