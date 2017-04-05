@@ -1,4 +1,4 @@
-linux (4.9.18-1rpi1) stretch-staging; urgency=high
+linux (4.9.20-0rpi1) stretch-staging; urgency=high
 
   [ Peter Michael Green ]
   [Changes from 3.18.5-1~exp1rpi1 or earlier]
@@ -54,7 +54,124 @@ linux (4.9.18-1rpi1) stretch-staging; urgency=high
   * Disable rpi_9999_other_changes.patch, it seems to contain only garbage.
   * add device tree trailer using scripts/mkknlimg (previously we used our own copy of mkknlimg)
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 30 Mar 2017 18:04:11 +0200
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 04 Apr 2017 09:46:48 +0200
+
+linux (4.9.20-1) UNRELEASED; urgency=medium
+
+  [ Ben Hutchings ]
+  * New upstream stable update:
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.19
+    - net/openvswitch: Set the ipv6 source tunnel key address attribute correctly
+    - net: bcmgenet: Do not suspend PHY if Wake-on-LAN is enabled
+    - net: properly release sk_frag.page
+    - amd-xgbe: Fix jumbo MTU processing on newer hardware
+    - openvswitch: Add missing case OVS_TUNNEL_KEY_ATTR_PAD
+    - net: unix: properly re-increment inflight counter of GC discarded candidates
+    - qmi_wwan: add Dell DW5811e
+    - net: vrf: Reset rt6i_idev in local dst after put
+    - net/mlx5: Add missing entries for set/query rate limit commands
+    - net/mlx5e: Use the proper UAPI values when offloading TC vlan actions
+    - net/mlx5: Increase number of max QPs in default profile
+    - net/mlx5e: Count GSO packets correctly
+    - net/mlx5e: Count LRO packets correctly
+    - ipv6: make sure to initialize sockc.tsflags before first use
+    - net: bcmgenet: remove bcmgenet_internal_phy_setup()
+    - ipv4: provide stronger user input validation in nl_fib_input()
+    - socket, bpf: fix sk_filter use after free in sk_clone_lock
+    - tcp: initialize icsk_ack.lrcvtime at session start time
+    - Input: ALPS - fix V8+ protocol handling (73 03 28)
+    - Input: ALPS - fix trackstick button handling on V8 devices
+    - Input: elan_i2c - add ASUS EeeBook X205TA special touchpad fw
+    - Input: i8042 - add noloop quirk for Dell Embedded Box PC 3000
+    - Input: iforce - validate number of endpoints before using them
+    - Input: ims-pcu - validate number of endpoints before using them
+    - Input: hanwang - validate number of endpoints before using them
+    - Input: yealink - validate number of endpoints before using them
+    - Input: cm109 - validate number of endpoints before using them
+    - Input: kbtab - validate number of endpoints before using them
+    - Input: sur40 - validate number of endpoints before using them
+    - ALSA: seq: Fix racy cell insertions during snd_seq_pool_done()
+    - ALSA: ctxfi: Fix the incorrect check of dma_set_mask() call
+    - ALSA: hda - Adding a group of pin definition to fix headset problem
+    - USB: serial: option: add Quectel UC15, UC20, EC21, and EC25 modems
+    - USB: serial: qcserial: add Dell DW5811e
+    - ACM gadget: fix endianness in notifications
+    - usb: gadget: f_uvc: Fix SuperSpeed companion descriptor's wBytesPerInterval
+    - usb-core: Add LINEAR_FRAME_INTR_BINTERVAL USB quirk
+    - USB: uss720: fix NULL-deref at probe
+    - USB: lvtest: fix NULL-deref at probe
+    - USB: idmouse: fix NULL-deref at probe
+    - USB: wusbcore: fix NULL-deref at probe
+    - usb: musb: cppi41: don't check early-TX-interrupt for Isoch transfer
+    - usb: hub: Fix crash after failure to read BOS descriptor
+    - USB: usbtmc: add missing endpoint sanity check
+    - USB: usbtmc: fix probe error path
+    - uwb: i1480-dfu: fix NULL-deref at probe
+    - uwb: hwa-rc: fix NULL-deref at probe
+    - mmc: ushc: fix NULL-deref at probe
+    - iio: adc: ti_am335x_adc: fix fifo overrun recovery
+    - iio: sw-device: Fix config group initialization
+    - iio: hid-sensor-trigger: Change get poll value function order to avoid sensor properties losing after resume from S3
+    - iio: magnetometer: ak8974: remove incorrect __exit markups
+    - parport: fix attempt to write duplicate procfiles
+    - ext4: mark inode dirty after converting inline directory
+    - ext4: lock the xattr block before checksuming it
+    - powerpc/64s: Fix idle wakeup potential to clobber registers
+    - mmc: sdhci-of-at91: Support external regulators
+    - mmc: sdhci-of-arasan: fix incorrect timeout clock
+    - mmc: sdhci: Do not disable interrupts while waiting for clock
+    - mmc: sdhci-pci: Do not disable interrupts in sdhci_intel_set_power
+    - hwrng: amd - Revert managed API changes
+    - hwrng: geode - Revert managed API changes
+    - clk: sunxi-ng: sun6i: Fix enable bit offset for hdmi-ddc module clock
+    - clk: sunxi-ng: mp: Adjust parent rate for pre-dividers
+    - mwifiex: pcie: don't leak DMA buffers when removing
+    - crypto: ccp - Assign DMA commands to the channel's CCP
+    - xen/acpi: upload PM state from init-domain to Xen
+    - iommu/vt-d: Fix NULL pointer dereference in device_to_iommu
+    - Revert "ARM: at91/dt: sama5d2: Use new compatible for ohci node"
+    - ARM: at91: pm: cpu_idle: switch DDR to power-down mode
+    - arm64: kaslr: Fix up the kernel image alignment
+    - cpufreq: Restore policy min/max limits on CPU online
+    - cgroup, net_cls: iterate the fds of only the tasks which are being migrated
+    - blk-mq: don't complete un-started request in timeout handler
+    - drm/amdgpu: reinstate oland workaround for sclk
+    - auxdisplay: img-ascii-lcd: add missing sentinel entry in img_ascii_lcd_matches
+    - jbd2: don't leak memory if setting up journal fails
+    - intel_th: Don't leak module refcount on failure to activate
+    - Drivers: hv: vmbus: Don't leak channel ids
+    - Drivers: hv: vmbus: Don't leak memory when a channel is rescinded
+    - libceph: don't set weight to IN when OSD is destroyed
+    - device-dax: fix pmd/pte fault fallback handling
+    - drm/bridge: analogix dp: Fix runtime PM state on driver bind
+    - nl80211: fix dumpit error path RTNL deadlocks
+    - drm: reference count event->completion
+    - fbcon: Fix vc attr at deinit
+    - crypto: algif_hash - avoid zero-sized array
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.20
+    - xfrm: policy: init locks early
+    - xfrm_user: validate XFRM_MSG_NEWAE XFRMA_REPLAY_ESN_VAL replay_window
+    - xfrm_user: validate XFRM_MSG_NEWAE incoming ESN size harder
+    - KVM: x86: cleanup the page tracking SRCU instance
+    - virtio_balloon: init 1st buffer in stats vq
+    - pinctrl: qcom: Don't clear status bit on irq_unmask
+    - c6x/ptrace: Remove useless PTRACE_SETREGSET implementation
+    - h8300/ptrace: Fix incorrect register transfer count
+    - mips/ptrace: Preserve previous registers for short regset write
+    - sparc/ptrace: Preserve previous registers for short regset write
+    - metag/ptrace: Preserve previous registers for short regset write
+    - metag/ptrace: Provide default TXSTATUS for short NT_PRSTATUS
+    - metag/ptrace: Reject partial NT_METAG_RPIPE writes
+    - fscrypt: remove broken support for detecting keyring key revocation
+    - sched/rt: Add a missing rescheduling point
+    - usb: musb: fix possible spinlock deadlock
+
+  * w1: Really enable W1_MASTER_GPIO as module (Closes: #858975)
+
+  [ Mateusz Łukasik ]
+  * New upstream release
+
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Mon, 03 Apr 2017 14:14:16 +0200
 
 linux (4.9.18-1) unstable; urgency=medium
 
