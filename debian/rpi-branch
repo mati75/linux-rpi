@@ -1,7 +1,0 @@
-commit 883de20e54e16f89a878c9957fd265e352ebf5c3
-Merge: 4f9060c1c8a3 3737a5f72234
-Author: popcornmix <popcornmix@gmail.com>
-Date:   Sun Feb 26 19:08:53 2017 +0000
-
-    Merge remote-tracking branch 'stable/linux-4.9.y' into rpi-4.9.y
-
