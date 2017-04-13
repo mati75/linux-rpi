@@ -1,0 +1,40 @@
+tag v4.9.20
+Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date:   Fri Mar 31 10:32:09 2017 +0200
+
+This is the 4.9.20 stable release
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAljeFAkACgkQONu9yGCS
+aT5MGRAAhBw+wSgkRvHRc0+kecrqGgBsNli47FNH4yRsMCNNgxbDEg8+xDDj8MBH
+lHOAFq2eXxyej5S0yZso8c1uB5Q6imILElBFZEuoxuyFQg+rQ9q8sBp726/PH0MO
+TUlg8OAOcdzLNibCbTKT/sPfBFU+d5Jb2qErEFfssUO5h/GpJhjHYJBXC5q+TBLZ
+Fx1Laajx9GyOCwriYizju/NizVlEX51jiqMpetX/nkHTJWyq8VfKnCg69kNnBzbe
+XFJ1nSsfHbckiP15jrHtsNCIq4vX+2W6WRu05+YK2irwunEADb6Ak5pF1N75LfGV
+ssP+EZU9P/i9gl8DL/8Um7OY2x7N7/Hew/qyHOCly0mo67PL4Nj+byoq/k0Oe7+m
+KaAjnHhMjJGBJLiU+Xy5cPzkJb9dxFPPTu3PqwKiUrfqIaTPUQjHv7d2z3HzSl1t
+6s6S1y65MTOiTLbcRMAdJvF//PhyQar/91KE2sszVyoPqgT1hP+aUhjD+bf52ex9
+LnwMMBcMHObm8B8z/WzStho/1bxWD9wTC7MA8JtuCg8tWrEx9cnRtHsFh9IKwbQp
+00mk9kHBaDgxDaeCe1zz9GHcicP8rsLD/0HOjJCLmiWIIel50XRQZG2DjvYSCjss
+FyFbQ3SoACzyFPUPOQSLbw5ejrSRNL3emQcGxvyXz9U4P8rGJ3I=
+=8qjI
+-----END PGP SIGNATURE-----
+
+commit f6767727467056943bf6d3433ffce0a8b2b05681
+Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date:   Fri Mar 31 10:32:02 2017 +0200
+
+    Linux 4.9.20
+
+diff --git a/Makefile b/Makefile
+index ba1c6a8e6a70..44960184701a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+ VERSION = 4
+ PATCHLEVEL = 9
+-SUBLEVEL = 19
++SUBLEVEL = 20
+ EXTRAVERSION =
+ NAME = Roaring Lionus
+ 
