@@ -241,11 +241,13 @@ bugfix/all/xfrm-override-skb-mark-with-tunnel-parm.i_key-in-xfr.patch
 bugfix/all/ip_vti-ip6_vti-preserve-skb-mark-after-rcv_cb-call.patch
 bugfix/all/revert-usb-hub-do-not-clear-bos-field-during-reset-d.patch
 bugfix/all/ecryptfs-fix-handling-of-directory-opening.patch
-bugfix/all/revert-fs-give-dentry-to-inode_change_ok-instead-of-inode.patch
-bugfix/all/xfs-propagate-dentry-down-to-inode_change_ok.patch
-bugfix/all/fuse-propagate-dentry-down-to-inode_change_ok.patch
-bugfix/all/fs-give-dentry-to-inode_change_ok-instead-of-inode.patch
 bugfix/all/-xen-blkfront-fix-accounting-of-reqs-when-migrating.patch
+bugfix/all/locking-mutex-don-t-assume-task_running.patch
+bugfix/all/SUNRPC-fix-refcounting-problems-with-auth_gss-messag.patch
+bugfix/all/ext4-fix-fencepost-in-s_first_meta_bg-validation.patch
+bugfix/all/ixgbe-do-not-call-check_link-for-ethtool-in-ixgbe_ge.patch
+bugfix/all/ipv6-fix-a-refcnt-leak-with-peer-addr.patch
+bugfix/all/ipv6-use-addrconf_get_prefix_route-to-remove-peer-ad.patch
 
 # memfd_create() & kdbus backport
 features/all/kdbus/mm-allow-drivers-to-prevent-new-writable-mappings.patch
@@ -659,51 +661,38 @@ features/all/chaoskey/hwrng-chaoskey-Add-support-for-Araneus-Alea-I-USB-RN.patch
 features/all/chaoskey/hwrng-chaoskey-Fix-URB-warning-due-to-timeout-on-Ale.patch
 features/all/chaoskey/chaoskey-3.16-no-hwrng-quality.patch
 
+# Make PIE address randomisation independent of mmap
+bugfix/all/pie-aslr/arm-factor-out-mmap-aslr-into-mmap_rnd.patch
+bugfix/all/pie-aslr/arm64-aslr-don-t-randomise-text-when-randomise_va_sp.patch
+bugfix/all/pie-aslr/arm64-standardize-mmap_rnd-usage.patch
+bugfix/all/pie-aslr/mips-extract-logic-for-mmap_rnd.patch
+bugfix/all/pie-aslr/powerpc-use-generic-pie-randomization.patch
+bugfix/all/pie-aslr/powerpc-standardize-mmap_rnd-usage.patch
+bugfix/all/pie-aslr/s390-change-randomize_et_dyn-to-take-void-and-use-mmap_rnd.patch
+bugfix/all/pie-aslr/s390-standardize-mmap_rnd-usage.patch
+bugfix/all/pie-aslr/mm-expose-arch_mmap_rnd-when-available.patch
+bugfix/all/pie-aslr/s390-redefine-randomize_et_dyn-for-elf_et_dyn_base.patch
+bugfix/all/pie-aslr/mm-split-et_dyn-aslr-from-mmap-aslr.patch
+bugfix/all/pie-aslr/mm-fold-arch_randomize_brk-into-arch_has_elf_randomi.patch
+
 # Security fixes
-bugfix/all/sg-fix-double-free-when-drives-detach-during-sg_io.patch
-bugfix/all/perf-fix-race-in-swevent-hash.patch
-bugfix/all/tty-prevent-ldisc-drivers-from-re-using-stale-tty-fi.patch
-bugfix/all/usb-gadget-f_fs-fix-use-after-free.patch
-bugfix/all/hid-core-prevent-out-of-bound-readings.patch
-bugfix/all/netfilter-nfnetlink-correctly-validate-length-of-bat.patch
-bugfix/all/net-ping-check-minimum-size-on-icmp-header-length.patch
-features/all/net-add-__sock_queue_rcv_skb.patch
-bugfix/all/rose-limit-sk_filter-trim-to-payload.patch
-bugfix/all/dccp-limit-sk_filter-trim-to-payload.patch
-bugfix/all/tcp-take-care-of-truncations-done-by-sk_filter.patch
-bugfix/all/mpi-fix-null-ptr-dereference-in-mpi_powm-ver-3.patch
-bugfix/all/packet-fix-race-condition-in-packet_set_ring.patch
-bugfix/x86/fix-potential-infoleak-in-older-kernels.patch
-bugfix/all/sctp-validate-chunk-len-before-actually-using-it.patch
-bugfix/all/sg_write-bsg_write-is-not-fit-to-be-called-under-ker.patch
-bugfix/x86/kvm-x86-drop-error-recovery-in-em_jmp_far-and-em_ret.patch
-bugfix/all/net-avoid-signed-overflows-for-so_-snd-rcv-bufforce.patch
-bugfix/all/alsa-pcm-call-kill_fasync-in-stream-lock.patch
-bugfix/all/perf-Fix-event-ctx-locking.patch
-bugfix/all/perf-do-not-double-free.patch
-bugfix/all/perf-core-Fix-concurrent-sys_perf_event_open-vs.-mov.patch
-bugfix/all/dccp-fix-freeing-skb-too-early-for-IPV6_RECVPKTINFO.patch
-bugfix/all/fbdev-color-map-copying-bounds-checking.patch
-bugfix/all/sysctl-drop-reference-added-by-grab_header-in-proc_sys_readdir.patch
-bugfix/x86/kvm-x86-fix-emulation-of-mov-ss-null-selector.patch
-bugfix/x86/kvm-x86-introduce-segmented_write_std.patch
-bugfix/all/selinux-fix-off-by-one-in-setprocattr.patch
-bugfix/all/usb-serial-kl5kusb105-fix-line-state-error-handling.patch
-bugfix/all/tmpfs-clear-s_isgid-when-setting-posix-acls.patch
-bugfix/all/ip6_gre-fix-ip6gre_err-invalid-reads.patch
-bugfix/x86/kvm-fix-page-struct-leak-in-handle_vmon.patch
-bugfix/all/ipv4-keep-skb-dst-around-in-presence-of-ip-options.patch
-bugfix/all/ipc-shm-Fix-shmat-mmap-nil-page-protection.patch
-bugfix/all/sctp-avoid-BUG_ON-on-sctp_wait_for_sndbuf.patch
-bugfix/all/sctp-deny-peeloff-operation-on-asocs-with-threads-sl.patch
-bugfix/all/tcp-avoid-infinite-loop-in-tcp_splice_read.patch
-bugfix/all/net-sock-add-sock_efree.patch
-bugfix/all/net-llc-avoid-BUG_ON-in-skb_orphan.patch
-bugfix/all/packet-fix-races-in-fanout_add.patch
-bugfix/all/TTY-n_hdlc-fix-lockdep-false-positive.patch
-bugfix/all/tty-n_hdlc-get-rid-of-racy-n_hdlc.tbuf.patch
-bugfix/x86/kvm-nvmx-allow-l1-to-intercept-software-exceptions-bp-and-of.patch
-bugfix/all/irda-fix-lockdep-annotations-in-hashbin_delete.patch
+bugfix/all/timer-restrict-timer_stats-to-initial-pid-namespace.patch
+bugfix/all/mbcache-reschedule-before-restarting-iteration-in-mb_cache_entry_alloc.patch
+bugfix/all/ping-implement-proper-locking.patch
+bugfix/all/xfrm_user-validate-xfrm_msg_newae-xfrma_replay_esn_val-replay_window.patch
+bugfix/all/xfrm_user-validate-xfrm_msg_newae-incoming-esn-size-harder.patch
+bugfix/x86/vmwgfx-null-pointer-dereference-in-vmw_surface_define_ioctl.patch
+bugfix/x86/drm-vmwgfx-fix-integer-overflow-in-vmw_surface_define_ioctl.patch
+bugfix/all/net-packet-fix-overflow-in-check-for-priv-area-size.patch
+bugfix/all/net-packet-fix-overflow-in-check-for-tp_frame_nr.patch
+bugfix/all/net-packet-fix-overflow-in-check-for-tp_reserve.patch
+bugfix/all/mm-mempolicy.c-fix-error-handling-in-set_mempolicy-a.patch
+bugfix/all/crypto-ahash-fix-einprogress-notification-callback.patch
+bugfix/all/usb-iowarrior-fix-null-deref-at-probe.patch
+bugfix/all/keys-special-dot-prefixed-keyring-name-bug-fix.patch
+bugfix/all/keys-reinstate-eperm-for-a-key-type-name-beginning-w.patch
+bugfix/all/keys-disallow-keyrings-beginning-with-.-to-be-joined.patch
+bugfix/all/keys-fix-keyctl_set_reqkey_keyring-to-not-leak-threa.patch
 
 # Fix ABI changes
 debian/of-fix-abi-changes.patch
@@ -758,6 +747,11 @@ debian/revert-arm64-define-at_vector_size_arch-for-arch_dlinfo.patch
 debian/revert-s390-define-at_vector_size_arch-for-arch_dlinfo.patch
 debian/revert-block-fix-bdi-vs-gendisk-lifetime-mismatch.patch
 debian/net-fix-abi-change-for-sk_filter-changes.patch
+debian/arm64-ptrace-avoid-abi-change-in-3.16.42.patch
+debian/revert-x86-panic-replace-smp_send_stop-with-kdump-friendly-version.patch
+debian/net-avoid-abi-change-for-net-fix-sk_mem_reclaim_partial.patch
+debian/vfs-avoid-abi-change-for-mnt-add-a-per-mount-namespace-limit.patch
+debian/mmc-avoid-abi-change-for-mmc-core-annotate-cmd_hdr-as-__le32.patch
 
 rpi/rpi_1000_df585c81fd08256cfa2aa67d178b11d109606083.patch
 rpi/rpi_1001_d911fd1e5c1448caf47977e08050c2f79447f786.patch
@@ -855,3 +849,4 @@ rpi/rpi_1092_ad7559876771c85a5da8b89687291b5294d2b559.patch
 rpi/rpi_1093_952a6ac6911ee697117eaf0f8c42ff6582d351a6.patch
 rpi/rpi_1094_377c82aa1d31b37f1096096b0e4c65beb0bc5c49.patch
 rpi/rpi_9999_other_changes.patch
+
