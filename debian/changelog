@@ -1,4 +1,4 @@
-linux (3.16.43-1rpi1) jessie-staging; urgency=medium
+linux (3.16.43-2rpi1) jessie-staging; urgency=medium
 
   [ Raspbian forward porter ]
   [changes brought forward from 3.16.7-ckt4-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sun, 18 Jan 2015 13:41:28 +0000]
@@ -34,6 +34,13 @@ linux (3.16.43-1rpi1) jessie-staging; urgency=medium
   * Add RTC related kernel changes requested by Diederik
 
  -- Mateusz Łukasik <mati75@linuxmint.pl>  Sat, 22 Apr 2017 18:11:03 +0200
+
+linux (3.16.43-2) jessie; urgency=high
+
+  * mm/huge_memory.c: fix up "mm/huge_memory.c: respect FOLL_FORCE/FOLL_COW for
+    thp" backport (Closes: #861313)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Sun, 30 Apr 2017 03:37:58 +0100
 
 linux (3.16.43-1) jessie; urgency=medium
 
