@@ -1,5 +1,5 @@
 [abi]
-abiname: 2
+abiname: 3
 ignore-changes:
  __cpuhp_*
  bpf_analyzer
@@ -84,11 +84,11 @@ featuresets:
 
 [build]
 debug-info: true
-# Enable module signing by default (implemented in the linux-signed package)
+# Disable module signing for now
 signed-modules: false
 
 [featureset-rt_base]
-enabled: false
+enabled: true
 
 [description]
 part-long-up: This kernel is not suitable for SMP (multi-processor,
@@ -106,6 +106,3 @@ gcc-6: gcc-6 <!stage1 !cross>, gcc-6-@gnu-type-package@:native <!stage1 cross>
 # initramfs-generators
 initramfs-fallback: linux-initramfs-tool
 initramfs-tools: initramfs-tools (>= 0.120+deb8u2)
-
-#[packages]
-#installer: false
