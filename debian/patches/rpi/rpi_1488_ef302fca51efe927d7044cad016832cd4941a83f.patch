@@ -1,0 +1,43 @@
+commit ef302fca51efe927d7044cad016832cd4941a83f
+Author: James Hughes <james.hughes@raspberrypi.org>
+Date:   Mon Apr 24 12:40:50 2017 +0100
+
+    brcmfmac: Ensure pointer correctly set if skb data location changes
+    
+    The incoming skb header may be resized if header space is
+    insufficient, which might change the data adddress in the skb.
+    Ensure that a cached pointer to that data is correctly set by
+    moving assignment to after any possible changes.
+    
+    Signed-off-by: James Hughes <james.hughes@raspberrypi.org>
+    
+    Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+    Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+index 5eaac13e2317..9b7c19a508ac 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+@@ -198,7 +198,7 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct sk_buff *skb,
+ 	int ret;
+ 	struct brcmf_if *ifp = netdev_priv(ndev);
+ 	struct brcmf_pub *drvr = ifp->drvr;
+-	struct ethhdr *eh = (struct ethhdr *)(skb->data);
++	struct ethhdr *eh;
+ 
+ 	brcmf_dbg(DATA, "Enter, bsscfgidx=%d\n", ifp->bsscfgidx);
+ 
+@@ -236,6 +236,8 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct sk_buff *skb,
+ 		goto done;
+ 	}
+ 
++	eh = (struct ethhdr *)(skb->data);
++
+ 	if (eh->h_proto == htons(ETH_P_PAE))
+ 		atomic_inc(&ifp->pend_8021x_cnt);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1488_ef302fca51efe927d7044cad016832cd4941a83f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1488_ef302fca51efe927d7044cad016832cd4941a83f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

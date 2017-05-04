@@ -38,10 +38,10 @@ Date:   Fri Mar 10 16:55:32 2017 +0100
     Signed-off-by: David S. Miller <davem@davemloft.net>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-4.9.18/net/sched/act_connmark.c
+Index: linux-4.9.25/net/sched/act_connmark.c
 ===================================================================
---- linux-4.9.18.orig/net/sched/act_connmark.c
-+++ linux-4.9.18/net/sched/act_connmark.c
+--- linux-4.9.25.orig/net/sched/act_connmark.c
++++ linux-4.9.25/net/sched/act_connmark.c
 @@ -116,6 +116,9 @@ static int tcf_connmark_init(struct net
  	if (!tb[TCA_CONNMARK_PARMS])
  		return -EINVAL;
@@ -52,9 +52,9 @@ Index: linux-4.9.18/net/sched/act_connmark.c
  	parm = nla_data(tb[TCA_CONNMARK_PARMS]);
  
  	if (!tcf_hash_check(tn, parm->index, a, bind)) {
-Index: linux-4.9.18/dummy/rpi_1399_5b4b3d6a34af74ca0a9ee6b8af992f7456c4cb7b.txt
+Index: linux-4.9.25/dummy/rpi_1399_5b4b3d6a34af74ca0a9ee6b8af992f7456c4cb7b.txt
 ===================================================================
 --- /dev/null
-+++ linux-4.9.18/dummy/rpi_1399_5b4b3d6a34af74ca0a9ee6b8af992f7456c4cb7b.txt
++++ linux-4.9.25/dummy/rpi_1399_5b4b3d6a34af74ca0a9ee6b8af992f7456c4cb7b.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

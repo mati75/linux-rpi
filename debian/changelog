@@ -54,8 +54,7 @@ linux (4.9.25-1rpi1) stretch-staging; urgency=high
   * Disable rpi_9999_other_changes.patch, it seems to contain only garbage.
   * add device tree trailer using scripts/mkknlimg (previously we used our own copy of mkknlimg)
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 04 Apr 2017 09:46:48 +0200
-
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 04 May 2017 22:22:22 +0200
 
 linux (4.9.25-1) unstable; urgency=medium
 

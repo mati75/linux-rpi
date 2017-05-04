@@ -1,0 +1,53 @@
+commit 27c2a6afeaad78af7041f849faceab9c6fd7cfec
+Author: James Hughes <james.hughes@raspberrypi.org>
+Date:   Tue Apr 25 10:15:06 2017 +0100
+
+    brcmfmac: Make skb header writable before use
+    
+    The driver was making changes to the skb_header without
+    ensuring it was writable (i.e. uncloned).
+    This patch also removes some boiler plate header size
+    checking/adjustment code as that is also handled by the
+    skb_cow_header function used to make header writable.
+    
+    Signed-off-by: James Hughes <james.hughes@raspberrypi.org>
+    Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+    Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+index 9b7c19a508ac..f877301c9454 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+@@ -211,22 +211,13 @@ static netdev_tx_t brcmf_netdev_start_xmit(struct sk_buff *skb,
+ 		goto done;
+ 	}
+ 
+-	/* Make sure there's enough room for any header */
+-	if (skb_headroom(skb) < drvr->hdrlen) {
+-		struct sk_buff *skb2;
+-
+-		brcmf_dbg(INFO, "%s: insufficient headroom\n",
++	/* Make sure there's enough writable headroom*/
++	ret = skb_cow_head(skb, drvr->hdrlen);
++	if (ret < 0) {
++		brcmf_err("%s: skb_cow_head failed\n",
+ 			  brcmf_ifname(ifp));
+-		drvr->bus_if->tx_realloc++;
+-		skb2 = skb_realloc_headroom(skb, drvr->hdrlen);
+ 		dev_kfree_skb(skb);
+-		skb = skb2;
+-		if (skb == NULL) {
+-			brcmf_err("%s: skb_realloc_headroom failed\n",
+-				  brcmf_ifname(ifp));
+-			ret = -ENOMEM;
+-			goto done;
+-		}
++		goto done;
+ 	}
+ 
+ 	/* validate length for ether packet */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1489_27c2a6afeaad78af7041f849faceab9c6fd7cfec.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1489_27c2a6afeaad78af7041f849faceab9c6fd7cfec.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
