@@ -1,3 +1,9 @@
+linux (4.9.25-1~bpo8+1+rpi1) jessie-backports; urgency=medium
+
+  * Rebuild for rpi.
+
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Mon, 22 May 2017 17:46:25 +0200
+
 linux (4.9.25-1~bpo8+1) jessie-backports; urgency=medium
 
   * Rebuild for jessie-backports:

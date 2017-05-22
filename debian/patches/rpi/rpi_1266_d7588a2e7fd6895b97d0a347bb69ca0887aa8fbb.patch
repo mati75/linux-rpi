@@ -15,10 +15,10 @@ Date:   Wed Dec 14 18:46:01 2016 -0800
     Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-4.9.18/drivers/scsi/storvsc_drv.c
+Index: linux-4.9.25/drivers/scsi/storvsc_drv.c
 ===================================================================
---- linux-4.9.18.orig/drivers/scsi/storvsc_drv.c
-+++ linux-4.9.18/drivers/scsi/storvsc_drv.c
+--- linux-4.9.25.orig/drivers/scsi/storvsc_drv.c
++++ linux-4.9.25/drivers/scsi/storvsc_drv.c
 @@ -103,6 +103,8 @@ struct hv_fc_wwn_packet {
  };
  
@@ -42,9 +42,9 @@ Index: linux-4.9.18/drivers/scsi/storvsc_drv.c
  		(SRB_FLAGS_QUEUE_ACTION_ENABLE | SRB_FLAGS_NO_QUEUE_FREEZE);
  		vm_srb->win8_extension.queue_tag = SP_UNTAGGED;
  		vm_srb->win8_extension.queue_action = SRB_SIMPLE_TAG_REQUEST;
-Index: linux-4.9.18/dummy/rpi_1266_d7588a2e7fd6895b97d0a347bb69ca0887aa8fbb.txt
+Index: linux-4.9.25/dummy/rpi_1266_d7588a2e7fd6895b97d0a347bb69ca0887aa8fbb.txt
 ===================================================================
 --- /dev/null
-+++ linux-4.9.18/dummy/rpi_1266_d7588a2e7fd6895b97d0a347bb69ca0887aa8fbb.txt
++++ linux-4.9.25/dummy/rpi_1266_d7588a2e7fd6895b97d0a347bb69ca0887aa8fbb.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

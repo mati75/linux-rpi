@@ -16,10 +16,10 @@ Date:   Wed Dec 14 18:46:02 2016 -0800
     Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-4.9.18/drivers/scsi/storvsc_drv.c
+Index: linux-4.9.25/drivers/scsi/storvsc_drv.c
 ===================================================================
---- linux-4.9.18.orig/drivers/scsi/storvsc_drv.c
-+++ linux-4.9.18/drivers/scsi/storvsc_drv.c
+--- linux-4.9.25.orig/drivers/scsi/storvsc_drv.c
++++ linux-4.9.25/drivers/scsi/storvsc_drv.c
 @@ -901,6 +901,13 @@ static void storvsc_handle_error(struct
  		if (vm_srb->srb_status & SRB_STATUS_AUTOSENSE_VALID)
  			break;
@@ -34,9 +34,9 @@ Index: linux-4.9.18/drivers/scsi/storvsc_drv.c
  		 * If there is an error; offline the device since all
  		 * error recovery strategies would have already been
  		 * deployed on the host side. However, if the command
-Index: linux-4.9.18/dummy/rpi_1267_8547c1d6adfa3c7b2172317bad84e8098eb28cac.txt
+Index: linux-4.9.25/dummy/rpi_1267_8547c1d6adfa3c7b2172317bad84e8098eb28cac.txt
 ===================================================================
 --- /dev/null
-+++ linux-4.9.18/dummy/rpi_1267_8547c1d6adfa3c7b2172317bad84e8098eb28cac.txt
++++ linux-4.9.25/dummy/rpi_1267_8547c1d6adfa3c7b2172317bad84e8098eb28cac.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.
