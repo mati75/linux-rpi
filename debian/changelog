@@ -1,4 +1,4 @@
-linux (4.9.25-1rpi1) stretch-staging; urgency=high
+linux (4.9.30-1rpi1) stretch-staging; urgency=high
 
   [ Peter Michael Green ]
   [Changes from 3.18.5-1~exp1rpi1 or earlier]
@@ -54,7 +54,7 @@ linux (4.9.25-1rpi1) stretch-staging; urgency=high
   * Disable rpi_9999_other_changes.patch, it seems to contain only garbage.
   * add device tree trailer using scripts/mkknlimg (previously we used our own copy of mkknlimg)
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 04 May 2017 22:22:22 +0200
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Sun, 04 Jun 2017 22:21:44 +0200
 
 linux (4.9.30-1) unstable; urgency=medium
 
