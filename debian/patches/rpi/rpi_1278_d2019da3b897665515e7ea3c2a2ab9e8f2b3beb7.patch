@@ -16,10 +16,10 @@ Date:   Fri Jan 27 14:34:30 2017 -0500
     Signed-off-by: Theodore Ts'o <tytso@mit.edu>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-4.9.25/fs/ext4/mballoc.c
+Index: linux-rpi/fs/ext4/mballoc.c
 ===================================================================
---- linux-4.9.25.orig/fs/ext4/mballoc.c
-+++ linux-4.9.25/fs/ext4/mballoc.c
+--- linux-rpi.orig/fs/ext4/mballoc.c
++++ linux-rpi/fs/ext4/mballoc.c
 @@ -3130,6 +3130,13 @@ ext4_mb_normalize_request(struct ext4_al
  	if (size > EXT4_BLOCKS_PER_GROUP(ac->ac_sb))
  		size = EXT4_BLOCKS_PER_GROUP(ac->ac_sb);
@@ -34,9 +34,9 @@ Index: linux-4.9.25/fs/ext4/mballoc.c
  	end = start + size;
  
  	/* check we don't cross already preallocated blocks */
-Index: linux-4.9.25/dummy/rpi_1278_d2019da3b897665515e7ea3c2a2ab9e8f2b3beb7.txt
+Index: linux-rpi/dummy/rpi_1278_d2019da3b897665515e7ea3c2a2ab9e8f2b3beb7.txt
 ===================================================================
 --- /dev/null
-+++ linux-4.9.25/dummy/rpi_1278_d2019da3b897665515e7ea3c2a2ab9e8f2b3beb7.txt
++++ linux-rpi/dummy/rpi_1278_d2019da3b897665515e7ea3c2a2ab9e8f2b3beb7.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

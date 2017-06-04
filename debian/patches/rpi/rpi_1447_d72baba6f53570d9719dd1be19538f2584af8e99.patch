@@ -18,10 +18,10 @@ Date:   Fri Mar 17 00:48:32 2017 +0000
     Signed-off-by: Sasha Levin <alexander.levin@verizon.com>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-4.9.25/drivers/acpi/blacklist.c
+Index: linux-rpi/drivers/acpi/blacklist.c
 ===================================================================
---- linux-4.9.25.orig/drivers/acpi/blacklist.c
-+++ linux-4.9.25/drivers/acpi/blacklist.c
+--- linux-rpi.orig/drivers/acpi/blacklist.c
++++ linux-rpi/drivers/acpi/blacklist.c
 @@ -188,6 +188,22 @@ static struct dmi_system_id acpi_rev_dmi
  		      DMI_MATCH(DMI_PRODUCT_NAME, "Latitude 3350"),
  		},
@@ -45,9 +45,9 @@ Index: linux-4.9.25/drivers/acpi/blacklist.c
  #endif
  	{}
  };
-Index: linux-4.9.25/dummy/rpi_1447_d72baba6f53570d9719dd1be19538f2584af8e99.txt
+Index: linux-rpi/dummy/rpi_1447_d72baba6f53570d9719dd1be19538f2584af8e99.txt
 ===================================================================
 --- /dev/null
-+++ linux-4.9.25/dummy/rpi_1447_d72baba6f53570d9719dd1be19538f2584af8e99.txt
++++ linux-rpi/dummy/rpi_1447_d72baba6f53570d9719dd1be19538f2584af8e99.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

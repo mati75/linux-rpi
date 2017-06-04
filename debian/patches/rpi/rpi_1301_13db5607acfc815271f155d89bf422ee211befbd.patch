@@ -23,10 +23,10 @@ Date:   Thu Feb 2 20:30:03 2017 -0600
     Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-4.9.25/virt/kvm/arm/vgic/vgic-irqfd.c
+Index: linux-rpi/virt/kvm/arm/vgic/vgic-irqfd.c
 ===================================================================
---- linux-4.9.25.orig/virt/kvm/arm/vgic/vgic-irqfd.c
-+++ linux-4.9.25/virt/kvm/arm/vgic/vgic-irqfd.c
+--- linux-rpi.orig/virt/kvm/arm/vgic/vgic-irqfd.c
++++ linux-rpi/virt/kvm/arm/vgic/vgic-irqfd.c
 @@ -102,6 +102,9 @@ int kvm_set_msi(struct kvm_kernel_irq_ro
  	if (!level)
  		return -1;
@@ -37,9 +37,9 @@ Index: linux-4.9.25/virt/kvm/arm/vgic/vgic-irqfd.c
  	return vgic_its_inject_msi(kvm, &msi);
  }
  
-Index: linux-4.9.25/dummy/rpi_1301_13db5607acfc815271f155d89bf422ee211befbd.txt
+Index: linux-rpi/dummy/rpi_1301_13db5607acfc815271f155d89bf422ee211befbd.txt
 ===================================================================
 --- /dev/null
-+++ linux-4.9.25/dummy/rpi_1301_13db5607acfc815271f155d89bf422ee211befbd.txt
++++ linux-rpi/dummy/rpi_1301_13db5607acfc815271f155d89bf422ee211befbd.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

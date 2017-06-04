@@ -18,10 +18,10 @@ Date:   Sun Feb 26 17:14:35 2017 +0200
     Signed-off-by: David S. Miller <davem@davemloft.net>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-4.9.25/net/ipv4/route.c
+Index: linux-rpi/net/ipv4/route.c
 ===================================================================
---- linux-4.9.25.orig/net/ipv4/route.c
-+++ linux-4.9.25/net/ipv4/route.c
+--- linux-rpi.orig/net/ipv4/route.c
++++ linux-rpi/net/ipv4/route.c
 @@ -2174,6 +2174,7 @@ struct rtable *__ip_route_output_key_has
  	fl4->flowi4_scope = ((tos & RTO_ONLINK) ?
  			 RT_SCOPE_LINK : RT_SCOPE_UNIVERSE);
@@ -30,9 +30,9 @@ Index: linux-4.9.25/net/ipv4/route.c
  	rcu_read_lock();
  	if (fl4->saddr) {
  		rth = ERR_PTR(-EINVAL);
-Index: linux-4.9.25/dummy/rpi_1377_3cc57856564e6578c49196826a410a9e9107c1d7.txt
+Index: linux-rpi/dummy/rpi_1377_3cc57856564e6578c49196826a410a9e9107c1d7.txt
 ===================================================================
 --- /dev/null
-+++ linux-4.9.25/dummy/rpi_1377_3cc57856564e6578c49196826a410a9e9107c1d7.txt
++++ linux-rpi/dummy/rpi_1377_3cc57856564e6578c49196826a410a9e9107c1d7.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

@@ -26,10 +26,10 @@ Date:   Thu Apr 20 21:32:16 2017 +0200
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
     --
 
-Index: linux-4.9.25/net/mac80211/rx.c
+Index: linux-rpi/net/mac80211/rx.c
 ===================================================================
---- linux-4.9.25.orig/net/mac80211/rx.c
-+++ linux-4.9.25/net/mac80211/rx.c
+--- linux-rpi.orig/net/mac80211/rx.c
++++ linux-rpi/net/mac80211/rx.c
 @@ -3611,6 +3611,27 @@ static bool ieee80211_accept_frame(struc
  			ieee80211_ocb_rx_no_sta(sdata, bssid, hdr->addr2,
  						BIT(rate_idx));
@@ -58,9 +58,9 @@ Index: linux-4.9.25/net/mac80211/rx.c
  		return true;
  	case NL80211_IFTYPE_MESH_POINT:
  		if (multicast)
-Index: linux-4.9.25/dummy/rpi_1508_f60e66f9ba976d207e6ae8999a99b13b7db8703a.txt
+Index: linux-rpi/dummy/rpi_1508_f60e66f9ba976d207e6ae8999a99b13b7db8703a.txt
 ===================================================================
 --- /dev/null
-+++ linux-4.9.25/dummy/rpi_1508_f60e66f9ba976d207e6ae8999a99b13b7db8703a.txt
++++ linux-rpi/dummy/rpi_1508_f60e66f9ba976d207e6ae8999a99b13b7db8703a.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

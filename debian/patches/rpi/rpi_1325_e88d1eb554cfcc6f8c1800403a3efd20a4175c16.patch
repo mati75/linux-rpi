@@ -15,10 +15,10 @@ Date:   Tue Feb 21 11:21:57 2017 -0800
     Signed-off-by: Doug Ledford <dledford@redhat.com>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-4.9.25/drivers/infiniband/core/cma.c
+Index: linux-rpi/drivers/infiniband/core/cma.c
 ===================================================================
---- linux-4.9.25.orig/drivers/infiniband/core/cma.c
-+++ linux-4.9.25/drivers/infiniband/core/cma.c
+--- linux-rpi.orig/drivers/infiniband/core/cma.c
++++ linux-rpi/drivers/infiniband/core/cma.c
 @@ -3509,6 +3509,9 @@ static int cma_accept_ib(struct rdma_id_
  	struct ib_cm_rep_param rep;
  	int ret;
@@ -29,9 +29,9 @@ Index: linux-4.9.25/drivers/infiniband/core/cma.c
  	ret = cma_modify_qp_rtr(id_priv, conn_param);
  	if (ret)
  		goto out;
-Index: linux-4.9.25/dummy/rpi_1325_e88d1eb554cfcc6f8c1800403a3efd20a4175c16.txt
+Index: linux-rpi/dummy/rpi_1325_e88d1eb554cfcc6f8c1800403a3efd20a4175c16.txt
 ===================================================================
 --- /dev/null
-+++ linux-4.9.25/dummy/rpi_1325_e88d1eb554cfcc6f8c1800403a3efd20a4175c16.txt
++++ linux-rpi/dummy/rpi_1325_e88d1eb554cfcc6f8c1800403a3efd20a4175c16.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.
