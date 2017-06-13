@@ -1,0 +1,28 @@
+#!/bin/bash -ev
+scriptdir=`dirname $(readlink -f "$BASH_SOURCE")`
+
+git reset --hard
+
+#git checkout buildnewlinuxpackage-deb
+#DEBVERSION=`dpkg-parsechangelog -S version`
+#PACKAGE=linux-`echo $NEWVERSION | cut -d '.' -f 1`.`echo $NEWVERSION | cut -d '.' -f 2`
+#git checkout buildnewlinuxpackage-oldpkgonly
+#OLDVERSION=`dpkg-parsechangelog -S version`
+#
+#git checkout buildnewlinuxpackage-pkgmerge
+#NEWVERSION=`dpkg-parsechangelog -S version`
+#TARGETSUITE=`dpkg-parsechangelog -S distribution`
+
+
+git config --local user.name "Raspbian kernel package updater"
+git config --local user.email root@raspbian.org
+git config merge.conflictstyle diff3
+
+git checkout buildnewlinuxpackage-stage2
+touch debian/changelog
+
+debian/rules clean || debian/rules clean
+git add -f debian/*
+git commit -m 'run clean target to update generated files in debian packaging'
+
+dgit --quilt=auto quilt-fixup

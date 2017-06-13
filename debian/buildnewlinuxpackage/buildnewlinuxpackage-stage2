@@ -1,0 +1,57 @@
+#!/bin/bash -ev
+scriptdir=`dirname $(readlink -f "$BASH_SOURCE")`
+
+git reset --hard
+
+git checkout buildnewlinuxpackage-deb
+DEBVERSION=`dpkg-parsechangelog -S version`
+PACKAGE=linux-`echo $NEWVERSION | cut -d '.' -f 1`.`echo $NEWVERSION | cut -d '.' -f 2`
+git checkout buildnewlinuxpackage-oldpkgonly
+OLDVERSION=`dpkg-parsechangelog -S version`
+
+git checkout buildnewlinuxpackage-pkgmerge
+NEWVERSION=`dpkg-parsechangelog -S version`
+TARGETSUITE=`dpkg-parsechangelog -S distribution`
+
+
+git config --local user.name "Raspbian kernel package updater"
+git config --local user.email root@raspbian.org
+git config merge.conflictstyle diff3
+
+#pseudomerge in upstream history
+git merge -sours --allow-unrelated-histories buildnewlinuxpackage-upstream -m 'psudedomerge to tie in upstream history'
+
+git tag -f buildnewlinuxpackage-upstreampsuedomerge
+
+#merge in rpi stuff
+git merge buildnewlinuxpackage-rpi -m 'merge rpi changes with packaging'
+
+git tag -f buildnewlinuxpackage-rpimerge
+
+git rebase buildnewlinuxpackage-upstreampsuedomerge buildnewlinuxpackage-rpi
+
+git tag -f buildnewlinuxpackage-rpirebase
+
+git checkout buildnewlinuxpackage-rpirebase
+git_commits=$(git cherry buildnewlinuxpackage-upstreampsuedomerge | awk '/^\+/{print $2}')
+git checkout buildnewlinuxpackage-rpimerge
+
+git merge -sours --no-commit buildnewlinuxpackage-rpirebase
+
+mkdir -p debian/patches/rpi
+i=1000
+for c in $git_commits ; do
+    git show ${c} > debian/patches/rpi/rpi_${i}_${c}.patch
+    git add debian/patches/rpi/rpi_${i}_${c}.patch
+    i=$((${i}+1))
+done
+chmod 755 debian/splitseries.php
+debian/splitseries.php
+ls debian/patches/rpi/ | sed s_^_rpi/_ > debian/patches/series.fromgit
+cat debian/patches/series.prefix debian/patches/series.fromgit debian/patches/series.suffix > debian/patches/series
+rm debian/patches/series.prefix debian/patches/series.fromgit debian/patches/series.suffix
+
+git add debian/patches/series
+git commit -m 'generate rpi patches from rebased rpi commits and update quilt series with them'
+
+git tag -f buildnewlinuxpackage-stage2

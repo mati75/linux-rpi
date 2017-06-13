@@ -1,0 +1,42 @@
+#!/bin/bash -ev
+scriptdir=`dirname $(readlink -f "$BASH_SOURCE")`
+
+git reset --hard
+
+git checkout buildnewlinuxpackage-deb
+DEBVERSION=`dpkg-parsechangelog -S version`
+NEWVERSION=`dpkg-parsechangelog -S version`+rpi1
+PACKAGE=linux-`echo $NEWVERSION | cut -d '.' -f 1`.`echo $NEWVERSION | cut -d '.' -f 2`
+git checkout buildnewlinuxpackage-oldpkgonly
+OLDVERSION=`dpkg-parsechangelog -S version`
+TARGETSUITE=`dpkg-parsechangelog -S distribution`
+
+git config --local user.name "Raspbian kernel package updater"
+git config --local user.email root@raspbian.org
+git config merge.conflictstyle diff3
+
+#merge in existing packaging
+git merge buildnewlinuxpackage-deb || true
+
+$scriptdir/fixupchangelog debian/changelog $NEWVERSION $TARGETSUITE "`date -uR`" $PACKAGE
+git add debian/changelog
+
+git diff --name-only --diff-filter=U > ../conflicts
+
+if grep ^debian/patches/series$ ../conflicts ; then
+    $scriptdir/fixupseries debian/patches/series
+    git add debian/patches/series
+fi
+
+if grep ^debian/config/defines$ ../conflicts ; then
+    ($scriptdir/fixupcontrol debian/config/defines .. && git add debian/config/defines) || true
+fi
+
+if ! git commit -m "Merge packaging changes from $OLDVERSION into $DEBVERSION to produce packaging for $NEWVERSION" ; then
+    echo automatic merging failed, fix any remaining conflicts commit and tag your changes before moving on
+    echo example commands to merge and tag:
+    echo git commit -m '"Merge packaging changes from '$OLDVERSION' into '$DEBVERSION' to produce packaging for '$NEWVERSION'"'
+    echo git tag -f buildnewlinuxpackage-pkgmerge
+    exit 1
+fi
+git tag -f buildnewlinuxpackage-pkgmerge

@@ -1,0 +1,39 @@
+#!/bin/bash -ev
+set -o pipefail
+oldurl=$1
+oldtag=$2
+deburl=$3
+debtag=$4
+rpibranch=$5
+
+git fetch $oldurl $oldtag
+oldcommit=`git rev-parse FETCH_HEAD`
+echo fetched old commit $oldcommit
+git tag -f buildnewlinuxpackage-old $oldcommit
+
+echo git fetch $oldurl $oldtag=pkgonly
+git fetch $oldurl $oldtag=pkgonly
+oldcommitpkgonly=`git rev-parse FETCH_HEAD`
+echo fetched old pkgonly commit $oldcommitpkgonly
+git tag -f buildnewlinuxpackage-oldpkgonly $oldcommitpkgonly
+
+git fetch $deburl $debtag
+debcommit=`git rev-parse FETCH_HEAD`
+echo fetched deb commit $debcommit
+git tag -f buildnewlinuxpackage-deb $debcommit
+
+git fetch https://github.com/raspberrypi/linux.git $rpibranch
+rpicommit=`git rev-parse FETCH_HEAD`
+echo fetched rpi commit $rpicommit
+git tag -f buildnewlinuxpackage-rpi $rpicommit
+
+
+git checkout $debcommit
+upstreamversion=`dpkg-parsechangelog -S version | cut -d '-' -f 1`
+
+git fetch git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git v$upstreamversion
+upstreamcommit=`git rev-parse FETCH_HEAD`
+echo fetched upstream commit $upstreamcommit
+
+git tag -f buildnewlinuxpackage-upstream $upstreamcommit
+
