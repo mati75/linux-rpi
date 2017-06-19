@@ -1,4 +1,4 @@
-linux (4.9.30-2rpi1) stretch-staging; urgency=medium
+linux (4.9.30-2+deb9u1rpi1) stretch-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -118,7 +118,18 @@ linux (4.9.30-2rpi1) stretch-staging; urgency=medium
   * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
   * Remove ext3 modules from d-i package list.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 13 Jun 2017 09:27:37 +0200
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Mon, 19 Jun 2017 18:44:51 +0200
+
+linux (4.9.30-2+deb9u1) stretch-security; urgency=high
+
+  * mm: enlarge stack guard gap (CVE-2017-1000364)
+  * mm: allow to configure stack gap size
+  * mm, proc: cap the stack gap for unpopulated growing vmas
+  * mm, proc: drop priv parameter from is_stack
+  * mm: do not collapse stack gap into THP
+  * fold me "mm: allow to configure stack gap size"
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Sun, 18 Jun 2017 10:14:32 +0200
 
 linux (4.9.30-2) unstable; urgency=high
 
