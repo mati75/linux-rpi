@@ -33,7 +33,7 @@ linux (3.16.43-2+deb8u1rpi1) jessie-staging; urgency=medium
     which conflicted with the rpi patches.
   * Add RTC related kernel changes requested by Diederik
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 03 May 2017 22:27:57 +0200
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Mon, 19 Jun 2017 18:37:34 +0200
 
 linux (3.16.43-2+deb8u1) jessie-security; urgency=high
 
