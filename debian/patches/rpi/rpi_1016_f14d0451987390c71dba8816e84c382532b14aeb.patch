@@ -1,0 +1,55 @@
+commit f14d0451987390c71dba8816e84c382532b14aeb
+Author: Noralf Trønnes <noralf@tronnes.org>
+Date:   Wed Jun 3 12:26:13 2015 +0200
+
+    ARM: bcm2835: Set Serial number and Revision
+    
+    The VideoCore bootloader passes in Serial number and
+    Revision number through Device Tree. Make these available to
+    userspace through /proc/cpuinfo.
+    
+    Mainline status:
+    
+    There is a commit in linux-next that standardize passing the serial
+    number through Device Tree (string: /serial-number):
+    ARM: 8355/1: arch: Show the serial number from devicetree in cpuinfo
+    
+    There was an attempt to do the same with the revision number, but it
+    didn't get in:
+    [PATCH v2 1/2] arm: devtree: Set system_rev from DT revision
+    
+    Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+
+diff --git a/arch/arm/mach-bcm/board_bcm2835.c b/arch/arm/mach-bcm/board_bcm2835.c
+index 0c1edfc98696..8f152266ba9b 100644
+--- a/arch/arm/mach-bcm/board_bcm2835.c
++++ b/arch/arm/mach-bcm/board_bcm2835.c
+@@ -16,13 +16,23 @@
+ #include <linux/irqchip.h>
+ #include <linux/of_address.h>
+ #include <linux/clk/bcm2835.h>
++#include <asm/system_info.h>
+ 
+ #include <asm/mach/arch.h>
+ #include <asm/mach/map.h>
+ 
+ static void __init bcm2835_init(void)
+ {
++	struct device_node *np = of_find_node_by_path("/system");
++	u32 val;
++	u64 val64;
++
+ 	bcm2835_init_clocks();
++
++	if (!of_property_read_u32(np, "linux,revision", &val))
++		system_rev = val;
++	if (!of_property_read_u64(np, "linux,serial", &val64))
++		system_serial_low = val64;
+ }
+ 
+ static const char * const bcm2835_compat[] = {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1016_f14d0451987390c71dba8816e84c382532b14aeb.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1016_f14d0451987390c71dba8816e84c382532b14aeb.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
