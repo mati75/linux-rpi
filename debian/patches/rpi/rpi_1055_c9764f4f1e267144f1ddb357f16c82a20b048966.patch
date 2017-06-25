@@ -10997,7 +10997,7 @@ diff --git a/scripts/Makefile.dtbinst b/scripts/Makefile.dtbinst
 index a1be75d0a5fd..ad8dc1c93d04 100644
 --- a/scripts/Makefile.dtbinst
 +++ b/scripts/Makefile.dtbinst
-@@ -27,6 +27,7 @@ ifeq ("$(dtbinst-root)", "$(obj)")
+@@ -27,6 +27,7 @@ ifeq ("$(dtbinst_root)", "$(obj)")
  endif
  
  dtbinst-files	:= $(dtb-y)
@@ -11007,7 +11007,7 @@ index a1be75d0a5fd..ad8dc1c93d04 100644
  # Helper targets for Installing DTBs into the boot directory
 @@ -35,15 +36,18 @@ quiet_cmd_dtb_install =	INSTALL $<
  
- install-dir = $(patsubst $(dtbinst-root)%,$(INSTALL_DTBS_PATH)%,$(obj))
+ install-dir = $(patsubst $(dtbinst_root)%,$(INSTALL_DTBS_PATH)%,$(obj))
  
 -$(dtbinst-files) $(dtbinst-dirs): | __dtbs_install_prep
 +$(dtbinst-files) $(dtboinst-files) $(dtbinst-dirs): | __dtbs_install_prep
