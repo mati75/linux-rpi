@@ -114,11 +114,10 @@ linux (4.9.30-2+deb9u2rpi1) stretch-staging; urgency=medium
   * swap order of asciidoc and asciidoc-base alternative build-depends.
   * Deversion flex build-dependency
   * Deversion libbabeltrace-dev and libbabeltrace-ctf-dev build-dependencys
-  * Build with gcc-4.9
   * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
   * Remove ext3 modules from d-i package list.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Mon, 19 Jun 2017 18:44:51 +0200
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 28 Jun 2017 11:03:16 +0200
 
 linux (4.9.30-2+deb9u2) stretch-security; urgency=high
 
