@@ -7,7 +7,7 @@ Forwarded: not-needed
 
 --- a/.gitignore
 +++ b/.gitignore
-@@ -47,17 +47,6 @@ Module.symvers
+@@ -53,23 +53,11 @@ Module.symvers
  /Module.markers
  
  #
@@ -16,19 +16,25 @@ Forwarded: not-needed
 -/debian/
 -
 -#
--# git files that we don't want to ignore even it they are dot-files
+ # tar directory (make tar*-pkg)
+ #
+ /tar-install/
+ 
+ #
+-# git files that we don't want to ignore even if they are dot-files
 -#
 -!.gitignore
 -!.mailmap
+-!.cocciconfig
 -
 -#
  # Generated include files
  #
  include/config
-@@ -95,3 +84,10 @@ x509.genkey
+@@ -114,3 +102,10 @@ all.config
  
- # Kconfig presets
- all.config
+ # Kdevelop4
+ *.kdev4
 +
 +#
 +# Debian packaging: ignore everything at the top level, since it isn't

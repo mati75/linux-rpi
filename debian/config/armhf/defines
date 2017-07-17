@@ -1,20 +1,18 @@
 [base]
 flavours:
  rpi
+ rpi2
 kernel-arch: arm
 
 [build]
 image-file: arch/arm/boot/zImage
+vdso: true
 
 [image]
-suggests: fdutils
-configs:
- kernelarch-arm/config
- armhf/config
 install-stem: vmlinuz
 
 [relations]
-headers%gcc-4.8: linux-compiler-gcc-4.8-arm
+headers%gcc-6: linux-compiler-gcc-6-arm
 
 [armmp_description]
 hardware: ARMv7 multiplatform compatible SoCs
@@ -28,16 +26,26 @@ hardware-long: ARMv7 multiplatform kernel supporting LPAE. See
   https://wiki.debian.org/DebianKernel/ARMMP for details of supported
   platforms.
 
-[armmp-lpae_image]
-configs:
- armhf/config.armmp
- armhf/config.lpae
-
 [rpi_build]
-image-file: arch/arm/boot/zImage
+image-file: arch/arm/boot/zImagerpdt
 
 [rpi_description]
 hardware: RaspberryPI
 hardware-long: Raspberry PI
 
+[rpi_image]
+configs:
+ armhf/config.rpix
+ armhf/config.rpi
 
+[rpi2_image]
+configs:
+ armhf/config.rpix
+ armhf/config.rpi2
+
+[rpi2_build]
+image-file: arch/arm/boot/zImagerpdt
+
+[rpi2_description]
+hardware: RaspberryPI2
+hardware-long: Raspberry PI 2

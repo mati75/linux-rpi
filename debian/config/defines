@@ -1,74 +1,51 @@
 [abi]
-abiname: 4
+abiname: 1
 ignore-changes:
-# Should not be used from OOT
- module:arch/x86/kvm/kvm
- module:arch/powerpc/kvm/kvm
- module:drivers/md/dm-snapshot
- module:drivers/misc/mei/*
- module:drivers/mtd/spi-nor/spi-nor
- module:drivers/net/can/can-dev
- module:drivers/net/ethernet/**
+ __cpuhp_*
+ bpf_analyzer
+ cxl_*
+ mm_iommu_*
+ register_cxl_calls
+ unregister_cxl_calls
+ module:arch/x86/kvm/*
+ module:drivers/crypto/ccp/*
+ module:drivers/hv/*
+ module:drivers/iio/common/hid-sensors/*
+ module:drivers/iio/common/st_sensors/**
  module:drivers/net/wireless/**
+ module:drivers/nvdimm/*
+ module:drivers/power/supply/bq27xxx_battery
+ module:drivers/scsi/cxgbi/*
+ module:drivers/scsi/libiscs*
  module:drivers/scsi/qla2xxx/qla2xxx
- module:drivers/target/iscsi/iscsi_target_mod
- module:drivers/target/target_core_mod
- module:drivers/usb/musb/*
+ module:drivers/scsi/ufs/*
+ module:drivers/target/**
+ module:drivers/usb/chipidea/**
+ module:drivers/usb/host/**
+ module:drivers/usb/musb/**
  module:net/ceph/libceph
+ module:net/l2tp/l2tp_core
  module:sound/firewire/snd-firewire-lib
- module:sound/i2c/other/snd-ak4113
- module:sound/i2c/other/snd-ak4114
- module:sound/pci/emu10k1/*
- azx_alloc_cmd_io
- azx_free_cmd_io
- azx_get_response
- azx_init_cmd_io
- azx_send_cmd
+# btree library is only selected by few drivers so not useful OOT
+ btree_*
+ visitor*
+# Exported for related protocols only
  can_rx_register
- cpuidle_*
- kvmppc_*
- musb_*
- tcp_make_synack
- tcp_parse_options
- tcp_try_fastopen
-# Apparently not used OOT
- __add_pages
- __remove_pages
- nf_register_queue_handler
- of_device_is_stdout_path
- module:sound/soc/*
-# Not needed by modules at all
- blk_rq_check_limits
- clk_divider_ro_ops
- tick_nohz_idle_enter
- tick_nohz_idle_exit
-# Apparently not used from OOT
- skb_copy_and_csum_datagram_iovec
- module:net/dccp/dccp
- fl6_*
- inet_sk_diag_fill
- ip6_append_data
- ip6_datagram_send_ctl
  ip6_xmit
- ipv6_dup_options
- ipv6_fixup_options
- ipv6_push_nfrag_opts
- tcp_cong_avoid_ai
- tcp_slow_start
-# Not used by OOT modules
- __scm_destroy
- __scm_send
- scm_detach_fds
- scm_fp_dup
- af_alg_*
- xt_compat_match_from_user
- efivar_validate
- zpci_disable_device
- zpci_enable_device
- zpci_stop_device
-# Private to *notify
- fsnotify_*_group
- fsnotify_*_mark
+ module:net/dccp/dccp
+ module:net/rds/rds
+# devfreq is unlikely to be useful for OOT modules
+ devfreq_*
+ devm_devfreq_*
+ update_devfreq
+# Assume IB drivers are added/updated through OFED, which also updates IB core
+ module:drivers/infiniband/**
+# Declared in private header, not usable OOT
+ acpi_ec_add_query_handler
+ acpi_ec_remove_query_handler
+ first_ec
+# Exported for tracefs only
+ debugfs_create_automount
 
 [base]
 arches:
@@ -79,27 +56,41 @@ arches:
  armhf
  hppa
  i386
- ia64
  m68k
  mips
  mipsel
+ mipsn32
+ mipsn32el
  mips64
  mips64el
- or1k
+# Disabled until dak accepts them in the control file
+# mipsr6
+# mipsr6el
+# mipsn32r6
+# mipsn32r6el
+# mips64r6
+# mips64r6el
  powerpc
  powerpcspe
  ppc64
  ppc64el
  s390
  s390x
+ sh3
  sh4
  sparc
  sparc64
+ tilegx
  x32
-compiler: gcc-4.8
+compiler: gcc-6
 featuresets:
  none
  rt
+
+[build]
+debug-info: true
+# Disable module signing for now
+signed-modules: false
 
 [featureset-rt_base]
 enabled: false
@@ -112,15 +103,11 @@ part-long-xen: This kernel also runs on a Xen hypervisor.
 
 [image]
 initramfs-generators: initramfs-tools initramfs-fallback
-type: plain
 
 [relations]
 # compilers
-gcc-4.4: gcc-4.4
-gcc-4.6: gcc-4.6
-gcc-4.7: gcc-4.7
-gcc-4.8: gcc-4.8
+gcc-6: gcc-6 <!stage1 !cross>, gcc-6-@gnu-type-package@ <!stage1 cross>
 
 # initramfs-generators
 initramfs-fallback: linux-initramfs-tool
-initramfs-tools: initramfs-tools (>= 0.110~)
+initramfs-tools: initramfs-tools (>= 0.120+deb8u2)

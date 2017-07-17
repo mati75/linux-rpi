@@ -126,7 +126,6 @@ CONFIG_ATM_HE=m
 ## file: drivers/block/Kconfig
 ##
 CONFIG_BLK_DEV_FD=m
-CONFIG_BLK_CPQ_DA=m
 CONFIG_BLK_CPQ_CISS_DA=m
 CONFIG_CISS_SCSI_TAPE=y
 CONFIG_BLK_DEV_DAC960=m
@@ -173,6 +172,7 @@ CONFIG_IPMI_HANDLER=m
 # CONFIG_IPMI_PANIC_EVENT is not set
 CONFIG_IPMI_DEVICE_INTERFACE=m
 CONFIG_IPMI_SI=m
+CONFIG_IPMI_POWERNV=m
 CONFIG_IPMI_WATCHDOG=m
 CONFIG_IPMI_POWEROFF=m
 
@@ -185,9 +185,9 @@ CONFIG_CPU_FREQ_PMAC=y
 ## file: drivers/gpu/drm/Kconfig
 ##
 CONFIG_DRM=m
+CONFIG_DRM_RADEON=m
 CONFIG_DRM_TDFX=m
 CONFIG_DRM_R128=m
-CONFIG_DRM_RADEON=m
 CONFIG_DRM_MGA=m
 # CONFIG_DRM_SIS is not set
 
@@ -251,7 +251,6 @@ CONFIG_SENSORS_W83627HF=m
 ## file: drivers/i2c/Kconfig
 ##
 CONFIG_I2C=y
-CONFIG_I2C_CHARDEV=m
 # CONFIG_I2C_STUB is not set
 # CONFIG_I2C_DEBUG_CORE is not set
 # CONFIG_I2C_DEBUG_ALGO is not set
@@ -379,7 +378,7 @@ CONFIG_ADB=y
 CONFIG_ADB_CUDA=y
 CONFIG_ADB_PMU=y
 CONFIG_ADB_PMU_LED=y
-# CONFIG_ADB_PMU_LED_IDE is not set
+# CONFIG_ADB_PMU_LED_DISK is not set
 CONFIG_PMAC_SMU=y
 # CONFIG_PMAC_APM_EMU is not set
 CONFIG_PMAC_MEDIABAY=y
@@ -400,15 +399,6 @@ CONFIG_USB_DSBR=m
 CONFIG_RADIO_MAXIRADIO=m
 
 ##
-## file: drivers/message/i2o/Kconfig
-##
-CONFIG_I2O=m
-CONFIG_I2O_CONFIG=m
-CONFIG_I2O_BLOCK=m
-CONFIG_I2O_SCSI=m
-CONFIG_I2O_PROC=m
-
-##
 ## file: drivers/misc/Kconfig
 ##
 CONFIG_PHANTOM=m
@@ -421,7 +411,7 @@ CONFIG_MMC=m
 # CONFIG_MMC_DEBUG is not set
 
 ##
-## file: drivers/mmc/card/Kconfig
+## file: drivers/mmc/core/Kconfig
 ##
 CONFIG_MMC_BLOCK=m
 
@@ -547,10 +537,6 @@ CONFIG_NATSEMI=m
 ##
 CONFIG_8139CP=m
 CONFIG_8139TOO=m
-CONFIG_8139TOO_PIO=y
-# CONFIG_8139TOO_TUNE_TWISTER is not set
-CONFIG_8139TOO_8129=y
-# CONFIG_8139_OLD_RX_RESET is not set
 
 ##
 ## file: drivers/net/ethernet/sis/Kconfig
@@ -630,27 +616,27 @@ CONFIG_DLCI_MAX=8
 ## file: drivers/net/wireless/Kconfig
 ##
 CONFIG_PCMCIA_RAYCS=m
+CONFIG_PCMCIA_WL3501=m
+
+##
+## file: drivers/net/wireless/atmel/Kconfig
+##
 CONFIG_ATMEL=m
 # CONFIG_PCI_ATMEL is not set
 CONFIG_PCMCIA_ATMEL=m
-CONFIG_AIRO_CS=m
-CONFIG_PCMCIA_WL3501=m
-CONFIG_USB_ZD1201=m
 
 ##
-## file: drivers/net/wireless/ipw2x00/Kconfig
+## file: drivers/net/wireless/cisco/Kconfig
+##
+CONFIG_AIRO_CS=m
+
+##
+## file: drivers/net/wireless/intel/ipw2x00/Kconfig
 ##
 # CONFIG_IPW2100 is not set
 
 ##
-## file: drivers/net/wireless/mwifiex/Kconfig
-##
-CONFIG_MWIFIEX=m
-CONFIG_MWIFIEX_SDIO=m
-CONFIG_MWIFIEX_PCIE=m
-
-##
-## file: drivers/net/wireless/orinoco/Kconfig
+## file: drivers/net/wireless/intersil/orinoco/Kconfig
 ##
 CONFIG_HERMES=m
 CONFIG_APPLE_AIRPORT=m
@@ -658,6 +644,18 @@ CONFIG_PLX_HERMES=m
 CONFIG_TMD_HERMES=m
 CONFIG_PCI_HERMES=m
 CONFIG_PCMCIA_HERMES=m
+
+##
+## file: drivers/net/wireless/marvell/mwifiex/Kconfig
+##
+CONFIG_MWIFIEX=m
+CONFIG_MWIFIEX_SDIO=m
+CONFIG_MWIFIEX_PCIE=m
+
+##
+## file: drivers/net/wireless/zydas/Kconfig
+##
+CONFIG_USB_ZD1201=m
 
 ##
 ## file: drivers/pci/hotplug/Kconfig
@@ -677,7 +675,7 @@ CONFIG_TCIC=m
 # CONFIG_PCMCIA_DEBUG is not set
 
 ##
-## file: drivers/power/Kconfig
+## file: drivers/power/supply/Kconfig
 ##
 CONFIG_BATTERY_PMU=m
 
@@ -711,7 +709,7 @@ CONFIG_SCSI_IPR=m
 # CONFIG_SCSI_IPR_DUMP is not set
 # CONFIG_SCSI_QLOGIC_1280 is not set
 CONFIG_SCSI_DC395x=m
-CONFIG_SCSI_DC390T=m
+CONFIG_SCSI_AM53C974=m
 CONFIG_SCSI_NSP32=m
 CONFIG_SCSI_MESH=m
 CONFIG_SCSI_MESH_SYNC_RATE=5
@@ -796,7 +794,6 @@ CONFIG_FRAMEBUFFER_CONSOLE=y
 ##
 ## file: drivers/video/fbdev/Kconfig
 ##
-CONFIG_FB=y
 CONFIG_FB_MODE_HELPERS=y
 CONFIG_FB_TILEBLITTING=y
 CONFIG_FB_CIRRUS=m

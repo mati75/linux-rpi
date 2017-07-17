@@ -1,4 +1,2 @@
 # arch version flavour   installedname suffix build-depends
-armel  -       kirkwood  -             y      -
-armel  -       orion5x   -             y      -
-armel  -       versatile -             y      -
+armel  -       marvell   -             y      -

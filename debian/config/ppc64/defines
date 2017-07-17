@@ -5,15 +5,14 @@ kernel-arch: powerpc
 
 [build]
 image-file: vmlinux
+# linux-signed only works for architectures in the main archive
+signed-modules: false
+vdso: true
 
 [image]
 configs:
 suggests: mkvmlinuz
 install-stem: vmlinux
-
-[relations]
-# This ensures we get asm goto support and avoid an ABI change
-gcc-4.8: gcc-4.8 (>= 4.8.2-21)
 
 [powerpc64_description]
 hardware: 64-bit PowerPC

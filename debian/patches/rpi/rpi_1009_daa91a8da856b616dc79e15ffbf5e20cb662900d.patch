@@ -1,0 +1,25 @@
+commit daa91a8da856b616dc79e15ffbf5e20cb662900d
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Jul 14 10:26:09 2015 +0100
+
+    spidev: Add "spidev" compatible string to silence warning
+    
+    See: https://github.com/raspberrypi/linux/issues/1054
+
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index 9e2e099baf8c..e59640942826 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -697,6 +697,7 @@ static const struct of_device_id spidev_dt_ids[] = {
+ 	{ .compatible = "rohm,dh2228fv" },
+ 	{ .compatible = "lineartechnology,ltc2488" },
+ 	{ .compatible = "ge,achc" },
++	{ .compatible = "spidev" },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, spidev_dt_ids);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1009_daa91a8da856b616dc79e15ffbf5e20cb662900d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1009_daa91a8da856b616dc79e15ffbf5e20cb662900d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

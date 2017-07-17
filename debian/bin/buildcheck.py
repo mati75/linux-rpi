@@ -1,9 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
 sys.path.append('debian/lib/python')
 
 import fnmatch
+import glob
 import stat
 
 from debian_linux.abi import Symbols
@@ -55,11 +56,19 @@ class CheckAbi(object):
         ret = 0
 
         new = Symbols(open(self.filename_new))
+        unversioned = [name for name in new if new[name].version == '0x00000000']
+        if unversioned:
+            out.write("ABI is not completely versioned!  Refusing to continue.\n")
+            out.write("\nUnversioned symbols:\n")
+            for name in sorted(unversioned):
+                self.SymbolInfo(new[name]).write(out, False)
+            ret = 1
+
         try:
             ref = Symbols(open(self.filename_ref))
         except IOError:
-            out.write("Can't read ABI reference.  ABI not checked!  Continuing.\n")
-            return 0
+            out.write("Can't read ABI reference.  ABI not checked!\n")
+            return ret
 
         symbols, add, change, remove = self._cmp(ref, new)
 
@@ -158,7 +167,7 @@ class CheckAbi(object):
                 type, ignore = ignore.split(':')
             if type in ('name', 'module'):
                 p = self._ignore_pattern(ignore)
-                for symbol in symbols.itervalues():
+                for symbol in symbols.values():
                     if p.match(getattr(symbol, type)):
                         filtered.add(symbol.name)
             else:
@@ -174,6 +183,7 @@ class CheckImage(object):
 
         self.changelog = Changelog(version=VersionLinux)[0]
 
+        self.config_entry_base = config.merge('base', arch, featureset, flavour)
         self.config_entry_build = config.merge('build', arch, featureset, flavour)
         self.config_entry_image = config.merge('image', arch, featureset, flavour)
 
@@ -198,9 +208,15 @@ class CheckImage(object):
         if not value:
             return 0
 
-        value = int(value)
+        dtb_size = 0
+        if self.config_entry_image.get('check-size-with-dtb'):
+            for dtb in glob.glob(
+                    os.path.join(self.dir, 'arch',
+                                 self.config_entry_base['kernel-arch'],
+                                 'boot/dts/*.dtb')):
+                dtb_size = max(dtb_size, os.stat(dtb).st_size)
 
-        size = os.stat(image)[stat.ST_SIZE]
+        size = os.stat(image).st_size + dtb_size
 
         if size > value:
             out.write('Image too large (%d > %d)!  Refusing to continue.\n' % (size, value))
@@ -212,7 +228,7 @@ class CheckImage(object):
         usage = (float(size)/value) * 100.0
         out.write('Image size %d/%d, using %.2f%%.  ' % (size, value, usage))
         if size > value:
-            sys.write('Too large.  Refusing to continue.\n')
+            out.write('Too large.  Refusing to continue.\n')
             return 1
         elif usage >= 99.0:
             out.write('Under 1%% space in %s.  ' % self.changelog.distribution)

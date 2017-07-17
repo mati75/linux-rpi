@@ -44,7 +44,6 @@ CONFIG_PATA_LEGACY=m
 ## file: drivers/block/Kconfig
 ##
 CONFIG_BLK_DEV_FD=y
-# CONFIG_BLK_CPQ_DA is not set
 # CONFIG_BLK_CPQ_CISS_DA is not set
 # CONFIG_BLK_DEV_DAC960 is not set
 # CONFIG_BLK_DEV_UMEM is not set
@@ -78,9 +77,9 @@ CONFIG_CRYPTO_DEV_NIAGARA2=m
 ## file: drivers/gpu/drm/Kconfig
 ##
 CONFIG_DRM=m
+CONFIG_DRM_RADEON=m
 CONFIG_DRM_TDFX=m
 CONFIG_DRM_R128=m
-CONFIG_DRM_RADEON=m
 CONFIG_DRM_MGA=m
 
 ##
@@ -137,7 +136,6 @@ CONFIG_USB_HID=y
 ## file: drivers/i2c/Kconfig
 ##
 CONFIG_I2C=m
-CONFIG_I2C_CHARDEV=m
 # CONFIG_I2C_STUB is not set
 # CONFIG_I2C_DEBUG_CORE is not set
 # CONFIG_I2C_DEBUG_ALGO is not set
@@ -220,11 +218,6 @@ CONFIG_SERIO_LIBPS2=y
 # CONFIG_INPUT_TOUCHSCREEN is not set
 
 ##
-## file: drivers/media/parport/Kconfig
-##
-# CONFIG_MEDIA_PARPORT_SUPPORT is not set
-
-##
 ## file: drivers/media/pci/cx88/Kconfig
 ##
 # CONFIG_VIDEO_CX88 is not set
@@ -246,11 +239,6 @@ CONFIG_SERIO_LIBPS2=y
 ##
 # CONFIG_USB_DSBR is not set
 # CONFIG_RADIO_MAXIRADIO is not set
-
-##
-## file: drivers/message/i2o/Kconfig
-##
-# CONFIG_I2O is not set
 
 ##
 ## file: drivers/mmc/Kconfig
@@ -342,10 +330,6 @@ CONFIG_NATSEMI=m
 ##
 # CONFIG_8139CP is not set
 CONFIG_8139TOO=m
-# CONFIG_8139TOO_PIO is not set
-# CONFIG_8139TOO_TUNE_TWISTER is not set
-# CONFIG_8139TOO_8129 is not set
-# CONFIG_8139_OLD_RX_RESET is not set
 
 ##
 ## file: drivers/net/ethernet/sis/Kconfig
@@ -394,7 +378,7 @@ CONFIG_PLIP=m
 # CONFIG_WAN is not set
 
 ##
-## file: drivers/net/wireless/mwifiex/Kconfig
+## file: drivers/net/wireless/marvell/mwifiex/Kconfig
 ##
 CONFIG_MWIFIEX=m
 CONFIG_MWIFIEX_PCIE=m
@@ -432,7 +416,6 @@ CONFIG_SCSI_IPR=m
 CONFIG_SCSI_QLOGIC_1280=m
 CONFIG_SCSI_QLOGICPTI=m
 CONFIG_SCSI_DC395x=m
-# CONFIG_SCSI_DC390T is not set
 CONFIG_SCSI_SUNESP=m
 
 ##
@@ -489,7 +472,6 @@ CONFIG_FRAMEBUFFER_CONSOLE=y
 ##
 ## file: drivers/video/fbdev/Kconfig
 ##
-CONFIG_FB=y
 CONFIG_FB_MODE_HELPERS=y
 # CONFIG_FB_TILEBLITTING is not set
 # CONFIG_FB_CIRRUS is not set

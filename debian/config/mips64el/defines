@@ -1,6 +1,5 @@
 [base]
 flavours:
- sb1-bcm91250a
  5kc-malta
  loongson-3
  octeon
@@ -8,23 +7,20 @@ kernel-arch: mips
 
 [build]
 image-file: vmlinux
+# linux-signed only works for architectures in the main archive
+signed-modules: false
 
 [image]
 install-stem: vmlinux
-
-[sb1-bcm91250a_description]
-hardware: BCM91250A
-hardware-long: Broadcom BCM91250A systems (aka SWARM)
-
-[sb1-bcm91250a_image]
-configs: kernelarch-mips/config.sb1-bcm91250a
 
 [5kc-malta_description]
 hardware: MIPS Malta
 hardware-long: MIPS Malta boards
 
 [5kc-malta_image]
-configs: kernelarch-mips/config.5kc-malta
+configs:
+ kernelarch-mips/config.malta
+ kernelarch-mips/config.mips64r2
 
 [loongson-3_description]
 hardware: Loongson 3A/3B

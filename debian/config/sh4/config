@@ -1,4 +1,12 @@
 ##
+## file: arch/Kconfig
+##
+## choice: Stack Protector buffer overflow detection
+CONFIG_CC_STACKPROTECTOR_REGULAR=y
+# CONFIG_CC_STACKPROTECTOR_STRONG is not set
+## end choice
+
+##
 ## file: arch/sh/Kconfig
 ##
 CONFIG_KEXEC=y
@@ -28,9 +36,6 @@ CONFIG_CACHE_WRITEBACK=y
 ##
 ## file: drivers/cpufreq/Kconfig
 ##
-CONFIG_CPU_FREQ=y
-CONFIG_CPU_FREQ_STAT=y
-CONFIG_CPU_FREQ_STAT_DETAILS=y
 CONFIG_CPU_FREQ_GOV_PERFORMANCE=y
 CONFIG_SH_CPU_FREQ=y
 
