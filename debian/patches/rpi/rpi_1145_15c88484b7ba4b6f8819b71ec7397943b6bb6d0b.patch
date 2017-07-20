@@ -1,0 +1,43 @@
+commit 15c88484b7ba4b6f8819b71ec7397943b6bb6d0b
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Tue May 2 16:36:05 2017 +0100
+
+    vcsm: Treat EBUSY as success rather than SIGBUS
+    
+    Currently if two cores access the same page concurrently one will return VM_FAULT_NOPAGE
+    and the other VM_FAULT_SIGBUS crashing the user code.
+    
+    Also report when mapping fails.
+    
+    Signed-off-by: popcornmix <popcornmix@gmail.com>
+
+diff --git a/drivers/char/broadcom/vc_sm/vmcs_sm.c b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+index fd71d9fbb400..fd2ca788dcd5 100644
+--- a/drivers/char/broadcom/vc_sm/vmcs_sm.c
++++ b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+@@ -1181,11 +1181,20 @@ static int vcsm_vma_fault(struct vm_fault *vmf)
+ 	switch (ret) {
+ 	case 0:
+ 	case -ERESTARTSYS:
++	/*
++	* EBUSY is ok: this just means that another thread
++	* already did the job.
++	*/
++	case -EBUSY:
+ 		return VM_FAULT_NOPAGE;
+ 	case -ENOMEM:
+ 	case -EAGAIN:
++		pr_err("[%s]: failed to map page pfn:%lx virt:%lx ret:%d\n", __func__,
++			pfn, (unsigned long)vmf->address, ret);
+ 		return VM_FAULT_OOM;
+ 	default:
++		pr_err("[%s]: failed to map page pfn:%lx virt:%lx ret:%d\n", __func__,
++			pfn, (unsigned long)vmf->address, ret);
+ 		return VM_FAULT_SIGBUS;
+ 	}
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1145_15c88484b7ba4b6f8819b71ec7397943b6bb6d0b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1145_15c88484b7ba4b6f8819b71ec7397943b6bb6d0b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

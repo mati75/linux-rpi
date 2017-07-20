@@ -1,0 +1,41 @@
+commit 8de219031df46c145c60607e3aff9c6bc72be7c6
+Author: P33M <p33m@github.com>
+Date:   Thu May 4 12:58:11 2017 +0100
+
+    fiq_fsm: Use correct states when starting isoc OUT transfers
+    
+    In fiq_fsm_start_next_periodic() if an isochronous OUT transfer
+    was selected, no regard was given as to whether this was a single-packet
+    transfer or a multi-packet staged transfer.
+    
+    For single-packet transfers, this had the effect of repeatedly sending
+    OUT packets with bogus data and lengths.
+    
+    Eventually if the channel was repeatedly enabled enough times, this
+    would lock up the OTG core and no further bus transfers would happen.
+    
+    Set the FSM state up properly if we select a single-packet transfer.
+    
+    Fixes https://github.com/raspberrypi/linux/issues/1842
+
+diff --git a/drivers/usb/host/dwc_otg/dwc_otg_fiq_fsm.c b/drivers/usb/host/dwc_otg/dwc_otg_fiq_fsm.c
+index 9304279592cb..208252645c09 100644
+--- a/drivers/usb/host/dwc_otg/dwc_otg_fiq_fsm.c
++++ b/drivers/usb/host/dwc_otg/dwc_otg_fiq_fsm.c
+@@ -491,7 +491,10 @@ static void notrace noinline fiq_fsm_start_next_periodic(struct fiq_state *st, i
+ 		if (st->channel[n].fsm == FIQ_PER_ISO_OUT_PENDING) {
+ 			if (!fiq_fsm_tt_in_use(st, num_channels, n)) {
+ 				fiq_print(FIQDBG_INT, st, "NEXTISO ");
+-				st->channel[n].fsm = FIQ_PER_ISO_OUT_ACTIVE;
++				if (st->channel[n].nrpackets == 1)
++					st->channel[n].fsm = FIQ_PER_ISO_OUT_LAST;
++				else
++					st->channel[n].fsm = FIQ_PER_ISO_OUT_ACTIVE;
+ 				fiq_fsm_restart_channel(st, n, 0);
+ 				break;
+ 			}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1146_8de219031df46c145c60607e3aff9c6bc72be7c6.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1146_8de219031df46c145c60607e3aff9c6bc72be7c6.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

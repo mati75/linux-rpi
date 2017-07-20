@@ -1,0 +1,41 @@
+commit 8863dd56b2abbaea53b3b69c10a5c4b2ea3821db
+Author: Robert Tiemann <rtie@gmx.de>
+Date:   Mon Jul 20 11:01:25 2015 +0200
+
+    BCM2835_DT: Fix I2S register map
+
+diff --git a/Documentation/devicetree/bindings/dma/brcm,bcm2835-dma.txt b/Documentation/devicetree/bindings/dma/brcm,bcm2835-dma.txt
+index baf9b34d20bf..11c052acf65e 100644
+--- a/Documentation/devicetree/bindings/dma/brcm,bcm2835-dma.txt
++++ b/Documentation/devicetree/bindings/dma/brcm,bcm2835-dma.txt
+@@ -74,8 +74,8 @@ Example:
+ 
+ bcm2835_i2s: i2s@7e203000 {
+ 	compatible = "brcm,bcm2835-i2s";
+-	reg = <	0x7e203000 0x20>,
+-	      < 0x7e101098 0x02>;
++	reg = <	0x7e203000 0x24>,
++	      < 0x7e101098 0x08>;
+ 
+ 	dmas = <&dma 2>,
+ 	       <&dma 3>;
+diff --git a/Documentation/devicetree/bindings/sound/brcm,bcm2835-i2s.txt b/Documentation/devicetree/bindings/sound/brcm,bcm2835-i2s.txt
+index 65783de0aedf..a89fe4220fdc 100644
+--- a/Documentation/devicetree/bindings/sound/brcm,bcm2835-i2s.txt
++++ b/Documentation/devicetree/bindings/sound/brcm,bcm2835-i2s.txt
+@@ -16,8 +16,8 @@ Example:
+ 
+ bcm2835_i2s: i2s@7e203000 {
+ 	compatible = "brcm,bcm2835-i2s";
+-	reg = <0x7e203000 0x20>,
+-	      <0x7e101098 0x02>;
++	reg = <0x7e203000 0x24>,
++	      <0x7e101098 0x08>;
+ 
+ 	dmas = <&dma 2>,
+ 	       <&dma 3>;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1026_8863dd56b2abbaea53b3b69c10a5c4b2ea3821db.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1026_8863dd56b2abbaea53b3b69c10a5c4b2ea3821db.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,46 @@
+commit 7bf079e10958cebfada65fd0235728053b31acef
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Feb 2 09:42:18 2017 -0800
+
+    drm/vc4: Fix sending of page flip completion events in FKMS mode.
+    
+    In the rewrite of vc4_crtc.c for fkms, I dropped the part of the
+    CRTC's atomic flush handler that moved the completion event from the
+    proposed atomic state change to the CRTC's current state.  That meant
+    that when full screen pageflipping happened (glxgears -fullscreen in
+    X, compton, por weston), the app would end up blocked firever waiting
+    to draw its next frame.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/gpu/drm/vc4/vc4_firmware_kms.c b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+index dbf065677202..da818a207bfa 100644
+--- a/drivers/gpu/drm/vc4/vc4_firmware_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+@@ -338,6 +338,21 @@ static int vc4_crtc_atomic_check(struct drm_crtc *crtc,
+ static void vc4_crtc_atomic_flush(struct drm_crtc *crtc,
+ 				  struct drm_crtc_state *old_state)
+ {
++	struct vc4_crtc *vc4_crtc = to_vc4_crtc(crtc);
++	struct drm_device *dev = crtc->dev;
++
++	if (crtc->state->event) {
++		unsigned long flags;
++
++		crtc->state->event->pipe = drm_crtc_index(crtc);
++
++		WARN_ON(drm_crtc_vblank_get(crtc) != 0);
++
++		spin_lock_irqsave(&dev->event_lock, flags);
++		vc4_crtc->event = crtc->state->event;
++		crtc->state->event = NULL;
++		spin_unlock_irqrestore(&dev->event_lock, flags);
++	}
+ }
+ 
+ static void vc4_crtc_handle_page_flip(struct vc4_crtc *vc4_crtc)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1152_7bf079e10958cebfada65fd0235728053b31acef.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1152_7bf079e10958cebfada65fd0235728053b31acef.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

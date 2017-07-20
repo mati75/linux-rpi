@@ -1,0 +1,36 @@
+commit fe395d129a6b2d2b6b337a145d40363ac4ef9eb3
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Mar 29 14:30:42 2017 +0100
+
+    BCM270X_DT: Add numbered aliases for SD/MMC devices
+    
+    In order to force a specific ID assignment to SD/MMC devices, add
+    numbered aliases to the DT: sdhost -> mmc0, mmc -> mmc1
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm2708-rpi.dtsi b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+index ef14e9ac6cd2..693d4c04a36d 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+@@ -21,6 +21,7 @@
+ 		gpio = &gpio;
+ 		uart0 = &uart0;
+ 		sdhost = &sdhost;
++		mmc0 = &sdhost;
+ 		i2s = &i2s;
+ 		spi0 = &spi0;
+ 		i2c0 = &i2c0;
+@@ -28,6 +29,7 @@
+ 		spi1 = &spi1;
+ 		spi2 = &spi2;
+ 		mmc = &mmc;
++		mmc1 = &mmc;
+ 		i2c1 = &i2c1;
+ 		i2c2 = &i2c2;
+ 		usb = &usb;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1125_fe395d129a6b2d2b6b337a145d40363ac4ef9eb3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1125_fe395d129a6b2d2b6b337a145d40363ac4ef9eb3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

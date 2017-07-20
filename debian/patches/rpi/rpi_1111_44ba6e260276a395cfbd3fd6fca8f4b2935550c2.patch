@@ -1,0 +1,25 @@
+commit 44ba6e260276a395cfbd3fd6fca8f4b2935550c2
+Author: Michael Zoran <mzoran@crowfest.net>
+Date:   Sat Jan 14 21:45:03 2017 -0800
+
+    ARM64: Enable DWC_OTG Driver In ARM64 Build Config(bcmrpi3_defconfig)
+    
+    Signed-off-by: Michael Zoran <mzoran@crowfest.net>
+
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index b7d762df19b8..4d85c231c5ea 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -929,6 +929,7 @@ CONFIG_USB_HIDDEV=y
+ CONFIG_USB=y
+ CONFIG_USB_ANNOUNCE_NEW_DEVICES=y
+ CONFIG_USB_MON=m
++CONFIG_USB_DWCOTG=y
+ CONFIG_USB_PRINTER=m
+ CONFIG_USB_STORAGE=y
+ CONFIG_USB_STORAGE_REALTEK=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1111_44ba6e260276a395cfbd3fd6fca8f4b2935550c2.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1111_44ba6e260276a395cfbd3fd6fca8f4b2935550c2.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

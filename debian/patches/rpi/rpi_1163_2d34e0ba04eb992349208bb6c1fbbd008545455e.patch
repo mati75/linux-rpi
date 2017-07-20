@@ -1,0 +1,50 @@
+commit 2d34e0ba04eb992349208bb6c1fbbd008545455e
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Apr 26 17:28:47 2017 +0100
+
+    clk: bcm2835: Limit PCM clock to OSC and PLLD_PER
+    
+    It is unwise to use sources other than the oscillator and PLLD_PER for
+    the PCM peripheral (and perhaps others - TBD) because their rate can
+    change and they may even be switched off, so explicitly restrict the
+    choice using dummy entries in the list of potential parents (item index
+    is significant).
+    
+    See: https://github.com/raspberrypi/linux/issues/1949
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index fe3298b54cdf..c24b4defb2b0 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -1562,6 +1562,16 @@ static const char *const bcm2835_clock_per_parents[] = {
+ 	"pllh_aux",
+ };
+ 
++static const char *const bcm2835_pcm_per_parents[] = {
++	"-",
++	"xosc",
++	"-",
++	"-",
++	"-",
++	"-",
++	"plld_per",
++};
++
+ #define REGISTER_PER_CLK(...)	REGISTER_CLK(				\
+ 	.num_mux_parents = ARRAY_SIZE(bcm2835_clock_per_parents),	\
+ 	.parents = bcm2835_clock_per_parents,				\
+@@ -2051,6 +2061,7 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
+ 		.int_bits = 12,
+ 		.frac_bits = 12,
+ 		.is_mash_clock = true,
++		.parents = bcm2835_pcm_per_parents,
+ 		.tcnt_mux = 23),
+ 	[BCM2835_CLOCK_PWM]	= REGISTER_PER_CLK(
+ 		.name = "pwm",
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1163_2d34e0ba04eb992349208bb6c1fbbd008545455e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1163_2d34e0ba04eb992349208bb6c1fbbd008545455e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

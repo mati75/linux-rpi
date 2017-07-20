@@ -1,0 +1,68 @@
+commit c121d20ebd6d88f1c4ca6c8a6824ab62f2ba1f04
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Mar 28 14:22:20 2017 +0100
+
+    BCM270X_DT: Allow multiple instances of w1-gpio overlays
+    
+    Upcoming firmware will modify the address portion of node names when
+    their "reg" property is written by a dtparam. Modify the w1-gpio
+    overlays to write the gpiopin parameter value to "reg" properties, so
+    that multiple instances can be loaded simultaneously.
+    
+    Note: The value of the "address" is unimportant - the w1 subsystem
+    assigns instance numbers to buses sequentially from 1, and it is
+    not necessary to know which bus a device is on in order to find it.
+
+diff --git a/arch/arm/boot/dts/overlays/w1-gpio-overlay.dts b/arch/arm/boot/dts/overlays/w1-gpio-overlay.dts
+index 29a3b48d19ab..f7f874751265 100644
+--- a/arch/arm/boot/dts/overlays/w1-gpio-overlay.dts
++++ b/arch/arm/boot/dts/overlays/w1-gpio-overlay.dts
+@@ -23,7 +23,7 @@
+ 	fragment@1 {
+ 		target = <&gpio>;
+ 		__overlay__ {
+-			w1_pins: w1_pins {
++			w1_pins: w1_pins@0 {
+ 				brcm,pins = <4>;
+ 				brcm,function = <0>; // in (initially)
+ 				brcm,pull = <0>; // off
+@@ -33,7 +33,9 @@
+ 
+ 	__overrides__ {
+ 		gpiopin =       <&w1>,"gpios:4",
+-				<&w1_pins>,"brcm,pins:0";
++				<&w1>,"reg:0",
++				<&w1_pins>,"brcm,pins:0",
++				<&w1_pins>,"reg:0";
+ 		pullup =        <&w1>,"rpi,parasitic-power:0";
+ 	};
+ };
+diff --git a/arch/arm/boot/dts/overlays/w1-gpio-pullup-overlay.dts b/arch/arm/boot/dts/overlays/w1-gpio-pullup-overlay.dts
+index 66a98f6c9601..ef8bfbcabdb3 100644
+--- a/arch/arm/boot/dts/overlays/w1-gpio-pullup-overlay.dts
++++ b/arch/arm/boot/dts/overlays/w1-gpio-pullup-overlay.dts
+@@ -23,7 +23,7 @@
+ 	fragment@1 {
+ 		target = <&gpio>;
+ 		__overlay__ {
+-			w1_pins: w1_pins {
++			w1_pins: w1_pins@0 {
+ 				brcm,pins = <4 5>;
+ 				brcm,function = <0 1>; // in out
+ 				brcm,pull = <0 0>; // off off
+@@ -33,7 +33,9 @@
+ 
+ 	__overrides__ {
+ 		gpiopin =       <&w1>,"gpios:4",
+-				<&w1_pins>,"brcm,pins:0";
++				<&w1>,"reg:0",
++				<&w1_pins>,"brcm,pins:0",
++				<&w1_pins>,"reg:0";
+ 		extpullup =     <&w1>,"gpios:16",
+ 				<&w1_pins>,"brcm,pins:4";
+ 		pullup =        <&w1>,"rpi,parasitic-power:0";
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1132_c121d20ebd6d88f1c4ca6c8a6824ab62f2ba1f04.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1132_c121d20ebd6d88f1c4ca6c8a6824ab62f2ba1f04.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

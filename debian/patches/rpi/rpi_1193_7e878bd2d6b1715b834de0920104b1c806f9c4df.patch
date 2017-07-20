@@ -1,0 +1,35 @@
+commit 7e878bd2d6b1715b834de0920104b1c806f9c4df
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Mon May 22 13:35:28 2017 +0100
+
+    config: Add CONFIG_IPV6_SIT_6RD
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index ca97073ef5a0..b8feb7d97355 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -106,6 +106,7 @@ CONFIG_IPV6_ROUTE_INFO=y
+ CONFIG_INET6_AH=m
+ CONFIG_INET6_ESP=m
+ CONFIG_INET6_IPCOMP=m
++CONFIG_IPV6_SIT_6RD=y
+ CONFIG_IPV6_TUNNEL=m
+ CONFIG_IPV6_MULTIPLE_TABLES=y
+ CONFIG_IPV6_SUBTREES=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 125654dbad22..354221833db0 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -102,6 +102,7 @@ CONFIG_IPV6_ROUTE_INFO=y
+ CONFIG_INET6_AH=m
+ CONFIG_INET6_ESP=m
+ CONFIG_INET6_IPCOMP=m
++CONFIG_IPV6_SIT_6RD=y
+ CONFIG_IPV6_TUNNEL=m
+ CONFIG_IPV6_MULTIPLE_TABLES=y
+ CONFIG_IPV6_SUBTREES=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1193_7e878bd2d6b1715b834de0920104b1c806f9c4df.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1193_7e878bd2d6b1715b834de0920104b1c806f9c4df.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

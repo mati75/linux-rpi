@@ -1,0 +1,61 @@
+commit ae608b716147f75f8c8ad92f83becae447383161
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Jun 21 09:03:51 2017 -0700
+
+    bcm2708: Drop CMA alignment from FKMS mode as well.
+    
+    I dropped it from KMS mode in d88274d88ed81de1ade8e18e4c0ed91792ec82ea
+    and should have done both of them at that time.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/arch/arm/boot/dts/overlays/vc4-fkms-v3d-overlay.dts b/arch/arm/boot/dts/overlays/vc4-fkms-v3d-overlay.dts
+index 95a595a35cb4..36fbf6c8c2e6 100644
+--- a/arch/arm/boot/dts/overlays/vc4-fkms-v3d-overlay.dts
++++ b/arch/arm/boot/dts/overlays/vc4-fkms-v3d-overlay.dts
+@@ -11,35 +11,35 @@
+ 	fragment@0 {
+ 		target-path = "/chosen";
+ 		__overlay__ {
+-			bootargs = "cma=256M@256M";
++			bootargs = "cma=256M";
+ 		};
+ 	};
+ 
+ 	fragment@1 {
+ 		target-path = "/chosen";
+ 		__dormant__ {
+-			bootargs = "cma=192M@256M";
++			bootargs = "cma=192M";
+ 		};
+ 	};
+ 
+ 	fragment@2 {
+ 		target-path = "/chosen";
+ 		__dormant__ {
+-			bootargs = "cma=128M@128M";
++			bootargs = "cma=128M";
+ 		};
+ 	};
+ 
+ 	fragment@3 {
+ 		target-path = "/chosen";
+ 		__dormant__ {
+-			bootargs = "cma=96M@128M";
++			bootargs = "cma=96M";
+ 		};
+ 	};
+ 
+ 	fragment@4 {
+ 		target-path = "/chosen";
+ 		__dormant__ {
+-			bootargs = "cma=64M@64M";
++			bootargs = "cma=64M";
+ 		};
+ 	};
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1201_ae608b716147f75f8c8ad92f83becae447383161.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1201_ae608b716147f75f8c8ad92f83becae447383161.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

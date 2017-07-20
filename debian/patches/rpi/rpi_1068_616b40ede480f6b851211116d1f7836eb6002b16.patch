@@ -1,0 +1,45 @@
+commit 616b40ede480f6b851211116d1f7836eb6002b16
+Author: Daniel Matuschek <info@crazy-audio.com>
+Date:   Wed Jan 15 21:41:23 2014 +0100
+
+    ASoC: wm8804: Implement MCLK configuration options, add 32bit support WM8804 can run with PLL frequencies of 256xfs and 128xfs for most sample rates. At 192kHz only 128xfs is supported. The existing driver selects 128xfs automatically for some lower samples rates. By using an additional mclk_div divider, it is now possible to control the behaviour. This allows using 256xfs PLL frequency on all sample rates up to 96kHz. It should allow lower jitter and better signal quality. The behavior has to be controlled by the sound card driver, because some sample frequency share the same setting. e.g. 192kHz and 96kHz use 24.576MHz master clock. The only difference is the MCLK divider.
+    
+    This also added support for 32bit data.
+    
+    Signed-off-by: Daniel Matuschek <daniel@matuschek.net>
+
+diff --git a/sound/soc/codecs/wm8804.c b/sound/soc/codecs/wm8804.c
+index af95d648265b..513f56ba1329 100644
+--- a/sound/soc/codecs/wm8804.c
++++ b/sound/soc/codecs/wm8804.c
+@@ -304,6 +304,7 @@ static int wm8804_hw_params(struct snd_pcm_substream *substream,
+ 		blen = 0x1;
+ 		break;
+ 	case 24:
++	case 32:
+ 		blen = 0x2;
+ 		break;
+ 	default:
+@@ -515,7 +516,7 @@ static const struct snd_soc_dai_ops wm8804_dai_ops = {
+ };
+ 
+ #define WM8804_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | \
+-			SNDRV_PCM_FMTBIT_S24_LE)
++			SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S32_LE)
+ 
+ #define WM8804_RATES (SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 | \
+ 		      SNDRV_PCM_RATE_48000 | SNDRV_PCM_RATE_64000 | \
+@@ -543,7 +544,7 @@ static struct snd_soc_dai_driver wm8804_dai = {
+ };
+ 
+ static const struct snd_soc_codec_driver soc_codec_dev_wm8804 = {
+-	.idle_bias_off = true,
++	.idle_bias_off = false,
+ 
+ 	.component_driver = {
+ 		.dapm_widgets		= wm8804_dapm_widgets,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1068_616b40ede480f6b851211116d1f7836eb6002b16.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1068_616b40ede480f6b851211116d1f7836eb6002b16.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

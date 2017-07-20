@@ -1,0 +1,55 @@
+commit 4f5af6b689dc440c990978832ca2d0826ef589f1
+Author: Bilal Amarni <bilal.amarni@gmail.com>
+Date:   Sun Jul 9 17:56:19 2017 +0200
+
+    rtl8192: switch to netdev->priv_destructor()
+    
+    When trying to build from the rpi-4.11.y branch, I'm getting the
+    following error :
+    
+    drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c:3464:10: error: 'struct net_device' has no member named 'destructor'
+    
+    It seems to occur since this upstream commit :
+    
+    https://github.com/torvalds/linux/commit/cf124db566e6b036b8bcbe8decbed740bdfac8c6
+    
+    [...]
+    
+    netdev->priv_destructor() performs all actions to free up the private
+    resources that used to be freed by netdev->destructor(), except for
+    free_netdev().
+    
+    netdev->needs_free_netdev is a boolean that indicates whether
+    free_netdev() should be done at the end of unregister_netdevice().
+    
+    Signed-off-by: Bilal Amarni <bilal.amarni@gmail.com>
+
+diff --git a/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c b/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c
+index f7db885ce32e..8b20603c0214 100644
+--- a/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c
++++ b/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c
+@@ -3461,7 +3461,8 @@ static int rtw_cfg80211_add_monitor_if(_adapter *padapter, char *name, struct ne
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4,1,0))
+ 	mon_ndev->name_assign_type = name_assign_type;
+ #endif
+-	mon_ndev->destructor = rtw_ndev_destructor;
++	mon_ndev->needs_free_netdev = true;
++	mon_ndev->priv_destructor = rtw_ndev_destructor;
+ 
+ #if (LINUX_VERSION_CODE>=KERNEL_VERSION(2,6,29))
+ 	mon_ndev->netdev_ops = &rtw_cfg80211_monitor_if_ops;
+diff --git a/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/os_intfs.c b/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/os_intfs.c
+index dff39f943b87..596eda72899a 100644
+--- a/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/os_intfs.c
++++ b/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/os_intfs.c
+@@ -2753,5 +2753,4 @@ void rtw_ndev_destructor(struct net_device *ndev)
+ 	if (ndev->ieee80211_ptr)
+ 		rtw_mfree((u8 *)ndev->ieee80211_ptr, sizeof(struct wireless_dev));
+ #endif
+-	free_netdev(ndev);
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1180_4f5af6b689dc440c990978832ca2d0826ef589f1.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1180_4f5af6b689dc440c990978832ca2d0826ef589f1.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

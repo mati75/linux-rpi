@@ -1,0 +1,103 @@
+commit 41ef0dfb9b2ee06c47fb3167ea92d1cfc45eb2cf
+Author: Noralf Trønnes <noralf@tronnes.org>
+Date:   Sat Oct 3 22:22:55 2015 +0200
+
+    dmaengine: bcm2835: Load driver early and support legacy API
+    
+    Load driver early since at least bcm2708_fb doesn't support deferred
+    probing and even if it did, we don't want the video driver deferred.
+    Support the legacy DMA API which is needed by bcm2708_fb.
+    Don't mask out channel 2.
+    
+    Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+
+diff --git a/drivers/dma/Kconfig b/drivers/dma/Kconfig
+index d01d59812cf3..a754288fb8be 100644
+--- a/drivers/dma/Kconfig
++++ b/drivers/dma/Kconfig
+@@ -108,7 +108,7 @@ config COH901318
+ 
+ config DMA_BCM2835
+ 	tristate "BCM2835 DMA engine support"
+-	depends on ARCH_BCM2835
++	depends on ARCH_BCM2835 || ARCH_BCM2708 || ARCH_BCM2709
+ 	select DMA_ENGINE
+ 	select DMA_VIRTUAL_CHANNELS
+ 
+diff --git a/drivers/dma/bcm2835-dma.c b/drivers/dma/bcm2835-dma.c
+index 6204cc32d09c..599c218dc8a7 100644
+--- a/drivers/dma/bcm2835-dma.c
++++ b/drivers/dma/bcm2835-dma.c
+@@ -37,6 +37,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/list.h>
+ #include <linux/module.h>
++#include <linux/platform_data/dma-bcm2708.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ #include <linux/io.h>
+@@ -48,6 +49,7 @@
+ 
+ #define BCM2835_DMA_MAX_DMA_CHAN_SUPPORTED 14
+ #define BCM2835_DMA_CHAN_NAME_SIZE 8
++#define BCM2835_DMA_BULK_MASK  BIT(0)
+ 
+ struct bcm2835_dmadev {
+ 	struct dma_device ddev;
+@@ -925,6 +927,9 @@ static int bcm2835_dma_probe(struct platform_device *pdev)
+ 	base = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
++	rc = bcm_dmaman_probe(pdev, base, BCM2835_DMA_BULK_MASK);
++	if (rc)
++		dev_err(&pdev->dev, "Failed to initialize the legacy API\n");
+ 
+ 	od->base = base;
+ 
+@@ -962,6 +967,9 @@ static int bcm2835_dma_probe(struct platform_device *pdev)
+ 		goto err_no_dma;
+ 	}
+ 
++	/* Channel 0 is used by the legacy API */
++	chans_available &= ~BCM2835_DMA_BULK_MASK;
++
+ 	/* get irqs for each channel that we support */
+ 	for (i = 0; i <= BCM2835_DMA_MAX_DMA_CHAN_SUPPORTED; i++) {
+ 		/* skip masked out channels */
+@@ -1036,6 +1044,7 @@ static int bcm2835_dma_remove(struct platform_device *pdev)
+ {
+ 	struct bcm2835_dmadev *od = platform_get_drvdata(pdev);
+ 
++	bcm_dmaman_remove(pdev);
+ 	dma_async_device_unregister(&od->ddev);
+ 	bcm2835_dma_free(od);
+ 
+@@ -1051,7 +1060,22 @@ static struct platform_driver bcm2835_dma_driver = {
+ 	},
+ };
+ 
+-module_platform_driver(bcm2835_dma_driver);
++static int bcm2835_dma_init(void)
++{
++	return platform_driver_register(&bcm2835_dma_driver);
++}
++
++static void bcm2835_dma_exit(void)
++{
++	platform_driver_unregister(&bcm2835_dma_driver);
++}
++
++/*
++ * Load after serial driver (arch_initcall) so we see the messages if it fails,
++ * but before drivers (module_init) that need a DMA channel.
++ */
++subsys_initcall(bcm2835_dma_init);
++module_exit(bcm2835_dma_exit);
+ 
+ MODULE_ALIAS("platform:bcm2835-dma");
+ MODULE_DESCRIPTION("BCM2835 DMA engine driver");
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1017_41ef0dfb9b2ee06c47fb3167ea92d1cfc45eb2cf.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1017_41ef0dfb9b2ee06c47fb3167ea92d1cfc45eb2cf.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

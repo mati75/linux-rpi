@@ -1,0 +1,51 @@
+commit 06ee6a6f80ce97266a353b59613083f5f9a5c925
+Author: Martin Sperl <kernel@martin.sperl.org>
+Date:   Fri Sep 2 16:45:27 2016 +0100
+
+    Register the clocks early during the boot process,
+    so that special/critical clocks can get enabled early on
+    in the boot process avoiding the risk of disabling a clock,
+    pll_divider or pll when a claiming driver fails to install
+    propperly - maybe it needs to defer.
+    
+    Signed-off-by: Martin Sperl <kernel@martin.sperl.org>
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index 025853870619..283d2de45e4f 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -2163,8 +2163,15 @@ static int bcm2835_clk_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	return of_clk_add_hw_provider(dev->of_node, of_clk_hw_onecell_get,
++	ret = of_clk_add_hw_provider(dev->of_node, of_clk_hw_onecell_get,
+ 				      &cprman->onecell);
++	if (ret)
++		return ret;
++
++	/* note that we have registered all the clocks */
++	dev_dbg(dev, "registered %d clocks\n", asize);
++
++	return 0;
+ }
+ 
+ static const struct of_device_id bcm2835_clk_of_match[] = {
+@@ -2181,7 +2188,11 @@ static struct platform_driver bcm2835_clk_driver = {
+ 	.probe          = bcm2835_clk_probe,
+ };
+ 
+-builtin_platform_driver(bcm2835_clk_driver);
++static int __init __bcm2835_clk_driver_init(void)
++{
++	return platform_driver_register(&bcm2835_clk_driver);
++}
++core_initcall(__bcm2835_clk_driver_init);
+ 
+ MODULE_AUTHOR("Eric Anholt <eric@anholt.net>");
+ MODULE_DESCRIPTION("BCM2835 clock driver");
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1023_06ee6a6f80ce97266a353b59613083f5f9a5c925.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1023_06ee6a6f80ce97266a353b59613083f5f9a5c925.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

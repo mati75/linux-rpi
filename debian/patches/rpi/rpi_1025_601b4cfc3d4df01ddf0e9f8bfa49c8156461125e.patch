@@ -1,0 +1,24 @@
+commit 601b4cfc3d4df01ddf0e9f8bfa49c8156461125e
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Aug 24 16:28:44 2016 +0100
+
+    kbuild: Ignore dtco targets when filtering symbols
+
+diff --git a/scripts/Kbuild.include b/scripts/Kbuild.include
+index afe3fd3af1e4..b2bbad417f0c 100644
+--- a/scripts/Kbuild.include
++++ b/scripts/Kbuild.include
+@@ -288,7 +288,7 @@ ksym_dep_filter =                                                            \
+ 	    $(CPP) $(call flags_nodeps,c_flags) -D__KSYM_DEPS__ $< ;;        \
+ 	  as_*_S|cpp_s_S)                                                    \
+ 	    $(CPP) $(call flags_nodeps,a_flags) -D__KSYM_DEPS__ $< ;;        \
+-	  boot*|build*|cpp_its_S|*cpp_lds_S|dtc|host*|vdso*) : ;;            \
++	  boot*|build*|cpp_its_S|*cpp_lds_S|dtc*|host*|vdso*) : ;;            \
+ 	  *) echo "Don't know how to preprocess $(1)" >&2; false ;;          \
+ 	esac | tr ";" "\n" | sed -rn 's/^.*=== __KSYM_(.*) ===.*$$/KSYM_\1/p'
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1025_601b4cfc3d4df01ddf0e9f8bfa49c8156461125e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1025_601b4cfc3d4df01ddf0e9f8bfa49c8156461125e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

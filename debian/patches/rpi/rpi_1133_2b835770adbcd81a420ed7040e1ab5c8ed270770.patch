@@ -1,0 +1,31 @@
+commit 2b835770adbcd81a420ed7040e1ab5c8ed270770
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Mar 28 17:41:30 2017 +0100
+
+    leds-gpio: Remove stray assignment to brightness_set
+    
+    The brightness_set method is intended for use cases that must not
+    block, and can only be used if the GPIO provider can never sleep.
+    Remove an accidental initialisation (a copy-and-paste error) that
+    sets it regardless, which has been seen to cause crashes with the
+    gpio expander driver.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/leds/leds-gpio.c b/drivers/leds/leds-gpio.c
+index 934cdb1d7bc7..a4df27f6af35 100644
+--- a/drivers/leds/leds-gpio.c
++++ b/drivers/leds/leds-gpio.c
+@@ -136,7 +136,6 @@ static int create_gpio_led(const struct gpio_led *template,
+ 		led_dat->platform_gpio_blink_set = blink_set;
+ 		led_dat->cdev.blink_set = gpio_blink_set;
+ 	}
+-	led_dat->cdev.brightness_set = gpio_led_set;
+ 	led_dat->cdev.brightness_get = gpio_led_get;
+ 	if (template->default_state == LEDS_GPIO_DEFSTATE_KEEP) {
+ 		state = gpiod_get_value_cansleep(led_dat->gpiod);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1133_2b835770adbcd81a420ed7040e1ab5c8ed270770.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1133_2b835770adbcd81a420ed7040e1ab5c8ed270770.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

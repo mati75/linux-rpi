@@ -1,0 +1,35 @@
+commit 75dc7166c825ffbd6f680bbe3436e4091681e6ff
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Mon May 15 16:40:05 2017 +0100
+
+    config: Add CONFIG_TOUCHSCREEN_GOODIX
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 94227b4a4f8a..268ac2b47d3f 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -565,6 +565,7 @@ CONFIG_JOYSTICK_RPISENSE=m
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
+ CONFIG_TOUCHSCREEN_EGALAX=m
++CONFIG_TOUCHSCREEN_GOODIX=m
+ CONFIG_TOUCHSCREEN_RPI_FT5406=m
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=m
+ CONFIG_TOUCHSCREEN_STMPE=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index db6589288b6a..88072e3b55eb 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -561,6 +561,7 @@ CONFIG_JOYSTICK_RPISENSE=m
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
+ CONFIG_TOUCHSCREEN_EGALAX=m
++CONFIG_TOUCHSCREEN_GOODIX=m
+ CONFIG_TOUCHSCREEN_RPI_FT5406=m
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=m
+ CONFIG_TOUCHSCREEN_STMPE=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1159_75dc7166c825ffbd6f680bbe3436e4091681e6ff.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1159_75dc7166c825ffbd6f680bbe3436e4091681e6ff.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

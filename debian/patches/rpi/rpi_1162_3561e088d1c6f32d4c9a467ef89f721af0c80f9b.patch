@@ -1,0 +1,35 @@
+commit 3561e088d1c6f32d4c9a467ef89f721af0c80f9b
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Tue May 16 19:34:52 2017 +0100
+
+    config: Add CONFIG_I2C_ROBOTFUZZ_OSIF
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 589ca1cb499e..12157f209bc0 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -614,6 +614,7 @@ CONFIG_I2C_MUX_PCA954x=m
+ CONFIG_I2C_BCM2708=m
+ CONFIG_I2C_BCM2835=m
+ CONFIG_I2C_GPIO=m
++CONFIG_I2C_ROBOTFUZZ_OSIF=m
+ CONFIG_SPI=y
+ CONFIG_SPI_BCM2835=m
+ CONFIG_SPI_BCM2835AUX=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 7381eeba83ec..35dc0b508425 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -610,6 +610,7 @@ CONFIG_I2C_MUX_PCA954x=m
+ CONFIG_I2C_BCM2708=m
+ CONFIG_I2C_BCM2835=m
+ CONFIG_I2C_GPIO=m
++CONFIG_I2C_ROBOTFUZZ_OSIF=m
+ CONFIG_SPI=y
+ CONFIG_SPI_BCM2835=m
+ CONFIG_SPI_BCM2835AUX=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1162_3561e088d1c6f32d4c9a467ef89f721af0c80f9b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1162_3561e088d1c6f32d4c9a467ef89f721af0c80f9b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

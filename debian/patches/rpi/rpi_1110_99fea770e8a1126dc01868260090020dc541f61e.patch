@@ -1,0 +1,78 @@
+commit 99fea770e8a1126dc01868260090020dc541f61e
+Author: Michael Zoran <mzoran@crowfest.net>
+Date:   Sat Jan 14 21:43:57 2017 -0800
+
+    ARM64: Round-Robin dispatch IRQs between CPUs.
+    
+    IRQ-CPU mapping is round robined on ARM64 to increase
+    concurrency and allow multiple interrupts to be serviced
+    at a time.  This reduces the need for FIQ.
+    
+    Signed-off-by: Michael Zoran <mzoran@crowfest.net>
+
+diff --git a/drivers/irqchip/irq-bcm2835.c b/drivers/irqchip/irq-bcm2835.c
+index 8ed457fd74bd..a035e1ceacc0 100644
+--- a/drivers/irqchip/irq-bcm2835.c
++++ b/drivers/irqchip/irq-bcm2835.c
+@@ -168,10 +168,23 @@ static void armctrl_unmask_irq(struct irq_data *d)
+ 	}
+ }
+ 
++#ifdef CONFIG_ARM64
++void bcm2836_arm_irqchip_spin_gpu_irq(void);
++
++static void armctrl_ack_irq(struct irq_data *d)
++{
++	bcm2836_arm_irqchip_spin_gpu_irq();
++}
++
++#endif
++
+ static struct irq_chip armctrl_chip = {
+ 	.name = "ARMCTRL-level",
+ 	.irq_mask = armctrl_mask_irq,
+-	.irq_unmask = armctrl_unmask_irq
++	.irq_unmask = armctrl_unmask_irq,
++#ifdef CONFIG_ARM64
++	.irq_ack    = armctrl_ack_irq
++#endif
+ };
+ 
+ static int armctrl_xlate(struct irq_domain *d, struct device_node *ctrlr,
+diff --git a/drivers/irqchip/irq-bcm2836.c b/drivers/irqchip/irq-bcm2836.c
+index c4e151451cf8..9a7ee04ee0d9 100644
+--- a/drivers/irqchip/irq-bcm2836.c
++++ b/drivers/irqchip/irq-bcm2836.c
+@@ -145,6 +145,27 @@ static void bcm2836_arm_irqchip_unmask_gpu_irq(struct irq_data *d)
+ {
+ }
+ 
++#ifdef CONFIG_ARM64
++
++void bcm2836_arm_irqchip_spin_gpu_irq(void)
++{
++	u32 i;
++	void __iomem *gpurouting = (intc.base + LOCAL_GPU_ROUTING);
++	u32 routing_val = readl(gpurouting);
++
++	for (i = 1; i <= 3; i++) {
++		u32 new_routing_val = (routing_val + i) & 3;
++
++		if (cpu_active(new_routing_val)) {
++			writel(new_routing_val, gpurouting);
++			return;
++		}
++	}
++}
++EXPORT_SYMBOL(bcm2836_arm_irqchip_spin_gpu_irq);
++
++#endif
++
+ static struct irq_chip bcm2836_arm_irqchip_gpu = {
+ 	.name		= "bcm2836-gpu",
+ 	.irq_mask	= bcm2836_arm_irqchip_mask_gpu_irq,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1110_99fea770e8a1126dc01868260090020dc541f61e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1110_99fea770e8a1126dc01868260090020dc541f61e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

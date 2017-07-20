@@ -1,0 +1,29 @@
+commit 4cf8de6fc07c47798f8321b9ff4fd256f4c98f6e
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Feb 1 17:09:18 2017 -0800
+
+    drm/vc4: Name the primary and cursor planes in fkms.
+    
+    This makes debugging nicer, compared to trying to remember what the
+    IDs are.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/gpu/drm/vc4/vc4_firmware_kms.c b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+index d18a1dae51a2..e49ce68b607a 100644
+--- a/drivers/gpu/drm/vc4/vc4_firmware_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+@@ -267,7 +267,7 @@ static struct drm_plane *vc4_fkms_plane_init(struct drm_device *dev,
+ 	ret = drm_universal_plane_init(dev, plane, 0xff,
+ 				       &vc4_plane_funcs,
+ 				       primary ? &xrgb8888 : &argb8888, 1,
+-				       type, NULL);
++				       type, primary ? "primary" : "cursor");
+ 
+ 	if (type == DRM_PLANE_TYPE_PRIMARY) {
+ 		vc4_plane->fbinfo =
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1150_4cf8de6fc07c47798f8321b9ff4fd256f4c98f6e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1150_4cf8de6fc07c47798f8321b9ff4fd256f4c98f6e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

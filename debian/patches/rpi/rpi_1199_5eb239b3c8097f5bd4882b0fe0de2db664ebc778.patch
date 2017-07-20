@@ -1,0 +1,47 @@
+commit 5eb239b3c8097f5bd4882b0fe0de2db664ebc778
+Author: Andrei Gherzan <andrei@gherzan.com>
+Date:   Mon Jun 5 16:40:38 2017 +0100
+
+    dma-bcm2708: Fix module compilation of CONFIG_DMA_BCM2708
+    
+    bcm2708-dmaengine.c defines functions like bcm_dma_start which are
+    defined as well in dma-bcm2708.h as inline versions when
+    CONFIG_DMA_BCM2708 is not defined. This works fine when
+    CONFIG_DMA_BCM2708 is built in, but when it is selected as module build
+    fails with redefinition errors because in the build system when
+    CONFIG_DMA_BCM2708 is selected as module, the macro becomes
+    CONFIG_DMA_BCM2708_MODULE.
+    
+    This patch makes the header use CONFIG_DMA_BCM2708_MODULE too when
+    available.
+    
+    Fixes https://github.com/raspberrypi/linux/issues/2056
+    
+    Signed-off-by: Andrei Gherzan <andrei@gherzan.com>
+
+diff --git a/include/linux/platform_data/dma-bcm2708.h b/include/linux/platform_data/dma-bcm2708.h
+index c5bfff2765be..6ca874d332a8 100644
+--- a/include/linux/platform_data/dma-bcm2708.h
++++ b/include/linux/platform_data/dma-bcm2708.h
+@@ -75,7 +75,7 @@ struct bcm2708_dma_cb {
+ struct scatterlist;
+ struct platform_device;
+ 
+-#ifdef CONFIG_DMA_BCM2708
++#if defined(CONFIG_DMA_BCM2708) || defined(CONFIG_DMA_BCM2708_MODULE)
+ 
+ int bcm_sg_suitable_for_dma(struct scatterlist *sg_ptr, int sg_len);
+ void bcm_dma_start(void __iomem *dma_chan_base, dma_addr_t control_block);
+@@ -138,6 +138,6 @@ static inline int bcm_dmaman_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#endif /* CONFIG_DMA_BCM2708 */
++#endif /* CONFIG_DMA_BCM2708 || CONFIG_DMA_BCM2708_MODULE */
+ 
+ #endif /* _PLAT_BCM2708_DMA_H */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1199_5eb239b3c8097f5bd4882b0fe0de2db664ebc778.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1199_5eb239b3c8097f5bd4882b0fe0de2db664ebc778.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,69 @@
+commit cfa41be43c876b1dffa5edc2d99e4c56f94b4439
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Thu May 4 17:38:22 2017 +0100
+
+    bcm2708_fb: Avoid firmware mbox call in vc_mem_copy
+    
+    If firmware has locked up it is useful to get vcdbg log out without a firmware mbox response.
+    Issue the mbox call at probe time instead.
+    
+    Signed-off-by: popcornmix <popcornmix@gmail.com>
+
+diff --git a/drivers/video/fbdev/bcm2708_fb.c b/drivers/video/fbdev/bcm2708_fb.c
+index 53c5a0bdadb4..612293cf9f1b 100644
+--- a/drivers/video/fbdev/bcm2708_fb.c
++++ b/drivers/video/fbdev/bcm2708_fb.c
+@@ -96,6 +96,7 @@ struct bcm2708_fb {
+ 	wait_queue_head_t dma_waitq;
+ 	struct bcm2708_fb_stats stats;
+ 	unsigned long fb_bus_address;
++	struct { u32 base, length; } gpu;
+ };
+ 
+ #define to_bcm2708(info)	container_of(info, struct bcm2708_fb, fb)
+@@ -472,7 +473,6 @@ static long vc_mem_copy(struct bcm2708_fb *fb, unsigned long arg)
+ 	dma_addr_t bus_addr;
+ 	long rc = 0;
+ 	size_t offset;
+-	struct { u32 base, length; } gpu = {};
+ 
+ 	/* restrict this to root user */
+ 	if (!uid_eq(current_euid(), GLOBAL_ROOT_UID))
+@@ -491,16 +491,13 @@ static long vc_mem_copy(struct bcm2708_fb *fb, unsigned long arg)
+ 		goto out;
+ 	}
+ 
+-	rc = rpi_firmware_property(fb->fw,
+-				    RPI_FIRMWARE_GET_VC_MEMORY,
+-				    &gpu, sizeof(gpu));
+-	if (rc != 0 || gpu.base == 0 || gpu.length == 0) {
+-		pr_err("[%s]: Unable to determine gpu memory %ld,%x,%x)\n", __func__, rc, gpu.base, gpu.length);
++	if (fb->gpu.base == 0 || fb->gpu.length == 0) {
++		pr_err("[%s]: Unable to determine gpu memory (%x,%x)\n", __func__, fb->gpu.base, fb->gpu.length);
+ 		return -EFAULT;
+ 	}
+ 
+-	if (INTALIAS_NORMAL(ioparam.src) < gpu.base || INTALIAS_NORMAL(ioparam.src) >= gpu.base + gpu.length) {
+-		pr_err("[%s]: Invalid memory access %x (%x-%x)", __func__, INTALIAS_NORMAL(ioparam.src), gpu.base, gpu.base + gpu.length);
++	if (INTALIAS_NORMAL(ioparam.src) < fb->gpu.base || INTALIAS_NORMAL(ioparam.src) >= fb->gpu.base + fb->gpu.length) {
++		pr_err("[%s]: Invalid memory access %x (%x-%x)", __func__, INTALIAS_NORMAL(ioparam.src), fb->gpu.base, fb->gpu.base + fb->gpu.length);
+ 		return -EFAULT;
+ 	}
+ 
+@@ -869,6 +866,11 @@ static int bcm2708_fb_probe(struct platform_device *dev)
+ 	fb->dev = dev;
+ 	fb->fb.device = &dev->dev;
+ 
++	// failure here isn't fatal, but we'll fail in vc_mem_copy if fb->gpu is not valid
++	rpi_firmware_property(fb->fw,
++				    RPI_FIRMWARE_GET_VC_MEMORY,
++				    &fb->gpu, sizeof(fb->gpu));
++
+ 	ret = bcm2708_fb_register(fb);
+ 	if (ret == 0) {
+ 		platform_set_drvdata(dev, fb);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1147_cfa41be43c876b1dffa5edc2d99e4c56f94b4439.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1147_cfa41be43c876b1dffa5edc2d99e4c56f94b4439.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

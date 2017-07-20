@@ -1,4 +1,4 @@
-linux (4.11.6-1rpi1) buster-staging; urgency=medium
+linux (4.11.11-1rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -116,8 +116,9 @@ linux (4.11.6-1rpi1) buster-staging; urgency=medium
   * Deversion libbabeltrace-dev and libbabeltrace-ctf-dev build-dependencys
   * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
   * Remove ext3 modules from d-i package list.
+  * Fix FTBFS with gcc-7.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Fri, 23 Jun 2017 11:58:08 +0200
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 19 Jul 2017 08:50:02 +0200
 
 linux (4.11.11-1) unstable; urgency=medium
 
@@ -415,7 +416,6 @@ linux (4.11.11-1) unstable; urgency=medium
     e.g. Arndale development boards, thanks to Wei Liu (Closes: #865645).
 
  -- Ben Hutchings <ben@decadent.org.uk>  Mon, 17 Jul 2017 03:01:21 +0100
->>>>>>> debian/4.11.11-1
 
 linux (4.11.6-1) unstable; urgency=medium
 
@@ -571,7 +571,6 @@ linux (4.10~rc6-1~exp1) experimental; urgency=medium
   * debian/copyright: Add GPL/X11 Dual License
 
  -- Ben Hutchings <ben@decadent.org.uk>  Tue, 31 Jan 2017 15:33:20 +0000
->>>>>>> debian/4.11.6-1
 
 linux (4.9.30-2) unstable; urgency=high
 

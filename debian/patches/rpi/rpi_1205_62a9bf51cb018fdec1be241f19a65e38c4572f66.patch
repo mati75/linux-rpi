@@ -1,0 +1,61 @@
+commit 62a9bf51cb018fdec1be241f19a65e38c4572f66
+Author: Matthias Reichl <github@hias.horus.com>
+Date:   Mon Jul 10 11:05:17 2017 +0200
+
+    config: enable generic S/PDIF codec drivers (#2104)
+    
+    These drivers can be used as dummy ADC/DAC drivers for
+    attaching general codecs that don't need to be configured.
+    
+    This option will build 2 additional drivers, spdif_receiver
+    and spdif_transmitter.
+    
+    Since these drivers have DT bindings they are handy for quick
+    testing of I2S peripherals with simple-audio-card.
+    
+    eg:
+    
+    fragment@0 {
+        target-path = "/";
+        __overlay__ {
+            dummy_receiver: spdif-receiver {
+                #address-cells = <0>;
+                #size-cells = <0>;
+                #sound-dai-cells = <0>;
+                compatible = "linux,spdif-dir";
+                status = "okay";
+            };
+        };
+    };
+    
+    Signed-off-by: Matthias Reichl <hias@horus.com>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 7434a6ddd94b..7d237499aeb2 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -898,6 +898,7 @@ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
+ CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
++CONFIG_SND_SOC_SPDIF=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SOUND_PRIME=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index f13f9fb0a194..dca568d6577c 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -892,6 +892,7 @@ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
+ CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
++CONFIG_SND_SOC_SPDIF=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SOUND_PRIME=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1205_62a9bf51cb018fdec1be241f19a65e38c4572f66.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1205_62a9bf51cb018fdec1be241f19a65e38c4572f66.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
