@@ -1,40 +1,40 @@
-tag v4.11.11
+tag v4.12.6
 Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Sat Jul 15 13:04:56 2017 +0200
+Date:   Fri Aug 11 08:34:20 2017 -0700
 
-This is the 4.11.11 stable release
+This is the 4.12.6 stable release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAllp9tgACgkQONu9yGCS
-aT77oQ/6A4/xErQZdFmfbDLtjJtLkx/DOUTLF5kuvgOQcb6KiOYwdXn3aibAY+ip
-PKC/RkVe8fChwscB6fxj04r3ESzAhTjrP7NmEfAHd9XCstV1WSnWAtyU0sdk4kZj
-VNq3VkyruJ0ALthElRv8+6o+ozkZrplaYhFCqqGYldV5JzK8RDdVQRNKU7GuM22e
-mS6/jyoYE+9qL0FLRS0rEo8uhOD9BJOL9XjEdos6xg7JKb1vZjuAimZ2yTVpbVSt
-tkssctD8oF1uxoNM9R3EC5uwWs/K8NtmR/9H/TguoWntQCVVInWHgeV7zgZb13kR
-x941YBSqA6GYgzGpMpB2eu7a51NeU1s58D5RIZVBYNWkK4+oPytEDNUOKgsh6SRl
-CIQJu8r11yFzlAmtKhsXNALlDkQLAIdfSqiqXzvzz6i+S7gsjfqqk7Pav190iBF5
-5eB+XoQJpnj9zItLnDfTnxWZxEBPeoIIfyNl8kk+wdvbZZSrv6t25fAxb198Xwwf
-6ylRPbV2XVxrZeIwB1ioFFS+a5TOIQ+blTi3YNP2oP7jG1UnYAmdlyGNn4BpVRMu
-lNCdVUfWJDxD4b3DUOyelK6/IlIHvN6UGZZLPBKGkvn9pN0PjxYwP2rAvppNVuGd
-Ln0aRWkhsXl8i0M033JlApmPDOH/oKvvXY+BwojXSP46iPzvIao=
-=QQql
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlmNznwACgkQONu9yGCS
+aT6fMw//Q328iclkF84Obn65WsOXaZx/dd9oImM+pD7H3UOWIKCMi/O3QRKVMmKE
+YrWXk7FCLs+JN6pfR7/Tpodva2+MGdm0iuk8BAyzRg2P2zLJtbe0Ny2AaJAk//PC
+GU0GQQVYEaIRkAMCJIKrgZTydTnlG2SSd4VyI9ynI91z7nJW71hME9vupKo7e4rz
+DjhWKuSo5P9sLVHb3SwZOY4RqXS5IrPZnGFZ7snQu2Yr7WOzK1naFj6bB04SuJjL
+VxenuB5fWIihDKBO2Yc19u1mhsR0sOuYfsvBclizPkmbNTwWRH7zRLTV1Ip4q+Wh
+wBhePjp2WCwfqiHRo7MQrwmQv8NYHKjsJQtbOW+mKIZigImcjwE042ENehLOKLPO
+P/zQc2YzUjVSnBhVrQRN/fPpDf5V7kBvlhTAMd0LgTOWQeVRxZ/opA1pRPDIhRXj
+WpYWLr6F7BWZ7bTLvORM///mZlG1NiiKymyLp3bMsE3Tcd9FD90qjTYn84GyO/Yi
+jOnYFzKS0t69DRmytxiMBqTc7FwBLa37Dhh3YluMJXDt+Uaz7FVIH+q5gIqcTqHO
+BEh+F2FqVv6FwjtaDhkcgyaHplLlxPU6oPSumUCvdmsoot//kzlEF0Kf16HQ0YCS
+upzSkzlXSDNVOtmd27x6rc6jRVGhh7N6wZrWRhJl4Fz/cWCaV4g=
+=5N41
 -----END PGP SIGNATURE-----
 
-commit 50a05be0a099d8917a52efeff214da62a39e531a
+commit 311d0c83145730eede422215b346d257ca6c0869
 Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Sat Jul 15 13:04:51 2017 +0200
+Date:   Fri Aug 11 08:34:14 2017 -0700
 
-    Linux 4.11.11
+    Linux 4.12.6
 
 diff --git a/Makefile b/Makefile
-index 64f73757916f..cf28e431b68a 100644
+index 382e967b0792..c8d80b50495a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,6 +1,6 @@
  VERSION = 4
- PATCHLEVEL = 11
--SUBLEVEL = 10
-+SUBLEVEL = 11
+ PATCHLEVEL = 12
+-SUBLEVEL = 5
++SUBLEVEL = 6
  EXTRAVERSION =
  NAME = Fearless Coyote
  

@@ -1,35 +1,19 @@
-commit 79d857309fe2ae90c23f9656c90a7e20d132a466
-Author: Phil Elwell <phil@raspberrypi.org>
-Date:   Fri Jul 14 12:59:55 2017 +0100
+commit 0d9ed68fbe6e4e8a5f8a580a211f962304395089
+Author: Sven Köhler <sven.koehler@gmail.com>
+Date:   Mon Aug 7 18:49:20 2017 +0200
 
-    bcm2835-mmc: Fix DMA usage
-    
-    The previous change ("bcm2835-mmc: Only claim one DMA channel")
-    used an incorrect variable, the effect of which was to prevent
-    DMA from being used at all. Fix that bug by using the right
-    variable.
-    
-    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+    Fix dependencies broken since driver was renamed
 
-diff --git a/drivers/mmc/host/bcm2835-mmc.c b/drivers/mmc/host/bcm2835-mmc.c
-index 4fe8d1fe4457..981db05de1ff 100644
---- a/drivers/mmc/host/bcm2835-mmc.c
-+++ b/drivers/mmc/host/bcm2835-mmc.c
-@@ -1354,14 +1354,14 @@ static int bcm2835_mmc_add_host(struct bcm2835_host *host)
- 		if (ret == 0) {
- 			host->dma_cfg_rx = cfg;
+diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
+index e577d20963bc..324da890a83a 100644
+--- a/drivers/mmc/host/Kconfig
++++ b/drivers/mmc/host/Kconfig
+@@ -25,7 +25,7 @@ config MMC_BCM2835_DMA
  
--			host->use_dma = true;
-+			host->have_dma = true;
- 		} else {
- 			pr_err("%s: unable to configure DMA channel. "
--			       "Faling back to PIO\n",
-+			       "Falling back to PIO\n",
- 			       mmc_hostname(mmc));
- 			dma_release_channel(host->dma_chan_rxtx);
- 			host->dma_chan_rxtx = NULL;
--			host->use_dma = false;
-+			host->have_dma = false;
- 		}
- 	}
- #endif
+ config MMC_BCM2835_PIO_DMA_BARRIER
+ 	int "Block count limit for PIO transfers"
+-	depends on MMC_BCM2835 && MMC_BCM2835_DMA
++	depends on MMC_BCM2835_MMC && MMC_BCM2835_DMA
+ 	range 0 256
+ 	default 2
+ 	help
