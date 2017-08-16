@@ -1,8 +1,5 @@
 #include <scsi-modules>
 
+ibmvfc
 ibmvscsi
-ps3disk ?
 ps3rom
-
-# Exclude target driver
-ibmvscsis -

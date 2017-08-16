@@ -1,4 +1,3 @@
-import collections
 import os
 import os.path
 import pickle
@@ -6,7 +5,10 @@ import re
 import sys
 import textwrap
 
-from configparser import RawConfigParser
+try:
+    from configparser import RawConfigParser
+except ImportError:
+    from ConfigParser import RawConfigParser
 
 __all__ = [
     'ConfigCoreDump',
@@ -25,14 +27,6 @@ class SchemaItemBoolean(object):
         raise Error
 
 
-class SchemaItemInteger(object):
-    def __call__(self, i):
-        try:
-            return int(i.strip(), 0)
-        except ValueError:
-            raise Error
-
-
 class SchemaItemList(object):
     def __init__(self, type="\s+"):
         self.type = type
@@ -44,8 +38,7 @@ class SchemaItemList(object):
         return [j.strip() for j in re.split(self.type, i)]
 
 
-# Using OrderedDict instead of dict makes the pickled config reproducible
-class ConfigCore(collections.OrderedDict):
+class ConfigCore(dict):
     def get_merge(self, section, arch, featureset, flavour, key, default=None):
         temp = []
 

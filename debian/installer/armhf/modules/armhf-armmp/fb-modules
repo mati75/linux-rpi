@@ -1,3 +1,2 @@
 imx-ipuv3-crtc
-dw_hdmi-imx
-tegra-drm
+imx-hdmi

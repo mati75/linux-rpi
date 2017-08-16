@@ -1,10 +1,19 @@
-# Include PCMCIA Ethernet and wireless drivers by default
-drivers/net/ethernet/**_cs
-drivers/net/wireless/**_cs
+# Common pcmcia nic modules.
+3c574_cs
+3c589_cs
+airo_cs ?
+axnet_cs
 b44 ?
-hostap_plx ?
+com20020_cs ?
+fmvj18x_cs ?
+netwave_cs ?
+nmclan_cs
+orinoco_cs
+pcnet_cs
+ray_cs
+smc91c92_cs
+wavelan_cs ?
+xirc2ps_cs
 xircom_cb
-
-# Exclude drivers packaged in nic-wireless-modules
-libertas_cs -
-spectrum_cs -
+atmel_cs ?
+wl3501_cs ?
