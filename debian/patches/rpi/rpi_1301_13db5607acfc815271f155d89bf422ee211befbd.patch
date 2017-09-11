@@ -23,13 +23,13 @@ Date:   Thu Feb 2 20:30:03 2017 -0600
     Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-diff --git a/virt/kvm/arm/vgic/vgic-irqfd.c b/virt/kvm/arm/vgic/vgic-irqfd.c
-index d918dcf26a5a..f138ed2e9c63 100644
---- a/virt/kvm/arm/vgic/vgic-irqfd.c
-+++ b/virt/kvm/arm/vgic/vgic-irqfd.c
-@@ -99,6 +99,9 @@ int kvm_set_msi(struct kvm_kernel_irq_routing_entry *e,
- 	if (!vgic_has_its(kvm))
- 		return -ENODEV;
+Index: linux-4.9.47/virt/kvm/arm/vgic/vgic-irqfd.c
+===================================================================
+--- linux-4.9.47.orig/virt/kvm/arm/vgic/vgic-irqfd.c
++++ linux-4.9.47/virt/kvm/arm/vgic/vgic-irqfd.c
+@@ -102,6 +102,9 @@ int kvm_set_msi(struct kvm_kernel_irq_ro
+ 	if (!level)
+ 		return -1;
  
 +	if (!level)
 +		return -1;
@@ -37,8 +37,9 @@ index d918dcf26a5a..f138ed2e9c63 100644
  	return vgic_its_inject_msi(kvm, &msi);
  }
  
-diff -uN a/1.txt b/1.txt
---- a/dummy/rpi_1301_13db5607acfc815271f155d89bf422ee211befbd.txt	1970-01-01 00:00:00.000000000 +0000
-+++ b/dummy/rpi_1301_13db5607acfc815271f155d89bf422ee211befbd.txt	2013-12-23 04:07:40.000000000 +0000
+Index: linux-4.9.47/dummy/rpi_1301_13db5607acfc815271f155d89bf422ee211befbd.txt
+===================================================================
+--- /dev/null
++++ linux-4.9.47/dummy/rpi_1301_13db5607acfc815271f155d89bf422ee211befbd.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

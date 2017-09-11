@@ -13,10 +13,10 @@ Date:   Thu Nov 3 18:53:10 2016 -0700
     Signed-off-by: Eric Anholt <eric@anholt.net>
     (cherry picked from commit 7154d76fedf549607afbc0d13db9aaf02da5cebf)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
-index 6c4a4fbc86d0..157e08ab2777 100644
---- a/drivers/gpu/drm/vc4/vc4_drv.c
-+++ b/drivers/gpu/drm/vc4/vc4_drv.c
+Index: linux-4.9.47/drivers/gpu/drm/vc4/vc4_drv.c
+===================================================================
+--- linux-4.9.47.orig/drivers/gpu/drm/vc4/vc4_drv.c
++++ linux-4.9.47/drivers/gpu/drm/vc4/vc4_drv.c
 @@ -81,6 +81,7 @@ static int vc4_get_param_ioctl(struct dr
  		pm_runtime_put_autosuspend(&vc4->v3d->pdev->dev);
  		break;
@@ -25,10 +25,10 @@ index 6c4a4fbc86d0..157e08ab2777 100644
  		args->value = true;
  		break;
  	default:
-diff --git a/drivers/gpu/drm/vc4/vc4_validate.c b/drivers/gpu/drm/vc4/vc4_validate.c
-index 26503e307438..e18f88203d32 100644
---- a/drivers/gpu/drm/vc4/vc4_validate.c
-+++ b/drivers/gpu/drm/vc4/vc4_validate.c
+Index: linux-4.9.47/drivers/gpu/drm/vc4/vc4_validate.c
+===================================================================
+--- linux-4.9.47.orig/drivers/gpu/drm/vc4/vc4_validate.c
++++ linux-4.9.47/drivers/gpu/drm/vc4/vc4_validate.c
 @@ -644,6 +644,13 @@ reloc_tex(struct vc4_exec_info *exec,
  		cpp = 1;
  		break;
@@ -43,10 +43,10 @@ index 26503e307438..e18f88203d32 100644
  	case VC4_TEXTURE_TYPE_BW1:
  	case VC4_TEXTURE_TYPE_A4:
  	case VC4_TEXTURE_TYPE_A1:
-diff --git a/include/uapi/drm/vc4_drm.h b/include/uapi/drm/vc4_drm.h
-index ad7edc3edf7c..69caa21f0cb2 100644
---- a/include/uapi/drm/vc4_drm.h
-+++ b/include/uapi/drm/vc4_drm.h
+Index: linux-4.9.47/include/uapi/drm/vc4_drm.h
+===================================================================
+--- linux-4.9.47.orig/include/uapi/drm/vc4_drm.h
++++ linux-4.9.47/include/uapi/drm/vc4_drm.h
 @@ -286,6 +286,7 @@ struct drm_vc4_get_hang_state {
  #define DRM_VC4_PARAM_V3D_IDENT1		1
  #define DRM_VC4_PARAM_V3D_IDENT2		2
@@ -55,8 +55,9 @@ index ad7edc3edf7c..69caa21f0cb2 100644
  
  struct drm_vc4_get_param {
  	__u32 param;
-diff -uN a/1.txt b/1.txt
---- a/dummy/rpi_1162_1e63ff0c37e40816639806088f961208a4fed823.txt	1970-01-01 00:00:00.000000000 +0000
-+++ b/dummy/rpi_1162_1e63ff0c37e40816639806088f961208a4fed823.txt	2013-12-23 04:07:40.000000000 +0000
+Index: linux-4.9.47/dummy/rpi_1162_1e63ff0c37e40816639806088f961208a4fed823.txt
+===================================================================
+--- /dev/null
++++ linux-4.9.47/dummy/rpi_1162_1e63ff0c37e40816639806088f961208a4fed823.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

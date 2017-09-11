@@ -181,10 +181,10 @@ Date:   Wed Jul 9 14:46:08 2014 +0200
     Signed-off-by: Herve Jourdain <herve.jourdain@neuf.fr>
     Signed-off-by: Khem Raj <raj.khem@gmail.com>
 
-diff --git a/arch/arm/Makefile b/arch/arm/Makefile
-index 6be9ee148b78..b1c49e2a0c5f 100644
---- a/arch/arm/Makefile
-+++ b/arch/arm/Makefile
+Index: linux-4.9.47/arch/arm/Makefile
+===================================================================
+--- linux-4.9.47.orig/arch/arm/Makefile
++++ linux-4.9.47/arch/arm/Makefile
 @@ -334,6 +334,8 @@ $(INSTALL_TARGETS):
  
  %.dtb: | scripts
@@ -194,20 +194,20 @@ index 6be9ee148b78..b1c49e2a0c5f 100644
  
  PHONY += dtbs dtbs_install
  
-diff --git a/arch/arm/boot/.gitignore b/arch/arm/boot/.gitignore
-index 3c79f85975aa..eaaeb17e5986 100644
---- a/arch/arm/boot/.gitignore
-+++ b/arch/arm/boot/.gitignore
+Index: linux-4.9.47/arch/arm/boot/.gitignore
+===================================================================
+--- linux-4.9.47.orig/arch/arm/boot/.gitignore
++++ linux-4.9.47/arch/arm/boot/.gitignore
 @@ -3,4 +3,4 @@ zImage
  xipImage
  bootpImage
  uImage
 -*.dtb
 +*.dtb*
-diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index 7037201c5e3a..c697c4843a4e 100644
---- a/arch/arm/boot/dts/Makefile
-+++ b/arch/arm/boot/dts/Makefile
+Index: linux-4.9.47/arch/arm/boot/dts/Makefile
+===================================================================
+--- linux-4.9.47.orig/arch/arm/boot/dts/Makefile
++++ linux-4.9.47/arch/arm/boot/dts/Makefile
 @@ -1,5 +1,13 @@
  ifeq ($(CONFIG_OF),y)
  
@@ -222,7 +222,7 @@ index 7037201c5e3a..c697c4843a4e 100644
  dtb-$(CONFIG_ARCH_ALPINE) += \
  	alpine-db.dtb
  dtb-$(CONFIG_MACH_ARTPEC6) += \
-@@ -955,10 +963,21 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += \
+@@ -957,10 +965,21 @@ dtb-$(CONFIG_ARCH_MEDIATEK) += \
  dtb-$(CONFIG_ARCH_ZX) += zx296702-ad1.dtb
  dtb-$(CONFIG_ARCH_ASPEED) += aspeed-bmc-opp-palmetto.dtb \
  	aspeed-ast2500-evb.dtb
@@ -244,11 +244,10 @@ index 7037201c5e3a..c697c4843a4e 100644
 +	DTC_FLAGS ?= -@ -H epapr
 +	dts-dirs += overlays
 +endif
-diff --git a/arch/arm/boot/dts/bcm2708-rpi-b-plus.dts b/arch/arm/boot/dts/bcm2708-rpi-b-plus.dts
-new file mode 100644
-index 000000000000..360da5c928dc
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi-b-plus.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2708-rpi-b-plus.dts
++++ linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi-b-plus.dts
 @@ -0,0 +1,156 @@
 +/dts-v1/;
 +
@@ -406,11 +405,10 @@ index 000000000000..360da5c928dc
 +		sd_debug     = <&sdhost>,"brcm,debug";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/bcm2708-rpi-b.dts b/arch/arm/boot/dts/bcm2708-rpi-b.dts
-new file mode 100644
-index 000000000000..9c49659ab246
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi-b.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2708-rpi-b.dts
++++ linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi-b.dts
 @@ -0,0 +1,146 @@
 +/dts-v1/;
 +
@@ -558,11 +556,10 @@ index 000000000000..9c49659ab246
 +		sd_debug     = <&sdhost>,"brcm,debug";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/bcm2708-rpi-cm.dts b/arch/arm/boot/dts/bcm2708-rpi-cm.dts
-new file mode 100644
-index 000000000000..eb8662f0d222
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi-cm.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2708-rpi-cm.dts
++++ linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi-cm.dts
 @@ -0,0 +1,105 @@
 +/dts-v1/;
 +
@@ -669,11 +666,10 @@ index 000000000000..eb8662f0d222
 +		i2c2_baudrate = <&i2c2>,"clock-frequency:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/bcm2708-rpi-cm.dtsi b/arch/arm/boot/dts/bcm2708-rpi-cm.dtsi
-new file mode 100644
-index 000000000000..d33d462b4090
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi-cm.dtsi
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2708-rpi-cm.dtsi
++++ linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi-cm.dtsi
 @@ -0,0 +1,50 @@
 +#include "bcm2708.dtsi"
 +
@@ -725,11 +721,10 @@ index 000000000000..d33d462b4090
 +		sd_overclock = <&mmc>,"brcm,overclock-50:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/bcm2708-rpi.dtsi b/arch/arm/boot/dts/bcm2708-rpi.dtsi
-new file mode 100644
-index 000000000000..46cf8602c3b9
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi.dtsi
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2708-rpi.dtsi
++++ linux-4.9.47/arch/arm/boot/dts/bcm2708-rpi.dtsi
 @@ -0,0 +1,109 @@
 +/* Downstream version of bcm2835-rpi.dtsi */
 +
@@ -840,11 +835,10 @@ index 000000000000..46cf8602c3b9
 +&usb {
 +	power-domains = <&power RPI_POWER_DOMAIN_USB>;
 +};
-diff --git a/arch/arm/boot/dts/bcm2708.dtsi b/arch/arm/boot/dts/bcm2708.dtsi
-new file mode 100644
-index 000000000000..0f72bd90c591
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2708.dtsi
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2708.dtsi
++++ linux-4.9.47/arch/arm/boot/dts/bcm2708.dtsi
 @@ -0,0 +1,16 @@
 +#include "bcm2835.dtsi"
 +#include "bcm270x.dtsi"
@@ -862,11 +856,10 @@ index 000000000000..0f72bd90c591
 +
 +	/delete-node/ cpus;
 +};
-diff --git a/arch/arm/boot/dts/bcm2709-rpi-2-b.dts b/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
-new file mode 100644
-index 000000000000..19c83823420f
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
++++ linux-4.9.47/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
 @@ -0,0 +1,156 @@
 +/dts-v1/;
 +
@@ -1024,11 +1017,10 @@ index 000000000000..19c83823420f
 +		sd_debug     = <&sdhost>,"brcm,debug";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/bcm2709.dtsi b/arch/arm/boot/dts/bcm2709.dtsi
-new file mode 100644
-index 000000000000..343437db9482
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2709.dtsi
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2709.dtsi
++++ linux-4.9.47/arch/arm/boot/dts/bcm2709.dtsi
 @@ -0,0 +1,22 @@
 +#include "bcm2836.dtsi"
 +#include "bcm270x.dtsi"
@@ -1052,11 +1044,10 @@ index 000000000000..343437db9482
 +			   <&v7_cpu3>, "clock-frequency:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/bcm270x.dtsi b/arch/arm/boot/dts/bcm270x.dtsi
-new file mode 100644
-index 000000000000..a46cb4a8b141
+Index: linux-4.9.47/arch/arm/boot/dts/bcm270x.dtsi
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm270x.dtsi
++++ linux-4.9.47/arch/arm/boot/dts/bcm270x.dtsi
 @@ -0,0 +1,141 @@
 +/* Downstream bcm283x.dtsi diff */
 +#include "dt-bindings/power/raspberrypi-power.h"
@@ -1199,11 +1190,10 @@ index 000000000000..a46cb4a8b141
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
-new file mode 100644
-index 000000000000..12764a3495b2
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
++++ linux-4.9.47/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
 @@ -0,0 +1,203 @@
 +/dts-v1/;
 +
@@ -1408,11 +1398,10 @@ index 000000000000..12764a3495b2
 +		sd_debug     = <&sdhost>,"brcm,debug";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/bcm2710-rpi-cm3.dts b/arch/arm/boot/dts/bcm2710-rpi-cm3.dts
-new file mode 100644
-index 000000000000..41874c25a842
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2710-rpi-cm3.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2710-rpi-cm3.dts
++++ linux-4.9.47/arch/arm/boot/dts/bcm2710-rpi-cm3.dts
 @@ -0,0 +1,155 @@
 +/dts-v1/;
 +
@@ -1569,11 +1558,10 @@ index 000000000000..41874c25a842
 +		sd_debug     = <&sdhost>,"brcm,debug";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/bcm2710.dtsi b/arch/arm/boot/dts/bcm2710.dtsi
-new file mode 100644
-index 000000000000..f6def5d7e5d6
+Index: linux-4.9.47/arch/arm/boot/dts/bcm2710.dtsi
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/bcm2710.dtsi
++++ linux-4.9.47/arch/arm/boot/dts/bcm2710.dtsi
 @@ -0,0 +1,155 @@
 +#include "bcm283x.dtsi"
 +#include "bcm270x.dtsi"
@@ -1730,11 +1718,10 @@ index 000000000000..f6def5d7e5d6
 +	interrupts = <1 9>;
 +};
 +#endif
-diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-new file mode 100644
-index 000000000000..11dba3171284
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/Makefile
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/Makefile
++++ linux-4.9.47/arch/arm/boot/dts/overlays/Makefile
 @@ -0,0 +1,105 @@
 +# Overlays for the Raspberry Pi platform
 +
@@ -1841,11 +1828,10 @@ index 000000000000..11dba3171284
 +
 +always		:= $(dtbo-y)
 +clean-files	:= *.dtbo
-diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
-new file mode 100644
-index 000000000000..81d991803be3
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/README
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/README
++++ linux-4.9.47/arch/arm/boot/dts/overlays/README
 @@ -0,0 +1,1368 @@
 +Introduction
 +============
@@ -3215,11 +3201,10 @@ index 000000000000..81d991803be3
 +Raspberry Pi. There is a more complete explanation here:
 +
 +http://www.raspberrypi.org/documentation/configuration/device-tree.md
-diff --git a/arch/arm/boot/dts/overlays/adau1977-adc-overlay.dts b/arch/arm/boot/dts/overlays/adau1977-adc-overlay.dts
-new file mode 100644
-index 000000000000..24fcd58fd1dc
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/adau1977-adc-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/adau1977-adc-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/adau1977-adc-overlay.dts
 @@ -0,0 +1,53 @@
 +// Definitions for ADAU1977 ADC
 +/dts-v1/;
@@ -3274,11 +3259,10 @@ index 000000000000..24fcd58fd1dc
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/ads1015-overlay.dts b/arch/arm/boot/dts/overlays/ads1015-overlay.dts
-new file mode 100644
-index 000000000000..02b9de46299b
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/ads1015-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/ads1015-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/ads1015-overlay.dts
 @@ -0,0 +1,98 @@
 +/*
 + * 2016 - Erik Sejr
@@ -3378,11 +3362,10 @@ index 000000000000..02b9de46299b
 +   };
 +
 +};
-diff --git a/arch/arm/boot/dts/overlays/ads7846-overlay.dts b/arch/arm/boot/dts/overlays/ads7846-overlay.dts
-new file mode 100644
-index 000000000000..edf2dc9d5d5f
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/ads7846-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/ads7846-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/ads7846-overlay.dts
 @@ -0,0 +1,89 @@
 +/*
 + * Generic Device Tree overlay for the ADS7846 touch controller
@@ -3473,11 +3456,10 @@ index 000000000000..edf2dc9d5d5f
 +		xohms =  <&ads7846>,"ti,x-plate-ohms;0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/akkordion-iqdacplus-overlay.dts b/arch/arm/boot/dts/overlays/akkordion-iqdacplus-overlay.dts
-new file mode 100644
-index 000000000000..208849d5c392
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/akkordion-iqdacplus-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/akkordion-iqdacplus-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/akkordion-iqdacplus-overlay.dts
 @@ -0,0 +1,46 @@
 +// Definitions for Digital Dreamtime Akkordion using IQaudIO DAC+ or DACZero
 +/dts-v1/;
@@ -3525,11 +3507,10 @@ index 000000000000..208849d5c392
 +		24db_digital_gain = <&frag2>,"iqaudio,24db_digital_gain?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/allo-piano-dac-pcm512x-audio-overlay.dts b/arch/arm/boot/dts/overlays/allo-piano-dac-pcm512x-audio-overlay.dts
-new file mode 100644
-index 000000000000..a5468d850a91
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/allo-piano-dac-pcm512x-audio-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/allo-piano-dac-pcm512x-audio-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/allo-piano-dac-pcm512x-audio-overlay.dts
 @@ -0,0 +1,54 @@
 +/*
 + * Definitions for Allo Piano DAC (2.0/2.1) boards
@@ -3585,11 +3566,10 @@ index 000000000000..a5468d850a91
 +			<&piano_dac>,"allo,24db_digital_gain?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/at86rf233-overlay.dts b/arch/arm/boot/dts/overlays/at86rf233-overlay.dts
-new file mode 100644
-index 000000000000..880c7539d496
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/at86rf233-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/at86rf233-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/at86rf233-overlay.dts
 @@ -0,0 +1,57 @@
 +/dts-v1/;
 +/plugin/;
@@ -3648,11 +3628,10 @@ index 000000000000..880c7539d496
 +		trim      = <&lowpan0>, "xtal-trim.0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/audioinjector-wm8731-audio-overlay.dts b/arch/arm/boot/dts/overlays/audioinjector-wm8731-audio-overlay.dts
-new file mode 100644
-index 000000000000..4ed66577fa1d
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/audioinjector-wm8731-audio-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/audioinjector-wm8731-audio-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/audioinjector-wm8731-audio-overlay.dts
 @@ -0,0 +1,39 @@
 +// Definitions for audioinjector.net audio add on soundcard
 +/dts-v1/;
@@ -3693,11 +3672,10 @@ index 000000000000..4ed66577fa1d
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/audremap-overlay.dts b/arch/arm/boot/dts/overlays/audremap-overlay.dts
-new file mode 100644
-index 000000000000..9582d6ab3121
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/audremap-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/audremap-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/audremap-overlay.dts
 @@ -0,0 +1,19 @@
 +/dts-v1/;
 +/plugin/;
@@ -3718,11 +3696,10 @@ index 000000000000..9582d6ab3121
 +		enable_jack = <&frag0>, "enable_jack?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/bmp085_i2c-sensor-overlay.dts b/arch/arm/boot/dts/overlays/bmp085_i2c-sensor-overlay.dts
-new file mode 100644
-index 000000000000..782b1715467e
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/bmp085_i2c-sensor-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/bmp085_i2c-sensor-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/bmp085_i2c-sensor-overlay.dts
 @@ -0,0 +1,23 @@
 +// Definitions for BMP085/BMP180 digital barometric pressure and temperature sensors from Bosch Sensortec
 +/dts-v1/;
@@ -3747,11 +3724,10 @@ index 000000000000..782b1715467e
 +                };
 +        };
 +};
-diff --git a/arch/arm/boot/dts/overlays/dht11-overlay.dts b/arch/arm/boot/dts/overlays/dht11-overlay.dts
-new file mode 100644
-index 000000000000..9bf67fd57bad
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/dht11-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/dht11-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/dht11-overlay.dts
 @@ -0,0 +1,39 @@
 +/*
 + * Overlay for the DHT11/21/22 humidity/temperature sensor modules.
@@ -3792,11 +3768,10 @@ index 000000000000..9bf67fd57bad
 +			<&dht11>,"gpios:4";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/dionaudio-loco-overlay.dts b/arch/arm/boot/dts/overlays/dionaudio-loco-overlay.dts
-new file mode 100644
-index 000000000000..3930f412bca4
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/dionaudio-loco-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/dionaudio-loco-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/dionaudio-loco-overlay.dts
 @@ -0,0 +1,39 @@
 +// Definitions for Dion Audio LOCO DAC-AMP
 +
@@ -3837,11 +3812,10 @@ index 000000000000..3930f412bca4
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/dpi18-overlay.dts b/arch/arm/boot/dts/overlays/dpi18-overlay.dts
-new file mode 100644
-index 000000000000..8098d5e28a71
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/dpi18-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/dpi18-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/dpi18-overlay.dts
 @@ -0,0 +1,31 @@
 +/dts-v1/;
 +/plugin/;
@@ -3874,11 +3848,10 @@ index 000000000000..8098d5e28a71
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/dpi24-overlay.dts b/arch/arm/boot/dts/overlays/dpi24-overlay.dts
-new file mode 100644
-index 000000000000..e4dbe40218a0
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/dpi24-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/dpi24-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/dpi24-overlay.dts
 @@ -0,0 +1,31 @@
 +/dts-v1/;
 +/plugin/;
@@ -3911,11 +3884,10 @@ index 000000000000..e4dbe40218a0
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/dwc-otg-overlay.dts b/arch/arm/boot/dts/overlays/dwc-otg-overlay.dts
-new file mode 100644
-index 000000000000..fc48bd1eac60
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/dwc-otg-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/dwc-otg-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/dwc-otg-overlay.dts
 @@ -0,0 +1,20 @@
 +/dts-v1/;
 +/plugin/;
@@ -3937,11 +3909,10 @@ index 000000000000..fc48bd1eac60
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/dwc2-overlay.dts b/arch/arm/boot/dts/overlays/dwc2-overlay.dts
-new file mode 100644
-index 000000000000..527abc9f0ddf
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/dwc2-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/dwc2-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/dwc2-overlay.dts
 @@ -0,0 +1,29 @@
 +/dts-v1/;
 +/plugin/;
@@ -3972,11 +3943,10 @@ index 000000000000..527abc9f0ddf
 +		g-tx-fifo-size = <&dwc2_usb>,"g-tx-fifo-size:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/enc28j60-overlay.dts b/arch/arm/boot/dts/overlays/enc28j60-overlay.dts
-new file mode 100644
-index 000000000000..db8a8feed94c
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/enc28j60-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/enc28j60-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/enc28j60-overlay.dts
 @@ -0,0 +1,53 @@
 +// Overlay for the Microchip ENC28J60 Ethernet Controller
 +/dts-v1/;
@@ -4031,11 +4001,10 @@ index 000000000000..db8a8feed94c
 +		speed   = <&eth1>, "spi-max-frequency:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/enc28j60-spi2-overlay.dts b/arch/arm/boot/dts/overlays/enc28j60-spi2-overlay.dts
-new file mode 100644
-index 000000000000..946c9d2107a8
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/enc28j60-spi2-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/enc28j60-spi2-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/enc28j60-spi2-overlay.dts
 @@ -0,0 +1,47 @@
 +// Overlay for the Microchip ENC28J60 Ethernet Controller - SPI2 Compute Module
 +// Interrupt pin: 39
@@ -4084,11 +4053,10 @@ index 000000000000..946c9d2107a8
 +		speed   = <&eth1>, "spi-max-frequency:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/gpio-ir-overlay.dts b/arch/arm/boot/dts/overlays/gpio-ir-overlay.dts
-new file mode 100644
-index 000000000000..af5baf7ddc92
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/gpio-ir-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/gpio-ir-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/gpio-ir-overlay.dts
 @@ -0,0 +1,44 @@
 +// Definitions for ir-gpio module
 +/dts-v1/;
@@ -4134,11 +4102,10 @@ index 000000000000..af5baf7ddc92
 +                rc-map-name = <&gpio_ir>,"linux,rc-map-name";           // default rc map
 +        };
 +};
-diff --git a/arch/arm/boot/dts/overlays/gpio-poweroff-overlay.dts b/arch/arm/boot/dts/overlays/gpio-poweroff-overlay.dts
-new file mode 100644
-index 000000000000..ff8cb36d94d4
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/gpio-poweroff-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/gpio-poweroff-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/gpio-poweroff-overlay.dts
 @@ -0,0 +1,34 @@
 +// Definitions for gpio-poweroff module
 +/dts-v1/;
@@ -4174,11 +4141,10 @@ index 000000000000..ff8cb36d94d4
 +		active_low =    <&power_ctrl>,"gpios:8";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/hifiberry-amp-overlay.dts b/arch/arm/boot/dts/overlays/hifiberry-amp-overlay.dts
-new file mode 100644
-index 000000000000..5f5785534fd3
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-amp-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/hifiberry-amp-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-amp-overlay.dts
 @@ -0,0 +1,39 @@
 +// Definitions for HiFiBerry Amp/Amp+
 +/dts-v1/;
@@ -4219,11 +4185,10 @@ index 000000000000..5f5785534fd3
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/hifiberry-dac-overlay.dts b/arch/arm/boot/dts/overlays/hifiberry-dac-overlay.dts
-new file mode 100644
-index 000000000000..0b74fdc6e0f6
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-dac-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/hifiberry-dac-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-dac-overlay.dts
 @@ -0,0 +1,34 @@
 +// Definitions for HiFiBerry DAC
 +/dts-v1/;
@@ -4259,11 +4224,10 @@ index 000000000000..0b74fdc6e0f6
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/hifiberry-dacplus-overlay.dts b/arch/arm/boot/dts/overlays/hifiberry-dacplus-overlay.dts
-new file mode 100644
-index 000000000000..2f078d4747cc
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-dacplus-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/hifiberry-dacplus-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-dacplus-overlay.dts
 @@ -0,0 +1,56 @@
 +// Definitions for HiFiBerry DAC+
 +/dts-v1/;
@@ -4321,11 +4285,10 @@ index 000000000000..2f078d4747cc
 +		slave = <&hifiberry_dacplus>,"hifiberry-dacplus,slave?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/hifiberry-digi-overlay.dts b/arch/arm/boot/dts/overlays/hifiberry-digi-overlay.dts
-new file mode 100644
-index 000000000000..f5e41f48ba4f
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-digi-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/hifiberry-digi-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-digi-overlay.dts
 @@ -0,0 +1,39 @@
 +// Definitions for HiFiBerry Digi
 +/dts-v1/;
@@ -4366,11 +4329,10 @@ index 000000000000..f5e41f48ba4f
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/hifiberry-digi-pro-overlay.dts b/arch/arm/boot/dts/overlays/hifiberry-digi-pro-overlay.dts
-new file mode 100644
-index 000000000000..2a26d9cfffb0
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-digi-pro-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/hifiberry-digi-pro-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/hifiberry-digi-pro-overlay.dts
 @@ -0,0 +1,41 @@
 +// Definitions for HiFiBerry Digi Pro
 +/dts-v1/;
@@ -4413,11 +4375,10 @@ index 000000000000..2a26d9cfffb0
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/hy28a-overlay.dts b/arch/arm/boot/dts/overlays/hy28a-overlay.dts
-new file mode 100644
-index 000000000000..ac0f3c28ea85
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/hy28a-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/hy28a-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/hy28a-overlay.dts
 @@ -0,0 +1,93 @@
 +/*
 + * Device Tree overlay for HY28A display
@@ -4512,11 +4473,10 @@ index 000000000000..ac0f3c28ea85
 +				<&hy28a_pins>, "brcm,pins:2";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/hy28b-overlay.dts b/arch/arm/boot/dts/overlays/hy28b-overlay.dts
-new file mode 100644
-index 000000000000..8018aebde8e5
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/hy28b-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/hy28b-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/hy28b-overlay.dts
 @@ -0,0 +1,148 @@
 +/*
 + * Device Tree overlay for HY28b display shield by Texy
@@ -4666,11 +4626,10 @@ index 000000000000..8018aebde8e5
 +				<&hy28b_pins>, "brcm,pins:2";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/i2c-bcm2708-overlay.dts b/arch/arm/boot/dts/overlays/i2c-bcm2708-overlay.dts
-new file mode 100644
-index 000000000000..0afc6b405414
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/i2c-bcm2708-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/i2c-bcm2708-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/i2c-bcm2708-overlay.dts
 @@ -0,0 +1,13 @@
 +/dts-v1/;
 +/plugin/;
@@ -4685,11 +4644,10 @@ index 000000000000..0afc6b405414
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts b/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
-new file mode 100644
-index 000000000000..b72b32e93677
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
 @@ -0,0 +1,43 @@
 +// Overlay for i2c_gpio bitbanging host bus.
 +/dts-v1/;
@@ -4734,11 +4692,10 @@ index 000000000000..b72b32e93677
 +	};
 +};
 +
-diff --git a/arch/arm/boot/dts/overlays/i2c-mux-overlay.dts b/arch/arm/boot/dts/overlays/i2c-mux-overlay.dts
-new file mode 100644
-index 000000000000..976d38e78153
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/i2c-mux-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/i2c-mux-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/i2c-mux-overlay.dts
 @@ -0,0 +1,139 @@
 +// Umbrella I2C Mux overlay
 +
@@ -4879,11 +4836,10 @@ index 000000000000..976d38e78153
 +			<&pca9548>,"reg:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/i2c-pwm-pca9685a-overlay.dts b/arch/arm/boot/dts/overlays/i2c-pwm-pca9685a-overlay.dts
-new file mode 100644
-index 000000000000..d1ffd2326669
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/i2c-pwm-pca9685a-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/i2c-pwm-pca9685a-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/i2c-pwm-pca9685a-overlay.dts
 @@ -0,0 +1,26 @@
 +// Definitions for NXP PCA9685A I2C PWM controller on ARM I2C bus.
 +/dts-v1/;
@@ -4911,11 +4867,10 @@ index 000000000000..d1ffd2326669
 +		addr = <&pca>,"reg:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/i2c-rtc-overlay.dts b/arch/arm/boot/dts/overlays/i2c-rtc-overlay.dts
-new file mode 100644
-index 000000000000..1efcf0b712c9
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/i2c-rtc-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/i2c-rtc-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/i2c-rtc-overlay.dts
 @@ -0,0 +1,83 @@
 +// Definitions for several I2C based Real Time Clocks
 +/dts-v1/;
@@ -5000,11 +4955,10 @@ index 000000000000..1efcf0b712c9
 +				<&mcp7941x>,"wakeup-source?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/i2c-sensor-overlay.dts b/arch/arm/boot/dts/overlays/i2c-sensor-overlay.dts
-new file mode 100644
-index 000000000000..f6d134c095af
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/i2c-sensor-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/i2c-sensor-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/i2c-sensor-overlay.dts
 @@ -0,0 +1,34 @@
 +// Definitions for a few digital barometric pressure and temperature sensors
 +/dts-v1/;
@@ -5040,11 +4994,10 @@ index 000000000000..f6d134c095af
 +		bmp280 = <&bmp280>,"status";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/i2c0-bcm2708-overlay.dts b/arch/arm/boot/dts/overlays/i2c0-bcm2708-overlay.dts
-new file mode 100644
-index 000000000000..1f4fc7b57060
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/i2c0-bcm2708-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/i2c0-bcm2708-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/i2c0-bcm2708-overlay.dts
 @@ -0,0 +1,61 @@
 +/*
 + * Device tree overlay for i2c_bcm2708, i2c0 bus
@@ -5107,11 +5060,10 @@ index 000000000000..1f4fc7b57060
 +      pins_46_47 = <0>,"-1-2-3+4";
 +   };
 +};
-diff --git a/arch/arm/boot/dts/overlays/i2c1-bcm2708-overlay.dts b/arch/arm/boot/dts/overlays/i2c1-bcm2708-overlay.dts
-new file mode 100644
-index 000000000000..e303b9c61c82
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/i2c1-bcm2708-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/i2c1-bcm2708-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/i2c1-bcm2708-overlay.dts
 @@ -0,0 +1,37 @@
 +/*
 + * Device tree overlay for i2c_bcm2708, i2c1 bus
@@ -5150,11 +5102,10 @@ index 000000000000..e303b9c61c82
 +      pin_func = <&i2c1_pins>,"brcm,function:0";
 +   };
 +};
-diff --git a/arch/arm/boot/dts/overlays/i2s-gpio28-31-overlay.dts b/arch/arm/boot/dts/overlays/i2s-gpio28-31-overlay.dts
-new file mode 100644
-index 000000000000..30c356d6070c
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/i2s-gpio28-31-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/i2s-gpio28-31-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/i2s-gpio28-31-overlay.dts
 @@ -0,0 +1,18 @@
 +/*
 + * Device tree overlay to move i2s to gpio 28 to 31 on CM
@@ -5174,11 +5125,10 @@ index 000000000000..30c356d6070c
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/iqaudio-dac-overlay.dts b/arch/arm/boot/dts/overlays/iqaudio-dac-overlay.dts
-new file mode 100644
-index 000000000000..0d35c85382bb
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/iqaudio-dac-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/iqaudio-dac-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/iqaudio-dac-overlay.dts
 @@ -0,0 +1,43 @@
 +// Definitions for IQaudIO DAC
 +/dts-v1/;
@@ -5223,11 +5173,10 @@ index 000000000000..0d35c85382bb
 +		24db_digital_gain = <&frag2>,"iqaudio,24db_digital_gain?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/iqaudio-dacplus-overlay.dts b/arch/arm/boot/dts/overlays/iqaudio-dacplus-overlay.dts
-new file mode 100644
-index 000000000000..d4bad8742a98
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/iqaudio-dacplus-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/iqaudio-dacplus-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/iqaudio-dacplus-overlay.dts
 @@ -0,0 +1,46 @@
 +// Definitions for IQaudIO DAC+
 +/dts-v1/;
@@ -5275,11 +5224,10 @@ index 000000000000..d4bad8742a98
 +		unmute_amp = <&iqaudio_dac>,"iqaudio-dac,unmute-amp?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/iqaudio-digi-wm8804-audio-overlay.dts b/arch/arm/boot/dts/overlays/iqaudio-digi-wm8804-audio-overlay.dts
-new file mode 100644
-index 000000000000..da4fbfdfdbbb
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/iqaudio-digi-wm8804-audio-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/iqaudio-digi-wm8804-audio-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/iqaudio-digi-wm8804-audio-overlay.dts
 @@ -0,0 +1,47 @@
 +// Definitions for IQAudIO Digi WM8804 audio board
 +/dts-v1/;
@@ -5328,11 +5276,10 @@ index 000000000000..da4fbfdfdbbb
 +		dai_stream_name = <&wm8804_digi>,"wm8804-digi,dai-stream-name";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/justboom-dac-overlay.dts b/arch/arm/boot/dts/overlays/justboom-dac-overlay.dts
-new file mode 100644
-index 000000000000..312632ad376d
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/justboom-dac-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/justboom-dac-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/justboom-dac-overlay.dts
 @@ -0,0 +1,43 @@
 +// Definitions for JustBoom DAC
 +/dts-v1/;
@@ -5377,11 +5324,10 @@ index 000000000000..312632ad376d
 +		24db_digital_gain = <&frag2>,"justboom,24db_digital_gain?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/justboom-digi-overlay.dts b/arch/arm/boot/dts/overlays/justboom-digi-overlay.dts
-new file mode 100644
-index 000000000000..cbbede9a5411
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/justboom-digi-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/justboom-digi-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/justboom-digi-overlay.dts
 @@ -0,0 +1,39 @@
 +// Definitions for JustBoom Digi
 +/dts-v1/;
@@ -5422,11 +5368,10 @@ index 000000000000..cbbede9a5411
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/lirc-rpi-overlay.dts b/arch/arm/boot/dts/overlays/lirc-rpi-overlay.dts
-new file mode 100644
-index 000000000000..7d5d82bdf4c4
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/lirc-rpi-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/lirc-rpi-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/lirc-rpi-overlay.dts
 @@ -0,0 +1,57 @@
 +// Definitions for lirc-rpi module
 +/dts-v1/;
@@ -5485,11 +5430,10 @@ index 000000000000..7d5d82bdf4c4
 +		debug =         <&lirc_rpi>,"rpi,debug:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/mcp23017-overlay.dts b/arch/arm/boot/dts/overlays/mcp23017-overlay.dts
-new file mode 100644
-index 000000000000..412f966a3cc0
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/mcp23017-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/mcp23017-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/mcp23017-overlay.dts
 @@ -0,0 +1,54 @@
 +// Definitions for MCP23017 Gpio Extender from Microchip Semiconductor
 +
@@ -5545,11 +5489,10 @@ index 000000000000..412f966a3cc0
 +	};
 +};
 +
-diff --git a/arch/arm/boot/dts/overlays/mcp23s17-overlay.dts b/arch/arm/boot/dts/overlays/mcp23s17-overlay.dts
-new file mode 100644
-index 000000000000..7dcbacb3cd00
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/mcp23s17-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/mcp23s17-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/mcp23s17-overlay.dts
 @@ -0,0 +1,732 @@
 +// Overlay for MCP23S08/17 GPIO Extenders from Microchip Semiconductor
 +
@@ -6283,11 +6226,10 @@ index 000000000000..7dcbacb3cd00
 +	};
 +};
 +
-diff --git a/arch/arm/boot/dts/overlays/mcp2515-can0-overlay.dts b/arch/arm/boot/dts/overlays/mcp2515-can0-overlay.dts
-new file mode 100755
-index 000000000000..c96cdae27fb1
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/mcp2515-can0-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/mcp2515-can0-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/mcp2515-can0-overlay.dts
 @@ -0,0 +1,73 @@
 +/*
 + * Device tree overlay for mcp251x/can0 on spi0.0
@@ -6362,11 +6304,10 @@ index 000000000000..c96cdae27fb1
 +        interrupt = <&can0_pins>,"brcm,pins:0",<&can0>,"interrupts:0";
 +    };
 +};
-diff --git a/arch/arm/boot/dts/overlays/mcp2515-can1-overlay.dts b/arch/arm/boot/dts/overlays/mcp2515-can1-overlay.dts
-new file mode 100644
-index 000000000000..67bd0d9bdaa2
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/mcp2515-can1-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/mcp2515-can1-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/mcp2515-can1-overlay.dts
 @@ -0,0 +1,73 @@
 +/*
 + * Device tree overlay for mcp251x/can1 on spi0.1 edited by petit_miner
@@ -6441,11 +6382,10 @@ index 000000000000..67bd0d9bdaa2
 +        interrupt = <&can1_pins>,"brcm,pins:0",<&can1>,"interrupts:0";
 +    };
 +};
-diff --git a/arch/arm/boot/dts/overlays/midi-uart0-overlay.dts b/arch/arm/boot/dts/overlays/midi-uart0-overlay.dts
-new file mode 100644
-index 000000000000..565af7cf79d7
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/midi-uart0-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/midi-uart0-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/midi-uart0-overlay.dts
 @@ -0,0 +1,36 @@
 +/dts-v1/;
 +/plugin/;
@@ -6483,11 +6423,10 @@ index 000000000000..565af7cf79d7
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/mmc-overlay.dts b/arch/arm/boot/dts/overlays/mmc-overlay.dts
-new file mode 100644
-index 000000000000..d32b02ca01ce
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/mmc-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/mmc-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/mmc-overlay.dts
 @@ -0,0 +1,38 @@
 +/dts-v1/;
 +/plugin/;
@@ -6527,11 +6466,10 @@ index 000000000000..d32b02ca01ce
 +		overclock_50     = <&frag0>,"brcm,overclock-50:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/mz61581-overlay.dts b/arch/arm/boot/dts/overlays/mz61581-overlay.dts
-new file mode 100644
-index 000000000000..2c29aaed44c5
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/mz61581-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/mz61581-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/mz61581-overlay.dts
 @@ -0,0 +1,117 @@
 +/*
 + * Device Tree overlay for MZ61581-PI-EXT 2014.12.28 by Tontec
@@ -6650,11 +6588,10 @@ index 000000000000..2c29aaed44c5
 +		xohms =   <&mz61581_ts>,"ti,x-plate-ohms;0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/pi3-act-led-overlay.dts b/arch/arm/boot/dts/overlays/pi3-act-led-overlay.dts
-new file mode 100644
-index 000000000000..14a59dcf13ca
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pi3-act-led-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pi3-act-led-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pi3-act-led-overlay.dts
 @@ -0,0 +1,27 @@
 +/dts-v1/;
 +/plugin/;
@@ -6683,11 +6620,10 @@ index 000000000000..14a59dcf13ca
 +		activelow = <&frag0>,"gpios:8";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/pi3-disable-bt-overlay.dts b/arch/arm/boot/dts/overlays/pi3-disable-bt-overlay.dts
-new file mode 100644
-index 000000000000..87cf345f9641
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pi3-disable-bt-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pi3-disable-bt-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pi3-disable-bt-overlay.dts
 @@ -0,0 +1,46 @@
 +/dts-v1/;
 +/plugin/;
@@ -6735,11 +6671,10 @@ index 000000000000..87cf345f9641
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/pi3-miniuart-bt-overlay.dts b/arch/arm/boot/dts/overlays/pi3-miniuart-bt-overlay.dts
-new file mode 100644
-index 000000000000..18f77453c38d
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pi3-miniuart-bt-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pi3-miniuart-bt-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pi3-miniuart-bt-overlay.dts
 @@ -0,0 +1,64 @@
 +/dts-v1/;
 +/plugin/;
@@ -6805,11 +6740,10 @@ index 000000000000..18f77453c38d
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/piscreen-overlay.dts b/arch/arm/boot/dts/overlays/piscreen-overlay.dts
-new file mode 100644
-index 000000000000..40a1f295346e
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/piscreen-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/piscreen-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/piscreen-overlay.dts
 @@ -0,0 +1,102 @@
 +/*
 + * Device Tree overlay for PiScreen 3.5" display shield by Ozzmaker
@@ -6913,11 +6847,10 @@ index 000000000000..40a1f295346e
 +		xohms =		<&piscreen_ts>,"ti,x-plate-ohms;0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/piscreen2r-overlay.dts b/arch/arm/boot/dts/overlays/piscreen2r-overlay.dts
-new file mode 100644
-index 000000000000..9c0bed893057
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/piscreen2r-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/piscreen2r-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/piscreen2r-overlay.dts
 @@ -0,0 +1,106 @@
 + /*
 + * Device Tree overlay for PiScreen2 3.5" TFT with resistive touch  by Ozzmaker.com
@@ -7025,11 +6958,10 @@ index 000000000000..9c0bed893057
 +	};
 +};
 +
-diff --git a/arch/arm/boot/dts/overlays/pisound-overlay.dts b/arch/arm/boot/dts/overlays/pisound-overlay.dts
-new file mode 100644
-index 000000000000..7cdfc29ba4fb
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pisound-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pisound-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pisound-overlay.dts
 @@ -0,0 +1,114 @@
 +/*
 + * pisound Linux kernel module.
@@ -7145,11 +7077,10 @@ index 000000000000..7cdfc29ba4fb
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/pitft22-overlay.dts b/arch/arm/boot/dts/overlays/pitft22-overlay.dts
-new file mode 100644
-index 000000000000..894ba2292f6b
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pitft22-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pitft22-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pitft22-overlay.dts
 @@ -0,0 +1,69 @@
 +/*
 + * Device Tree overlay for pitft by Adafruit
@@ -7220,11 +7151,10 @@ index 000000000000..894ba2292f6b
 +                debug =   <&pitft>,"debug:0";
 +        };
 +};
-diff --git a/arch/arm/boot/dts/overlays/pitft28-capacitive-overlay.dts b/arch/arm/boot/dts/overlays/pitft28-capacitive-overlay.dts
-new file mode 100644
-index 000000000000..5c0752655c70
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pitft28-capacitive-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pitft28-capacitive-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pitft28-capacitive-overlay.dts
 @@ -0,0 +1,91 @@
 +/*
 + * Device Tree overlay for Adafruit PiTFT 2.8" capacitive touch screen
@@ -7317,11 +7247,10 @@ index 000000000000..5c0752655c70
 +                touch-swapxy = <&ft6236>,"touchscreen-swapped-x-y?";
 +        };
 +};
-diff --git a/arch/arm/boot/dts/overlays/pitft28-resistive-overlay.dts b/arch/arm/boot/dts/overlays/pitft28-resistive-overlay.dts
-new file mode 100644
-index 000000000000..ed2afc2f7fd6
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pitft28-resistive-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pitft28-resistive-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pitft28-resistive-overlay.dts
 @@ -0,0 +1,121 @@
 +/*
 + * Device Tree overlay for Adafruit PiTFT 2.8" resistive touch screen
@@ -7444,11 +7373,10 @@ index 000000000000..ed2afc2f7fd6
 +		debug =   <&pitft>,"debug:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/pitft35-resistive-overlay.dts b/arch/arm/boot/dts/overlays/pitft35-resistive-overlay.dts
-new file mode 100644
-index 000000000000..25cb5cc9576d
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pitft35-resistive-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pitft35-resistive-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pitft35-resistive-overlay.dts
 @@ -0,0 +1,121 @@
 +/*
 + * Device Tree overlay for Adafruit PiTFT 3.5" resistive touch screen
@@ -7571,11 +7499,10 @@ index 000000000000..25cb5cc9576d
 +		debug =   <&pitft>,"debug:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/pps-gpio-overlay.dts b/arch/arm/boot/dts/overlays/pps-gpio-overlay.dts
-new file mode 100644
-index 000000000000..50143a4bb215
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pps-gpio-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pps-gpio-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pps-gpio-overlay.dts
 @@ -0,0 +1,35 @@
 +/dts-v1/;
 +/plugin/;
@@ -7612,11 +7539,10 @@ index 000000000000..50143a4bb215
 +		assert_falling_edge = <&pps>,"assert-falling-edge?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/pwm-2chan-overlay.dts b/arch/arm/boot/dts/overlays/pwm-2chan-overlay.dts
-new file mode 100644
-index 000000000000..abdeddd0f2c8
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pwm-2chan-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pwm-2chan-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pwm-2chan-overlay.dts
 @@ -0,0 +1,47 @@
 +/dts-v1/;
 +/plugin/;
@@ -7665,11 +7591,10 @@ index 000000000000..abdeddd0f2c8
 +		clock = <&frag1>,"assigned-clock-rates:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/pwm-overlay.dts b/arch/arm/boot/dts/overlays/pwm-overlay.dts
-new file mode 100644
-index 000000000000..27809e8dc746
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/pwm-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/pwm-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/pwm-overlay.dts
 @@ -0,0 +1,43 @@
 +/dts-v1/;
 +/plugin/;
@@ -7714,11 +7639,10 @@ index 000000000000..27809e8dc746
 +		clock = <&frag1>,"assigned-clock-rates:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/qca7000-overlay.dts b/arch/arm/boot/dts/overlays/qca7000-overlay.dts
-new file mode 100644
-index 000000000000..b4e601396c49
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/qca7000-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/qca7000-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/qca7000-overlay.dts
 @@ -0,0 +1,52 @@
 +// Overlay for the Qualcomm Atheros QCA7000 on I2SE's PLC Stamp micro EVK
 +// Visit: https://www.i2se.com/product/plc-stamp-micro-evk for details
@@ -7772,11 +7696,10 @@ index 000000000000..b4e601396c49
 +		speed   = <&eth1>, "spi-max-frequency:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/raspidac3-overlay.dts b/arch/arm/boot/dts/overlays/raspidac3-overlay.dts
-new file mode 100644
-index 000000000000..2fac57ca179f
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/raspidac3-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/raspidac3-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/raspidac3-overlay.dts
 @@ -0,0 +1,45 @@
 +// Definitions for RaspiDACv3
 +/dts-v1/;
@@ -7823,11 +7746,10 @@ index 000000000000..2fac57ca179f
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/rpi-backlight-overlay.dts b/arch/arm/boot/dts/overlays/rpi-backlight-overlay.dts
-new file mode 100644
-index 000000000000..c021d02bb75f
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/rpi-backlight-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/rpi-backlight-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/rpi-backlight-overlay.dts
 @@ -0,0 +1,21 @@
 +/*
 + * Devicetree overlay for mailbox-driven Raspberry Pi DSI Display
@@ -7850,11 +7772,10 @@ index 000000000000..c021d02bb75f
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/rpi-dac-overlay.dts b/arch/arm/boot/dts/overlays/rpi-dac-overlay.dts
-new file mode 100644
-index 000000000000..a442c8f0ec01
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/rpi-dac-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/rpi-dac-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/rpi-dac-overlay.dts
 @@ -0,0 +1,34 @@
 +// Definitions for RPi DAC
 +/dts-v1/;
@@ -7890,11 +7811,10 @@ index 000000000000..a442c8f0ec01
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/rpi-display-overlay.dts b/arch/arm/boot/dts/overlays/rpi-display-overlay.dts
-new file mode 100644
-index 000000000000..d7e72eef594e
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/rpi-display-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/rpi-display-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/rpi-display-overlay.dts
 @@ -0,0 +1,89 @@
 +/*
 + * Device Tree overlay for rpi-display by Watterott
@@ -7985,11 +7905,10 @@ index 000000000000..d7e72eef594e
 +		swapxy =  <&rpidisplay_ts>,"ti,swap-xy?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/rpi-ft5406-overlay.dts b/arch/arm/boot/dts/overlays/rpi-ft5406-overlay.dts
-new file mode 100644
-index 000000000000..2e53a1749170
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/rpi-ft5406-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/rpi-ft5406-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/rpi-ft5406-overlay.dts
 @@ -0,0 +1,17 @@
 +/dts-v1/;
 +/plugin/;
@@ -8008,11 +7927,10 @@ index 000000000000..2e53a1749170
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/rpi-proto-overlay.dts b/arch/arm/boot/dts/overlays/rpi-proto-overlay.dts
-new file mode 100644
-index 000000000000..8332d0159a45
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/rpi-proto-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/rpi-proto-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/rpi-proto-overlay.dts
 @@ -0,0 +1,39 @@
 +// Definitions for Rpi-Proto
 +/dts-v1/;
@@ -8053,11 +7971,10 @@ index 000000000000..8332d0159a45
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/rpi-sense-overlay.dts b/arch/arm/boot/dts/overlays/rpi-sense-overlay.dts
-new file mode 100644
-index 000000000000..27153240e1be
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/rpi-sense-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/rpi-sense-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/rpi-sense-overlay.dts
 @@ -0,0 +1,47 @@
 +// rpi-sense HAT
 +/dts-v1/;
@@ -8106,11 +8023,10 @@ index 000000000000..27153240e1be
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/rra-digidac1-wm8741-audio-overlay.dts b/arch/arm/boot/dts/overlays/rra-digidac1-wm8741-audio-overlay.dts
-new file mode 100644
-index 000000000000..16b1247bfa61
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/rra-digidac1-wm8741-audio-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/rra-digidac1-wm8741-audio-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/rra-digidac1-wm8741-audio-overlay.dts
 @@ -0,0 +1,81 @@
 +// Definitions for RRA DigiDAC1 Audio card
 +/dts-v1/;
@@ -8193,11 +8109,10 @@ index 000000000000..16b1247bfa61
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/sc16is750-i2c-overlay.dts b/arch/arm/boot/dts/overlays/sc16is750-i2c-overlay.dts
-new file mode 100644
-index 000000000000..339d0d17c01f
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/sc16is750-i2c-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/sc16is750-i2c-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/sc16is750-i2c-overlay.dts
 @@ -0,0 +1,37 @@
 +/dts-v1/;
 +/plugin/;
@@ -8236,11 +8151,10 @@ index 000000000000..339d0d17c01f
 +	};
 +
 +};
-diff --git a/arch/arm/boot/dts/overlays/sc16is752-spi1-overlay.dts b/arch/arm/boot/dts/overlays/sc16is752-spi1-overlay.dts
-new file mode 100644
-index 000000000000..d0a9e82dbea1
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/sc16is752-spi1-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/sc16is752-spi1-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/sc16is752-spi1-overlay.dts
 @@ -0,0 +1,61 @@
 +/dts-v1/;
 +/plugin/;
@@ -8303,11 +8217,10 @@ index 000000000000..d0a9e82dbea1
 +      int_pin = <&sc16is752>,"interrupts:0";
 +    };
 +};
-diff --git a/arch/arm/boot/dts/overlays/sdhost-overlay.dts b/arch/arm/boot/dts/overlays/sdhost-overlay.dts
-new file mode 100644
-index 000000000000..a431177a1c9d
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/sdhost-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/sdhost-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/sdhost-overlay.dts
 @@ -0,0 +1,32 @@
 +/dts-v1/;
 +/plugin/;
@@ -8341,11 +8254,10 @@ index 000000000000..a431177a1c9d
 +		debug            = <&frag0>,"brcm,debug?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/sdio-1bit-overlay.dts b/arch/arm/boot/dts/overlays/sdio-1bit-overlay.dts
-new file mode 100644
-index 000000000000..46d453859b31
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/sdio-1bit-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/sdio-1bit-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/sdio-1bit-overlay.dts
 @@ -0,0 +1,36 @@
 +/* Enable 1-bit SDIO from MMC interface via GPIOs 22-25. Includes sdhost overlay. */
 +
@@ -8383,11 +8295,10 @@ index 000000000000..46d453859b31
 +		sdio_overclock = <&sdio_mmc>,"brcm,overclock-50:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/sdio-overlay.dts b/arch/arm/boot/dts/overlays/sdio-overlay.dts
-new file mode 100644
-index 000000000000..398bd812c716
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/sdio-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/sdio-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/sdio-overlay.dts
 @@ -0,0 +1,36 @@
 +/* Enable SDIO from MMC interface via GPIOs 22-27. Includes sdhost overlay. */
 +
@@ -8425,11 +8336,10 @@ index 000000000000..398bd812c716
 +		sdio_overclock = <&sdio_mmc>,"brcm,overclock-50:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/sdtweak-overlay.dts b/arch/arm/boot/dts/overlays/sdtweak-overlay.dts
-new file mode 100644
-index 000000000000..e4a4677f6b20
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/sdtweak-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/sdtweak-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/sdtweak-overlay.dts
 @@ -0,0 +1,23 @@
 +/dts-v1/;
 +/plugin/;
@@ -8454,11 +8364,10 @@ index 000000000000..e4a4677f6b20
 +		debug            = <&frag0>,"brcm,debug?";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/smi-dev-overlay.dts b/arch/arm/boot/dts/overlays/smi-dev-overlay.dts
-new file mode 100644
-index 000000000000..b610d8283608
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/smi-dev-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/smi-dev-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/smi-dev-overlay.dts
 @@ -0,0 +1,18 @@
 +// Description: Overlay to enable character device interface for SMI.
 +// Author:	Luke Wren <luke@raspberrypi.org>
@@ -8478,11 +8387,10 @@ index 000000000000..b610d8283608
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/smi-nand-overlay.dts b/arch/arm/boot/dts/overlays/smi-nand-overlay.dts
-new file mode 100644
-index 000000000000..13ce0b7cfb24
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/smi-nand-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/smi-nand-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/smi-nand-overlay.dts
 @@ -0,0 +1,69 @@
 +// Description: Overlay to enable NAND flash through
 +// the secondary memory interface
@@ -8553,11 +8461,10 @@ index 000000000000..13ce0b7cfb24
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/smi-overlay.dts b/arch/arm/boot/dts/overlays/smi-overlay.dts
-new file mode 100644
-index 000000000000..095f52c355fd
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/smi-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/smi-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/smi-overlay.dts
 @@ -0,0 +1,37 @@
 +// Description:	Overlay to enable the secondary memory interface peripheral
 +// Author:	Luke Wren
@@ -8596,11 +8503,10 @@ index 000000000000..095f52c355fd
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/spi-gpio35-39-overlay.dts b/arch/arm/boot/dts/overlays/spi-gpio35-39-overlay.dts
-new file mode 100644
-index 000000000000..49803b309f86
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/spi-gpio35-39-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/spi-gpio35-39-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/spi-gpio35-39-overlay.dts
 @@ -0,0 +1,31 @@
 +/*
 + * Device tree overlay to move spi0 to gpio 35 to 39 on CM
@@ -8633,11 +8539,10 @@ index 000000000000..49803b309f86
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/spi-rtc-overlay.dts b/arch/arm/boot/dts/overlays/spi-rtc-overlay.dts
-new file mode 100644
-index 000000000000..88d1800d63c9
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/spi-rtc-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/spi-rtc-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/spi-rtc-overlay.dts
 @@ -0,0 +1,33 @@
 +/dts-v1/;
 +/plugin/;
@@ -8672,11 +8577,10 @@ index 000000000000..88d1800d63c9
 +		pcf2123 = <0>, "=0=1";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/spi0-hw-cs-overlay.dts b/arch/arm/boot/dts/overlays/spi0-hw-cs-overlay.dts
-new file mode 100644
-index 000000000000..ef9845f7184e
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/spi0-hw-cs-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/spi0-hw-cs-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/spi0-hw-cs-overlay.dts
 @@ -0,0 +1,26 @@
 +/*
 + * Device tree overlay to re-enable hardware CS for SPI0
@@ -8704,11 +8608,10 @@ index 000000000000..ef9845f7184e
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/spi1-1cs-overlay.dts b/arch/arm/boot/dts/overlays/spi1-1cs-overlay.dts
-new file mode 100644
-index 000000000000..71c243947004
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/spi1-1cs-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/spi1-1cs-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/spi1-1cs-overlay.dts
 @@ -0,0 +1,57 @@
 +/dts-v1/;
 +/plugin/;
@@ -8767,11 +8670,10 @@ index 000000000000..71c243947004
 +		cs0_spidev = <&spidev1_0>,"status";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/spi1-2cs-overlay.dts b/arch/arm/boot/dts/overlays/spi1-2cs-overlay.dts
-new file mode 100644
-index 000000000000..2ae0885cf1e7
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/spi1-2cs-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/spi1-2cs-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/spi1-2cs-overlay.dts
 @@ -0,0 +1,69 @@
 +/dts-v1/;
 +/plugin/;
@@ -8842,11 +8744,10 @@ index 000000000000..2ae0885cf1e7
 +		cs1_spidev = <&spidev1_1>,"status";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/spi1-3cs-overlay.dts b/arch/arm/boot/dts/overlays/spi1-3cs-overlay.dts
-new file mode 100644
-index 000000000000..8f79044cd8f4
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/spi1-3cs-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/spi1-3cs-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/spi1-3cs-overlay.dts
 @@ -0,0 +1,81 @@
 +/dts-v1/;
 +/plugin/;
@@ -8929,11 +8830,10 @@ index 000000000000..8f79044cd8f4
 +		cs2_spidev = <&spidev1_2>,"status";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/spi2-1cs-overlay.dts b/arch/arm/boot/dts/overlays/spi2-1cs-overlay.dts
-new file mode 100644
-index 000000000000..6f57bc710fe1
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/spi2-1cs-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/spi2-1cs-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/spi2-1cs-overlay.dts
 @@ -0,0 +1,57 @@
 +/dts-v1/;
 +/plugin/;
@@ -8992,11 +8892,10 @@ index 000000000000..6f57bc710fe1
 +		cs0_spidev = <&spidev2_0>,"status";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/spi2-2cs-overlay.dts b/arch/arm/boot/dts/overlays/spi2-2cs-overlay.dts
-new file mode 100644
-index 000000000000..d090631d3682
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/spi2-2cs-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/spi2-2cs-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/spi2-2cs-overlay.dts
 @@ -0,0 +1,69 @@
 +/dts-v1/;
 +/plugin/;
@@ -9067,11 +8966,10 @@ index 000000000000..d090631d3682
 +		cs1_spidev = <&spidev2_1>,"status";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/spi2-3cs-overlay.dts b/arch/arm/boot/dts/overlays/spi2-3cs-overlay.dts
-new file mode 100644
-index 000000000000..e2586728c311
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/spi2-3cs-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/spi2-3cs-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/spi2-3cs-overlay.dts
 @@ -0,0 +1,81 @@
 +/dts-v1/;
 +/plugin/;
@@ -9154,11 +9052,10 @@ index 000000000000..e2586728c311
 +		cs2_spidev = <&spidev2_2>,"status";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/tinylcd35-overlay.dts b/arch/arm/boot/dts/overlays/tinylcd35-overlay.dts
-new file mode 100644
-index 000000000000..ed2b053aef23
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/tinylcd35-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/tinylcd35-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/tinylcd35-overlay.dts
 @@ -0,0 +1,224 @@
 +/*
 + * tinylcd35-overlay.dts
@@ -9384,11 +9281,10 @@ index 000000000000..ed2b053aef23
 +		keypad =     <&keypad>,"status";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/uart1-overlay.dts b/arch/arm/boot/dts/overlays/uart1-overlay.dts
-new file mode 100644
-index 000000000000..fa73e1feaeb1
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/uart1-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/uart1-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/uart1-overlay.dts
 @@ -0,0 +1,38 @@
 +/dts-v1/;
 +/plugin/;
@@ -9428,11 +9324,10 @@ index 000000000000..fa73e1feaeb1
 +		rxd1_pin = <&uart1_pins>,"brcm,pins:4";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/vc4-fkms-v3d-overlay.dts b/arch/arm/boot/dts/overlays/vc4-fkms-v3d-overlay.dts
-new file mode 100644
-index 000000000000..95a595a35cb4
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/vc4-fkms-v3d-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/vc4-fkms-v3d-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/vc4-fkms-v3d-overlay.dts
 @@ -0,0 +1,89 @@
 +/*
 + * vc4-fkms-v3d-overlay.dts
@@ -9523,11 +9418,10 @@ index 000000000000..95a595a35cb4
 +		cma-64  = <0>,"-0-1-2-3+4";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/vc4-kms-v3d-overlay.dts b/arch/arm/boot/dts/overlays/vc4-kms-v3d-overlay.dts
-new file mode 100644
-index 000000000000..4f1cc20f90dc
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/vc4-kms-v3d-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/vc4-kms-v3d-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/vc4-kms-v3d-overlay.dts
 @@ -0,0 +1,136 @@
 +/*
 + * vc4-kms-v3d-overlay.dts
@@ -9665,11 +9559,10 @@ index 000000000000..4f1cc20f90dc
 +		cma-64  = <0>,"-0-1-2-3+4";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/vga666-overlay.dts b/arch/arm/boot/dts/overlays/vga666-overlay.dts
-new file mode 100644
-index 000000000000..7fcab963eb4a
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/vga666-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/vga666-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/vga666-overlay.dts
 @@ -0,0 +1,30 @@
 +/dts-v1/;
 +/plugin/;
@@ -9701,11 +9594,10 @@ index 000000000000..7fcab963eb4a
 +		};
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/w1-gpio-overlay.dts b/arch/arm/boot/dts/overlays/w1-gpio-overlay.dts
-new file mode 100644
-index 000000000000..29a3b48d19ab
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/w1-gpio-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/w1-gpio-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/w1-gpio-overlay.dts
 @@ -0,0 +1,39 @@
 +// Definitions for w1-gpio module (without external pullup)
 +/dts-v1/;
@@ -9746,11 +9638,10 @@ index 000000000000..29a3b48d19ab
 +		pullup =        <&w1>,"rpi,parasitic-power:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/w1-gpio-pullup-overlay.dts b/arch/arm/boot/dts/overlays/w1-gpio-pullup-overlay.dts
-new file mode 100644
-index 000000000000..66a98f6c9601
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/w1-gpio-pullup-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/w1-gpio-pullup-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/w1-gpio-pullup-overlay.dts
 @@ -0,0 +1,41 @@
 +// Definitions for w1-gpio module (with external pullup)
 +/dts-v1/;
@@ -9793,11 +9684,10 @@ index 000000000000..66a98f6c9601
 +		pullup =        <&w1>,"rpi,parasitic-power:0";
 +	};
 +};
-diff --git a/arch/arm/boot/dts/overlays/wittypi-overlay.dts b/arch/arm/boot/dts/overlays/wittypi-overlay.dts
-new file mode 100644
-index 000000000000..8498134fdbb3
+Index: linux-4.9.47/arch/arm/boot/dts/overlays/wittypi-overlay.dts
+===================================================================
 --- /dev/null
-+++ b/arch/arm/boot/dts/overlays/wittypi-overlay.dts
++++ linux-4.9.47/arch/arm/boot/dts/overlays/wittypi-overlay.dts
 @@ -0,0 +1,44 @@
 +/*
 + * Device Tree overlay for Witty Pi extension board by UUGear
@@ -9843,10 +9733,10 @@ index 000000000000..8498134fdbb3
 +	};
 +
 +};
-diff --git a/scripts/Makefile.dtbinst b/scripts/Makefile.dtbinst
-index a1be75d0a5fd..ad8dc1c93d04 100644
---- a/scripts/Makefile.dtbinst
-+++ b/scripts/Makefile.dtbinst
+Index: linux-4.9.47/scripts/Makefile.dtbinst
+===================================================================
+--- linux-4.9.47.orig/scripts/Makefile.dtbinst
++++ linux-4.9.47/scripts/Makefile.dtbinst
 @@ -27,6 +27,7 @@ ifeq ("$(dtbinst_root)", "$(obj)")
  endif
  
@@ -9877,10 +9767,10 @@ index a1be75d0a5fd..ad8dc1c93d04 100644
 +__dtbs_install: $(dtbinst-files) $(dtboinst-files) $(dtbinst-dirs)
  
  .PHONY: $(PHONY)
-diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index 0a07f9014944..1967878a8434 100644
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
+Index: linux-4.9.47/scripts/Makefile.lib
+===================================================================
+--- linux-4.9.47.orig/scripts/Makefile.lib
++++ linux-4.9.47/scripts/Makefile.lib
 @@ -312,6 +312,17 @@ cmd_dtc = mkdir -p $(dir ${dtc-tmp}) ; \
  $(obj)/%.dtb: $(src)/%.dts FORCE
  	$(call if_changed_dep,dtc)
@@ -9899,8 +9789,9 @@ index 0a07f9014944..1967878a8434 100644
  dtc-tmp = $(subst $(comma),_,$(dot-target).dts.tmp)
  
  # Bzip2
-diff -uN a/1.txt b/1.txt
---- a/dummy/rpi_1053_19cf22ebea3e310b5c68f8bd0ccc988255771277.txt	1970-01-01 00:00:00.000000000 +0000
-+++ b/dummy/rpi_1053_19cf22ebea3e310b5c68f8bd0ccc988255771277.txt	2013-12-23 04:07:40.000000000 +0000
+Index: linux-4.9.47/dummy/rpi_1053_19cf22ebea3e310b5c68f8bd0ccc988255771277.txt
+===================================================================
+--- /dev/null
++++ linux-4.9.47/dummy/rpi_1053_19cf22ebea3e310b5c68f8bd0ccc988255771277.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.
