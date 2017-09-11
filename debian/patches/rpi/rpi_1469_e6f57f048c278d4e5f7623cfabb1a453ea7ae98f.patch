@@ -141,13 +141,14 @@ index 1198c36c4563..dcf403ab3763 100644
  		default:
  			return -EINVAL;
  		}
-@@ -234,11 +275,14 @@ static int audioinjector_octo_probe(struct platform_device *pdev)
+@@ -233,12 +274,15 @@ static int audioinjector_octo_probe(struct platform_device *pdev)
+ 		if (IS_ERR(codec_rst_gpio))
  			return PTR_ERR(codec_rst_gpio);
  
- 		if (codec_rst_gpio)
++		if (codec_rst_gpio)
 +			gpiod_set_value(codec_rst_gpio, 1);
 +		msleep(500);
-+		if (codec_rst_gpio)
+ 		if (codec_rst_gpio)
  			gpiod_set_value(codec_rst_gpio, 0);
 -		msleep(5);
 +		msleep(500);

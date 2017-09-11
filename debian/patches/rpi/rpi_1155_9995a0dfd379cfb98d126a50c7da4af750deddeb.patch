@@ -139,10 +139,11 @@ index b58cff275658..b2c277b378ee 100644
  	}
  
  	memset(&init, 0, sizeof(init));
-@@ -1442,6 +1475,47 @@ static const char *const bcm2835_clock_vpu_parents[] = {
+@@ -1441,6 +1474,47 @@ static const char *const bcm2835_clock_vpu_parents[] = {
+ 	.parents = bcm2835_clock_vpu_parents,				\
  	__VA_ARGS__)
  
- /*
++/*
 + * DSI parent clocks.  The DSI byte/DDR/DDR2 clocks come from the DSI
 + * analog PHY.  The _inv variants are generated internally to cprman,
 + * but we don't use them so they aren't hooked up.
@@ -183,10 +184,9 @@ index b58cff275658..b2c277b378ee 100644
 +	.parents = bcm2835_clock_dsi1_parents,				\
 +	__VA_ARGS__)
 +
-+/*
+ /*
   * the real definition of all the pll, pll_dividers and clocks
   * these make use of the above REGISTER_* macros
-  */
 @@ -1904,6 +1978,18 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
  		.div_reg = CM_DSI1EDIV,
  		.int_bits = 4,

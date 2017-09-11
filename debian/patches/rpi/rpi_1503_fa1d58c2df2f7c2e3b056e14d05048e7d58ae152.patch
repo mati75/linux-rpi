@@ -18,6 +18,24 @@ Date:   Tue Apr 18 11:14:28 2017 -0700
     Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
+Index: linuxtest/drivers/input/mouse/elantech.c
+===================================================================
+--- linuxtest.orig/drivers/input/mouse/elantech.c
++++ linuxtest/drivers/input/mouse/elantech.c
+@@ -1541,6 +1541,13 @@ static const struct dmi_system_id elante
+ 		},
+ 	},
+ 	{
++		/* Fujitsu LIFEBOOK E547 does not work with crc_enabled == 0 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "LIFEBOOK E547"),
++		},
++	},
++	{
+ 		/* Fujitsu LIFEBOOK E554  does not work with crc_enabled == 0 */
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "FUJITSU"),
 Index: linuxtest/dummy/rpi_1503_fa1d58c2df2f7c2e3b056e14d05048e7d58ae152.txt
 ===================================================================
 --- /dev/null

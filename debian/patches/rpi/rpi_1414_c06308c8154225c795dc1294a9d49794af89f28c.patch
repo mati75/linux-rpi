@@ -18,13 +18,13 @@ Date:   Fri Mar 17 00:48:19 2017 +0000
     Signed-off-by: Sasha Levin <alexander.levin@verizon.com>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-rpi/drivers/net/ethernet/intel/igb/e1000_phy.c
-===================================================================
---- linux-rpi.orig/drivers/net/ethernet/intel/igb/e1000_phy.c
-+++ linux-rpi/drivers/net/ethernet/intel/igb/e1000_phy.c
-@@ -81,6 +81,10 @@ s32 igb_get_phy_id(struct e1000_hw *hw)
- 	if ((hw->mac.type == e1000_i210) || (hw->mac.type == e1000_i211))
- 		phy->ops.write_reg(hw, I347AT4_PAGE_SELECT, 0);
+diff --git a/drivers/net/ethernet/intel/igb/e1000_phy.c b/drivers/net/ethernet/intel/igb/e1000_phy.c
+index 5b54254aed4f..569ee25642b4 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_phy.c
++++ b/drivers/net/ethernet/intel/igb/e1000_phy.c
+@@ -77,6 +77,10 @@ s32 igb_get_phy_id(struct e1000_hw *hw)
+ 	s32 ret_val = 0;
+ 	u16 phy_id;
  
 +	/* ensure PHY page selection to fix misconfigured i210 */
 +	if (hw->mac.type == e1000_i210)
@@ -33,9 +33,8 @@ Index: linux-rpi/drivers/net/ethernet/intel/igb/e1000_phy.c
  	ret_val = phy->ops.read_reg(hw, PHY_ID1, &phy_id);
  	if (ret_val)
  		goto out;
-Index: linux-rpi/dummy/rpi_1414_c06308c8154225c795dc1294a9d49794af89f28c.txt
-===================================================================
---- /dev/null
-+++ linux-rpi/dummy/rpi_1414_c06308c8154225c795dc1294a9d49794af89f28c.txt
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1414_c06308c8154225c795dc1294a9d49794af89f28c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1414_c06308c8154225c795dc1294a9d49794af89f28c.txt	2013-12-23 04:07:40.000000000 +0000
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

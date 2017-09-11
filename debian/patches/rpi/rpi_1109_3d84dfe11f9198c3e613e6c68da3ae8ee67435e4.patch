@@ -37,10 +37,11 @@ index 565ef69ce614..241e08ae7c27 100644
  	u32 msg_err;
  	u8 *msg_buf;
  	size_t msg_buf_remaining;
-@@ -110,6 +111,45 @@ static void bcm2835_drain_rxfifo(struct bcm2835_i2c_dev *i2c_dev)
+@@ -109,6 +110,45 @@ static void bcm2835_drain_rxfifo(struct bcm2835_i2c_dev *i2c_dev)
+ 	}
  }
  
- /*
++/*
 + * Repeated Start Condition (Sr)
 + * The BCM2835 ARM Peripherals datasheet mentions a way to trigger a Sr when it
 + * talks about reading from a slave with 10 bit address. This is achieved by
@@ -79,10 +80,9 @@ index 565ef69ce614..241e08ae7c27 100644
 +	bcm2835_i2c_writel(i2c_dev, BCM2835_I2C_C, c);
 +}
 +
-+/*
+ /*
   * Note about I2C_C_CLEAR on error:
   * The I2C_C_CLEAR on errors will take some time to resolve -- if you were in
-  * non-idle state and I2C_C_READ, it sets an abort_rx flag and runs through
 @@ -151,6 +191,12 @@ static irqreturn_t bcm2835_i2c_isr(int this_irq, void *data)
  		}
  

@@ -31,7 +31,7 @@ Index: linuxtest/drivers/vfio/vfio_iommu_spapr_tce.c
 ===================================================================
 --- linuxtest.orig/drivers/vfio/vfio_iommu_spapr_tce.c
 +++ linuxtest/drivers/vfio/vfio_iommu_spapr_tce.c
-@@ -837,6 +837,29 @@ static long tce_iommu_create_default_win
+@@ -820,6 +820,29 @@ static long tce_iommu_create_default_win
  	return ret;
  }
  
@@ -61,7 +61,7 @@ Index: linuxtest/drivers/vfio/vfio_iommu_spapr_tce.c
  static long tce_iommu_ioctl(void *iommu_data,
  				 unsigned int cmd, unsigned long arg)
  {
-@@ -1287,6 +1310,7 @@ static int tce_iommu_attach_group(void *
+@@ -1292,6 +1315,7 @@ static int tce_iommu_attach_group(void *
  	struct tce_container *container = iommu_data;
  	struct iommu_table_group *table_group;
  	struct tce_iommu_group *tcegrp = NULL;

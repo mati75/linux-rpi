@@ -97,10 +97,11 @@ diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
 index ac9d7d8e0e43..2645e8038572 100644
 --- a/include/drm/drm_connector.h
 +++ b/include/drm/drm_connector.h
-@@ -194,10 +194,40 @@ int drm_display_info_set_bus_formats(struct drm_display_info *info,
+@@ -193,11 +193,41 @@ int drm_display_info_set_bus_formats(struct drm_display_info *info,
+ 				     const u32 *formats,
  				     unsigned int num_formats);
  
- /**
++/**
 + * struct drm_tv_connector_state - TV connector related states
 + * @subconnector: selected subconnector
 + * @margins: left/right/top/bottom margins
@@ -129,7 +130,7 @@ index ac9d7d8e0e43..2645e8038572 100644
 +	unsigned int hue;
 +};
 +
-+/**
+ /**
   * struct drm_connector_state - mutable connector state
   * @connector: backpointer to the connector
   * @best_encoder: can be used by helpers and drivers to select the encoder

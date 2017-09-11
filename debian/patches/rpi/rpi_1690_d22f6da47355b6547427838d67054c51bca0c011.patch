@@ -1,0 +1,56 @@
+commit d22f6da47355b6547427838d67054c51bca0c011
+Author: Stephen Douthit <stephend@adiengineering.com>
+Date:   Mon Aug 7 17:10:59 2017 -0400
+
+    i2c: ismt: Don't duplicate the receive length for block reads
+    
+    commit b6c159a9cb69c2cf0bf59d4e12c3a2da77e4d994 upstream.
+    
+    According to Table 15-14 of the C2000 EDS (Intel doc #510524) the
+    rx data pointed to by the descriptor dptr contains the byte count.
+    
+    desc->rxbytes reports all bytes read on the wire, including the
+    "byte count" byte.  So if a device sends 4 bytes in response to a
+    block read, on the wire and in the DMA buffer we see:
+    
+    count data1 data2 data3 data4
+     0x04  0xde  0xad  0xbe  0xef
+    
+    That's what we want to return in data->block to the next level.
+    
+    Instead we were actually prefixing that with desc->rxbytes:
+    
+    bad
+    count count data1 data2 data3 data4
+     0x05  0x04  0xde  0xad  0xbe  0xef
+    
+    This was discovered while developing a BMC solution relying on the
+    ipmi_ssif.c driver which was trying to interpret the bogus length
+    field as part of the IPMI response.
+    
+    Signed-off-by: Stephen Douthit <stephend@adiengineering.com>
+    Tested-by: Dan Priamo <danp@adiengineering.com>
+    Acked-by: Neil Horman <nhorman@tuxdriver.com>
+    Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
+index f573448d2132..8075a9368681 100644
+--- a/drivers/i2c/busses/i2c-ismt.c
++++ b/drivers/i2c/busses/i2c-ismt.c
+@@ -341,8 +341,8 @@ static int ismt_process_desc(const struct ismt_desc *desc,
+ 			break;
+ 		case I2C_SMBUS_BLOCK_DATA:
+ 		case I2C_SMBUS_I2C_BLOCK_DATA:
+-			memcpy(&data->block[1], dma_buffer, desc->rxbytes);
+-			data->block[0] = desc->rxbytes;
++			memcpy(data->block, dma_buffer, desc->rxbytes);
++			data->block[0] = desc->rxbytes - 1;
+ 			break;
+ 		}
+ 		return 0;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1690_d22f6da47355b6547427838d67054c51bca0c011.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1690_d22f6da47355b6547427838d67054c51bca0c011.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

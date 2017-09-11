@@ -38,13 +38,13 @@ Date:   Fri Mar 10 16:55:32 2017 +0100
     Signed-off-by: David S. Miller <davem@davemloft.net>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linux-rpi/net/sched/act_connmark.c
-===================================================================
---- linux-rpi.orig/net/sched/act_connmark.c
-+++ linux-rpi/net/sched/act_connmark.c
-@@ -116,6 +116,9 @@ static int tcf_connmark_init(struct net
- 	if (!tb[TCA_CONNMARK_PARMS])
- 		return -EINVAL;
+diff --git a/net/sched/act_connmark.c b/net/sched/act_connmark.c
+index eae07a2e774d..1191179c0341 100644
+--- a/net/sched/act_connmark.c
++++ b/net/sched/act_connmark.c
+@@ -113,6 +113,9 @@ static int tcf_connmark_init(struct net *net, struct nlattr *nla,
+ 	if (ret < 0)
+ 		return ret;
  
 +	if (!tb[TCA_CONNMARK_PARMS])
 +		return -EINVAL;
@@ -52,9 +52,8 @@ Index: linux-rpi/net/sched/act_connmark.c
  	parm = nla_data(tb[TCA_CONNMARK_PARMS]);
  
  	if (!tcf_hash_check(tn, parm->index, a, bind)) {
-Index: linux-rpi/dummy/rpi_1399_5b4b3d6a34af74ca0a9ee6b8af992f7456c4cb7b.txt
-===================================================================
---- /dev/null
-+++ linux-rpi/dummy/rpi_1399_5b4b3d6a34af74ca0a9ee6b8af992f7456c4cb7b.txt
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1399_5b4b3d6a34af74ca0a9ee6b8af992f7456c4cb7b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1399_5b4b3d6a34af74ca0a9ee6b8af992f7456c4cb7b.txt	2013-12-23 04:07:40.000000000 +0000
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

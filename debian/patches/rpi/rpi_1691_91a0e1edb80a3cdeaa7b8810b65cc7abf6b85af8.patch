@@ -1,0 +1,42 @@
+commit 91a0e1edb80a3cdeaa7b8810b65cc7abf6b85af8
+Author: Stephen Douthit <stephend@adiengineering.com>
+Date:   Mon Aug 7 17:11:00 2017 -0400
+
+    i2c: ismt: Return EMSGSIZE for block reads with bogus length
+    
+    commit ba201c4f5ebe13d7819081756378777d8153f23e upstream.
+    
+    Compare the number of bytes actually seen on the wire to the byte
+    count field returned by the slave device.
+    
+    Previously we just overwrote the byte count returned by the slave
+    with the real byte count and let the caller figure out if the
+    message was sane.
+    
+    Signed-off-by: Stephen Douthit <stephend@adiengineering.com>
+    Tested-by: Dan Priamo <danp@adiengineering.com>
+    Acked-by: Neil Horman <nhorman@tuxdriver.com>
+    Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/i2c/busses/i2c-ismt.c b/drivers/i2c/busses/i2c-ismt.c
+index 8075a9368681..8477292e92c8 100644
+--- a/drivers/i2c/busses/i2c-ismt.c
++++ b/drivers/i2c/busses/i2c-ismt.c
+@@ -341,8 +341,10 @@ static int ismt_process_desc(const struct ismt_desc *desc,
+ 			break;
+ 		case I2C_SMBUS_BLOCK_DATA:
+ 		case I2C_SMBUS_I2C_BLOCK_DATA:
++			if (desc->rxbytes != dma_buffer[0] + 1)
++				return -EMSGSIZE;
++
+ 			memcpy(data->block, dma_buffer, desc->rxbytes);
+-			data->block[0] = desc->rxbytes - 1;
+ 			break;
+ 		}
+ 		return 0;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1691_91a0e1edb80a3cdeaa7b8810b65cc7abf6b85af8.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1691_91a0e1edb80a3cdeaa7b8810b65cc7abf6b85af8.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,36 @@
+commit 309e4dbfaf3da435644b6d9c96a43c50ce9598be
+Author: Waiman Long <longman@redhat.com>
+Date:   Thu Aug 24 12:04:29 2017 -0400
+
+    cpuset: Fix incorrect memory_pressure control file mapping
+    
+    commit 1c08c22c874ac88799cab1f78c40f46110274915 upstream.
+    
+    The memory_pressure control file was incorrectly set up without
+    a private value (0, by default). As a result, this control
+    file was treated like memory_migrate on read. By adding back the
+    FILE_MEMORY_PRESSURE private value, the correct memory pressure value
+    will be returned.
+    
+    Signed-off-by: Waiman Long <longman@redhat.com>
+    Signed-off-by: Tejun Heo <tj@kernel.org>
+    Fixes: 7dbdb199d3bf ("cgroup: replace cftype->mode with CFTYPE_WORLD_WRITABLE")
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/kernel/cpuset.c b/kernel/cpuset.c
+index 247afb108343..03a3a6e94eb9 100644
+--- a/kernel/cpuset.c
++++ b/kernel/cpuset.c
+@@ -1905,6 +1905,7 @@ static struct cftype files[] = {
+ 	{
+ 		.name = "memory_pressure",
+ 		.read_u64 = cpuset_read_u64,
++		.private = FILE_MEMORY_PRESSURE,
+ 	},
+ 
+ 	{
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1697_309e4dbfaf3da435644b6d9c96a43c50ce9598be.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1697_309e4dbfaf3da435644b6d9c96a43c50ce9598be.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

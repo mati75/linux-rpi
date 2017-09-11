@@ -1,0 +1,45 @@
+commit 9e0a64330ce5ef4be20391fdf7c95a1d7ac67538
+Author: Stephan Mueller <smueller@chronox.de>
+Date:   Wed Aug 16 11:56:24 2017 +0200
+
+    crypto: algif_skcipher - only call put_page on referenced and used pages
+    
+    commit 445a582738de6802669aeed9c33ca406c23c3b1f upstream.
+    
+    For asynchronous operation, SGs are allocated without a page mapped to
+    them or with a page that is not used (ref-counted). If the SGL is freed,
+    the code must only call put_page for an SG if there was a page assigned
+    and ref-counted in the first place.
+    
+    This fixes a kernel crash when using io_submit with more than one iocb
+    using the sendmsg and sendpage (vmsplice/splice) interface.
+    
+    Signed-off-by: Stephan Mueller <smueller@chronox.de>
+    Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/crypto/algif_skcipher.c b/crypto/algif_skcipher.c
+index 28556fce4267..45af0fe00f33 100644
+--- a/crypto/algif_skcipher.c
++++ b/crypto/algif_skcipher.c
+@@ -86,8 +86,13 @@ static void skcipher_free_async_sgls(struct skcipher_async_req *sreq)
+ 	}
+ 	sgl = sreq->tsg;
+ 	n = sg_nents(sgl);
+-	for_each_sg(sgl, sg, n, i)
+-		put_page(sg_page(sg));
++	for_each_sg(sgl, sg, n, i) {
++		struct page *page = sg_page(sg);
++
++		/* some SGs may not have a page mapped */
++		if (page && page_ref_count(page))
++			put_page(page);
++	}
+ 
+ 	kfree(sreq->tsg);
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1692_9e0a64330ce5ef4be20391fdf7c95a1d7ac67538.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1692_9e0a64330ce5ef4be20391fdf7c95a1d7ac67538.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

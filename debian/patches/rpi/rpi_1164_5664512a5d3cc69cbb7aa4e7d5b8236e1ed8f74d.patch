@@ -99,20 +99,20 @@ index 917321ce832f..5dba13dd1e9b 100644
  };
  
  static uint32_t
-@@ -119,6 +126,13 @@ raddr_add_a_to_live_reg_index(uint64_t inst)
+@@ -118,6 +125,13 @@ raddr_add_a_to_live_reg_index(uint64_t inst)
+ 		return ~0;
  }
  
- static bool
++static bool
 +live_reg_is_upper_half(uint32_t lri)
 +{
 +	return	(lri >= 16 && lri < 32) ||
 +		(lri >= 32 + 16 && lri < 32 + 32);
 +}
 +
-+static bool
+ static bool
  is_tmu_submit(uint32_t waddr)
  {
- 	return (waddr == QPU_W_TMU0_S ||
 @@ -390,6 +404,9 @@ check_reg_write(struct vc4_validated_shader_info *validated_shader,
  		} else {
  			validation_state->live_immediates[lri] = ~0;

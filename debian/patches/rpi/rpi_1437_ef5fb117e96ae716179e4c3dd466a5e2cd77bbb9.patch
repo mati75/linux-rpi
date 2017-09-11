@@ -40,41 +40,6 @@ Date:   Fri Mar 17 00:48:27 2017 +0000
     Signed-off-by: Sasha Levin <alexander.levin@verizon.com>
     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Index: linuxtest/drivers/vfio/vfio_iommu_spapr_tce.c
-===================================================================
---- linuxtest.orig/drivers/vfio/vfio_iommu_spapr_tce.c
-+++ linuxtest/drivers/vfio/vfio_iommu_spapr_tce.c
-@@ -98,6 +98,15 @@ struct tce_iommu_prereg {
- };
- 
- /*
-+ * A container needs to remember which preregistered region  it has
-+ * referenced to do proper cleanup at the userspace process exit.
-+ */
-+struct tce_iommu_prereg {
-+	struct list_head next;
-+	struct mm_iommu_table_group_mem_t *mem;
-+};
-+
-+/*
-  * The container descriptor supports only a single group per container.
-  * Required by the API as the container is not supplied with the IOMMU group
-  * at the moment of initialization.
-@@ -424,6 +433,14 @@ static void tce_iommu_release(void *iomm
- 	}
- 
- 	while (!list_empty(&container->prereg_list)) {
-+		struct tce_iommu_prereg *tcemem;
-+
-+		tcemem = list_first_entry(&container->prereg_list,
-+				struct tce_iommu_prereg, next);
-+		WARN_ON_ONCE(tce_iommu_prereg_free(container, tcemem));
-+	}
-+
-+	while (!list_empty(&container->prereg_list)) {
- 		struct tce_iommu_prereg *tcemem;
- 
- 		tcemem = list_first_entry(&container->prereg_list,
 Index: linuxtest/dummy/rpi_1437_ef5fb117e96ae716179e4c3dd466a5e2cd77bbb9.txt
 ===================================================================
 --- /dev/null

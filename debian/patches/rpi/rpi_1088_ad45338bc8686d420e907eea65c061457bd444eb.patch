@@ -883,11 +883,12 @@ index 60e92b82aa23..f7db885ce32e 100644
  	struct ieee80211_channel *chan,
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,38)) || defined(COMPAT_KERNEL_RELEASE)
  	bool offchan,
-@@ -4663,8 +4723,15 @@ static int cfg80211_rtw_mgmt_tx(struct wiphy *wiphy,
+@@ -4662,9 +4722,16 @@ static int cfg80211_rtw_mgmt_tx(struct wiphy *wiphy,
+ #endif
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,3,0))
  	bool dont_wait_for_ack,
- #endif
 +#endif
+ #endif
  	u64 *cookie)
  {
 +#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,14,0))

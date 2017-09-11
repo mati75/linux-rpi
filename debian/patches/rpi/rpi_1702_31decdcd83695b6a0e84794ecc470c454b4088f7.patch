@@ -1,0 +1,51 @@
+commit 31decdcd83695b6a0e84794ecc470c454b4088f7
+Author: Stephan Mueller <smueller@chronox.de>
+Date:   Thu Aug 10 08:06:18 2017 +0200
+
+    lib/mpi: kunmap after finishing accessing buffer
+    
+    commit dea3eb8b452e36cf2dd572b0a797915ccf452ae6 upstream.
+    
+    Using sg_miter_start and sg_miter_next, the buffer of an SG is kmap'ed
+    to *buff. The current code calls sg_miter_stop (and thus kunmap) on the
+    SG entry before the last access of *buff.
+    
+    The patch moves the sg_miter_stop call after the last access to *buff to
+    ensure that the memory pointed to by *buff is still mapped.
+    
+    Fixes: 4816c9406430 ("lib/mpi: Fix SG miter leak")
+    Signed-off-by: Stephan Mueller <smueller@chronox.de>
+    Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/lib/mpi/mpicoder.c b/lib/mpi/mpicoder.c
+index 5a0f75a3bf01..eead4b339466 100644
+--- a/lib/mpi/mpicoder.c
++++ b/lib/mpi/mpicoder.c
+@@ -364,11 +364,11 @@ MPI mpi_read_raw_from_sgl(struct scatterlist *sgl, unsigned int nbytes)
+ 	}
+ 
+ 	miter.consumed = lzeros;
+-	sg_miter_stop(&miter);
+ 
+ 	nbytes -= lzeros;
+ 	nbits = nbytes * 8;
+ 	if (nbits > MAX_EXTERN_MPI_BITS) {
++		sg_miter_stop(&miter);
+ 		pr_info("MPI: mpi too large (%u bits)\n", nbits);
+ 		return NULL;
+ 	}
+@@ -376,6 +376,8 @@ MPI mpi_read_raw_from_sgl(struct scatterlist *sgl, unsigned int nbytes)
+ 	if (nbytes > 0)
+ 		nbits -= count_leading_zeros(*buff) - (BITS_PER_LONG - 8);
+ 
++	sg_miter_stop(&miter);
++
+ 	nlimbs = DIV_ROUND_UP(nbytes, BYTES_PER_MPI_LIMB);
+ 	val = mpi_alloc(nlimbs);
+ 	if (!val)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1702_31decdcd83695b6a0e84794ecc470c454b4088f7.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1702_31decdcd83695b6a0e84794ecc470c454b4088f7.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

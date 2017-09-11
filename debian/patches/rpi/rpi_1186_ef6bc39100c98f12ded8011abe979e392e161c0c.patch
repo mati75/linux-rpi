@@ -20,25 +20,9 @@ Date:   Mon Feb 20 20:01:16 2017 +0100
     Tested-by: Clive Messer <clive.messer@digitaldreamtime.co.uk>
     Reviewed-by: Eric Anholt <eric@anholt.net>
 
-diff --git a/drivers/dma/bcm2835-dma.c b/drivers/dma/bcm2835-dma.c
-index 80d35f760b4a..599c218dc8a7 100644
---- a/drivers/dma/bcm2835-dma.c
-+++ b/drivers/dma/bcm2835-dma.c
-@@ -253,8 +253,11 @@ static void bcm2835_dma_create_cb_set_length(
- 	 */
- 
- 	/* have we filled in period_length yet? */
--	if (*total_len + control_block->length < period_len)
-+	if (*total_len + control_block->length < period_len) {
-+		/* update number of bytes in this period so far */
-+		*total_len += control_block->length;
- 		return;
-+	}
- 
- 	/* calculate the length that remains to reach period_length */
- 	control_block->length = period_len - *total_len;
-diff -uN a/1.txt b/1.txt
---- a/dummy/rpi_1186_ef6bc39100c98f12ded8011abe979e392e161c0c.txt	1970-01-01 00:00:00.000000000 +0000
-+++ b/dummy/rpi_1186_ef6bc39100c98f12ded8011abe979e392e161c0c.txt	2013-12-23 04:07:40.000000000 +0000
+Index: linuxtest/dummy/rpi_1186_ef6bc39100c98f12ded8011abe979e392e161c0c.txt
+===================================================================
+--- /dev/null
++++ linuxtest/dummy/rpi_1186_ef6bc39100c98f12ded8011abe979e392e161c0c.txt
 @@ -0,0 +1 @@
 +dummy file to ensure patch has content.

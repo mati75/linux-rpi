@@ -1,0 +1,36 @@
+commit 70df301a083c73353b2951e74f9ff6d682f72d63
+Author: Xiangliang.Yu <Xiangliang.Yu@amd.com>
+Date:   Wed Aug 16 14:25:51 2017 +0800
+
+    drm/ttm: Fix accounting error when fail to get pages for pool
+    
+    commit 9afae2719273fa1d406829bf3498f82dbdba71c7 upstream.
+    
+    When fail to get needed page for pool, need to put allocated pages
+    into pool. But current code has a miscalculation of allocated pages,
+    correct it.
+    
+    Signed-off-by: Xiangliang.Yu <Xiangliang.Yu@amd.com>
+    Reviewed-by: Christian König <christian.koenig@amd.com>
+    Reviewed-by: Monk Liu <monk.liu@amd.com>
+    Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/gpu/drm/ttm/ttm_page_alloc.c b/drivers/gpu/drm/ttm/ttm_page_alloc.c
+index a37de5db5731..ddd6badd0eee 100644
+--- a/drivers/gpu/drm/ttm/ttm_page_alloc.c
++++ b/drivers/gpu/drm/ttm/ttm_page_alloc.c
+@@ -612,7 +612,7 @@ static void ttm_page_pool_fill_locked(struct ttm_page_pool *pool,
+ 		} else {
+ 			pr_err("Failed to fill pool (%p)\n", pool);
+ 			/* If we have any pages left put them to the pool. */
+-			list_for_each_entry(p, &pool->list, lru) {
++			list_for_each_entry(p, &new_pages, lru) {
+ 				++cpages;
+ 			}
+ 			list_splice(&new_pages, &pool->list);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1704_70df301a083c73353b2951e74f9ff6d682f72d63.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1704_70df301a083c73353b2951e74f9ff6d682f72d63.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,34 @@
+commit e2ae90bb85f83918c667942d9fff587c73cc1a8c
+Author: Steve French <smfrench@gmail.com>
+Date:   Sun Aug 27 16:56:08 2017 -0500
+
+    CIFS: remove endian related sparse warning
+    
+    commit 6e3c1529c39e92ed64ca41d53abadabbaa1d5393 upstream.
+    
+    Recent patch had an endian warning ie
+    cifs: return ENAMETOOLONG for overlong names in cifs_open()/cifs_lookup()
+    
+    Signed-off-by: Steve French <smfrench@gmail.com>
+    CC: Ronnie Sahlberg <lsahlber@redhat.com>
+    Acked-by: Pavel Shilovsky <pshilov@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/cifs/dir.c b/fs/cifs/dir.c
+index 581712534c93..dd3e236d7a2b 100644
+--- a/fs/cifs/dir.c
++++ b/fs/cifs/dir.c
+@@ -194,7 +194,7 @@ check_name(struct dentry *direntry, struct cifs_tcon *tcon)
+ 	int i;
+ 
+ 	if (unlikely(direntry->d_name.len >
+-		     tcon->fsAttrInfo.MaxPathNameComponentLength))
++		     le32_to_cpu(tcon->fsAttrInfo.MaxPathNameComponentLength)))
+ 		return -ENAMETOOLONG;
+ 
+ 	if (!(cifs_sb->mnt_cifs_flags & CIFS_MOUNT_POSIX_PATHS)) {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1700_e2ae90bb85f83918c667942d9fff587c73cc1a8c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1700_e2ae90bb85f83918c667942d9fff587c73cc1a8c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
