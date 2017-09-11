@@ -1,0 +1,54 @@
+commit ec43d05e5f1aeefe502019273dd30b916c97cfe3
+Author: Matthias Reichl <hias@horus.com>
+Date:   Thu Jul 6 18:52:16 2017 +0200
+
+    config: add missing arizona regulator modules
+    
+    In kernel 4.12 CONFIG_REGULATOR_ARIZONA was replaced by 2 separate
+    options for LDO1 and MICSUPP regulators. Enable these, they are
+    needed by the Cirrus Logic Audio Card.
+    
+    Also regenerate configs with make savedefconfig to get rid of
+    the duplicated CONFIG_TOUCHSCREEN_EDT_FT5X06 entry.
+    
+    Signed-off-by: Matthias Reichl <hias@horus.com>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 5b0f11690132..822fa346cfdd 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -568,7 +568,6 @@ CONFIG_JOYSTICK_RPISENSE=m
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
+ CONFIG_TOUCHSCREEN_EGALAX=m
+-CONFIG_TOUCHSCREEN_EDT_FT5X06=m
+ CONFIG_TOUCHSCREEN_GOODIX=m
+ CONFIG_TOUCHSCREEN_EDT_FT5X06=m
+ CONFIG_TOUCHSCREEN_RPI_FT5406=m
+@@ -670,6 +669,8 @@ CONFIG_MFD_ARIZONA_SPI=m
+ CONFIG_MFD_WM5102=y
+ CONFIG_REGULATOR=y
+ CONFIG_REGULATOR_FIXED_VOLTAGE=m
++CONFIG_REGULATOR_ARIZONA_LDO1=m
++CONFIG_REGULATOR_ARIZONA_MICSUPP=m
+ CONFIG_MEDIA_SUPPORT=m
+ CONFIG_MEDIA_CAMERA_SUPPORT=y
+ CONFIG_MEDIA_ANALOG_TV_SUPPORT=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 8894ef2ed789..7362d1a6e575 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -663,6 +663,8 @@ CONFIG_MFD_ARIZONA_SPI=m
+ CONFIG_MFD_WM5102=y
+ CONFIG_REGULATOR=y
+ CONFIG_REGULATOR_FIXED_VOLTAGE=m
++CONFIG_REGULATOR_ARIZONA_LDO1=m
++CONFIG_REGULATOR_ARIZONA_MICSUPP=m
+ CONFIG_MEDIA_SUPPORT=m
+ CONFIG_MEDIA_CAMERA_SUPPORT=y
+ CONFIG_MEDIA_ANALOG_TV_SUPPORT=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1153_ec43d05e5f1aeefe502019273dd30b916c97cfe3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1153_ec43d05e5f1aeefe502019273dd30b916c97cfe3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
