@@ -1,0 +1,49 @@
+commit 7816eb3874a273dc9461c78cdc3280a2437bc280
+Author: Song Liu <songliubraving@fb.com>
+Date:   Thu Aug 24 09:53:59 2017 -0700
+
+    md/raid5: release/flush io in raid5_do_work()
+    
+    commit 9c72a18e46ebe0f09484cce8ebf847abdab58498 upstream.
+    
+    In raid5, there are scenarios where some ios are deferred to a later
+    time, and some IO need a flush to complete. To make sure we make
+    progress with these IOs, we need to call the following functions:
+    
+        flush_deferred_bios(conf);
+        r5l_flush_stripe_to_raid(conf->log);
+    
+    Both of these functions are called in raid5d(), but missing in
+    raid5_do_work(). As a result, these functions are not called
+    when multi-threading (group_thread_cnt > 0) is enabled. This patch
+    adds calls to these function to raid5_do_work().
+    
+    Note for stable branches:
+    
+      r5l_flush_stripe_to_raid(conf->log) is need for 4.4+
+      flush_deferred_bios(conf) is only needed for 4.11+
+    
+    Signed-off-by: Song Liu <songliubraving@fb.com>
+    Signed-off-by: Shaohua Li <shli@fb.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
+index e92dd2dc4b5a..2280bae40189 100644
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -6238,6 +6238,10 @@ static void raid5_do_work(struct work_struct *work)
+ 
+ 	spin_unlock_irq(&conf->device_lock);
+ 
++	flush_deferred_bios(conf);
++
++	r5l_flush_stripe_to_raid(conf->log);
++
+ 	async_tx_issue_pending_all();
+ 	blk_finish_plug(&plug);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1051_7816eb3874a273dc9461c78cdc3280a2437bc280.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1051_7816eb3874a273dc9461c78cdc3280a2437bc280.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

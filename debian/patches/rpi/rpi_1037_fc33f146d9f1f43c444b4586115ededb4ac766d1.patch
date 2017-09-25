@@ -1,0 +1,42 @@
+commit fc33f146d9f1f43c444b4586115ededb4ac766d1
+Author: Claudiu Manoil <claudiu.manoil@nxp.com>
+Date:   Mon Sep 4 10:45:28 2017 +0300
+
+    gianfar: Fix Tx flow control deactivation
+    
+    
+    [ Upstream commit 5d621672bc1a1e5090c1ac5432a18c79e0e13e03 ]
+    
+    The wrong register is checked for the Tx flow control bit,
+    it should have been maccfg1 not maccfg2.
+    This went unnoticed for so long probably because the impact is
+    hardly visible, not to mention the tangled code from adjust_link().
+    First, link flow control (i.e. handling of Rx/Tx link level pause frames)
+    is disabled by default (needs to be enabled via 'ethtool -A').
+    Secondly, maccfg2 always returns 0 for tx_flow_oldval (except for a few
+    old boards), which results in Tx flow control remaining always on
+    once activated.
+    
+    Fixes: 45b679c9a3ccd9e34f28e6ec677b812a860eb8eb ("gianfar: Implement PAUSE frame generation support")
+    Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index 0ff166ec3e7e..aac8490c910a 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -3687,7 +3687,7 @@ static noinline void gfar_update_link_state(struct gfar_private *priv)
+ 		u32 tempval1 = gfar_read(&regs->maccfg1);
+ 		u32 tempval = gfar_read(&regs->maccfg2);
+ 		u32 ecntrl = gfar_read(&regs->ecntrl);
+-		u32 tx_flow_oldval = (tempval & MACCFG1_TX_FLOW);
++		u32 tx_flow_oldval = (tempval1 & MACCFG1_TX_FLOW);
+ 
+ 		if (phydev->duplex != priv->oldduplex) {
+ 			if (!(phydev->duplex))
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1037_fc33f146d9f1f43c444b4586115ededb4ac766d1.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1037_fc33f146d9f1f43c444b4586115ededb4ac766d1.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

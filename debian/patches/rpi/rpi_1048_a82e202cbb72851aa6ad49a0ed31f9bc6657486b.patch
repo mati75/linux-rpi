@@ -1,0 +1,98 @@
+commit a82e202cbb72851aa6ad49a0ed31f9bc6657486b
+Author: Miklos Szeredi <mszeredi@redhat.com>
+Date:   Tue Sep 12 16:57:53 2017 +0200
+
+    fuse: allow server to run in different pid_ns
+    
+    commit 5d6d3a301c4e749e04be6fcdcf4cb1ffa8bae524 upstream.
+    
+    Commit 0b6e9ea041e6 ("fuse: Add support for pid namespaces") broke
+    Sandstorm.io development tools, which have been sending FUSE file
+    descriptors across PID namespace boundaries since early 2014.
+    
+    The above patch added a check that prevented I/O on the fuse device file
+    descriptor if the pid namespace of the reader/writer was different from the
+    pid namespace of the mounter.  With this change passing the device file
+    descriptor to a different pid namespace simply doesn't work.  The check was
+    added because pids are transferred to/from the fuse userspace server in the
+    namespace registered at mount time.
+    
+    To fix this regression, remove the checks and do the following:
+    
+    1) the pid in the request header (the pid of the task that initiated the
+    filesystem operation) is translated to the reader's pid namespace.  If a
+    mapping doesn't exist for this pid, then a zero pid is used.  Note: even if
+    a mapping would exist between the initiator task's pid namespace and the
+    reader's pid namespace the pid will be zero if either mapping from
+    initator's to mounter's namespace or mapping from mounter's to reader's
+    namespace doesn't exist.
+    
+    2) The lk.pid value in setlk/setlkw requests and getlk reply is left alone.
+    Userspace should not interpret this value anyway.  Also allow the
+    setlk/setlkw operations if the pid of the task cannot be represented in the
+    mounter's namespace (pid being zero in that case).
+    
+    Reported-by: Kenton Varda <kenton@sandstorm.io>
+    Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+    Fixes: 0b6e9ea041e6 ("fuse: Add support for pid namespaces")
+    Cc: Eric W. Biederman <ebiederm@xmission.com>
+    Cc: Seth Forshee <seth.forshee@canonical.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/fuse/dev.c b/fs/fuse/dev.c
+index c16d00e53264..13c65dd2d37d 100644
+--- a/fs/fuse/dev.c
++++ b/fs/fuse/dev.c
+@@ -1222,9 +1222,6 @@ static ssize_t fuse_dev_do_read(struct fuse_dev *fud, struct file *file,
+ 	struct fuse_in *in;
+ 	unsigned reqsize;
+ 
+-	if (task_active_pid_ns(current) != fc->pid_ns)
+-		return -EIO;
+-
+  restart:
+ 	spin_lock(&fiq->waitq.lock);
+ 	err = -EAGAIN;
+@@ -1262,6 +1259,13 @@ static ssize_t fuse_dev_do_read(struct fuse_dev *fud, struct file *file,
+ 
+ 	in = &req->in;
+ 	reqsize = in->h.len;
++
++	if (task_active_pid_ns(current) != fc->pid_ns) {
++		rcu_read_lock();
++		in->h.pid = pid_vnr(find_pid_ns(in->h.pid, fc->pid_ns));
++		rcu_read_unlock();
++	}
++
+ 	/* If request is too large, reply with an error and restart the read */
+ 	if (nbytes < reqsize) {
+ 		req->out.h.error = -EIO;
+@@ -1823,9 +1827,6 @@ static ssize_t fuse_dev_do_write(struct fuse_dev *fud,
+ 	struct fuse_req *req;
+ 	struct fuse_out_header oh;
+ 
+-	if (task_active_pid_ns(current) != fc->pid_ns)
+-		return -EIO;
+-
+ 	if (nbytes < sizeof(struct fuse_out_header))
+ 		return -EINVAL;
+ 
+diff --git a/fs/fuse/file.c b/fs/fuse/file.c
+index 76eac2a554c4..e6d40e4f5e83 100644
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -2180,9 +2180,6 @@ static int fuse_setlk(struct file *file, struct file_lock *fl, int flock)
+ 	if ((fl->fl_flags & FL_CLOSE_POSIX) == FL_CLOSE_POSIX)
+ 		return 0;
+ 
+-	if (pid && pid_nr == 0)
+-		return -EOVERFLOW;
+-
+ 	fuse_lk_fill(&args, file, fl, opcode, pid_nr, flock, &inarg);
+ 	err = fuse_simple_request(fc, &args);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1048_a82e202cbb72851aa6ad49a0ed31f9bc6657486b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1048_a82e202cbb72851aa6ad49a0ed31f9bc6657486b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

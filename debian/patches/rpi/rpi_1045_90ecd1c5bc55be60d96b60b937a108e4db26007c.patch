@@ -1,0 +1,60 @@
+commit 90ecd1c5bc55be60d96b60b937a108e4db26007c
+Author: Andy Lutomirski <luto@kernel.org>
+Date:   Tue Aug 1 07:11:34 2017 -0700
+
+    x86/fsgsbase/64: Fully initialize FS and GS state in start_thread_common
+    
+    commit 767d035d838f4fd6b5a5bbd7a3f6d293b7f65a49 upstream.
+    
+    execve used to leak FSBASE and GSBASE on AMD CPUs.  Fix it.
+    
+    The security impact of this bug is small but not quite zero -- it
+    could weaken ASLR when a privileged task execs a less privileged
+    program, but only if program changed bitness across the exec, or the
+    child binary was highly unusual or actively malicious.  A child
+    program that was compromised after the exec would not have access to
+    the leaked base.
+    
+    Signed-off-by: Andy Lutomirski <luto@kernel.org>
+    Cc: Borislav Petkov <bp@alien8.de>
+    Cc: Borislav Petkov <bpetkov@suse.de>
+    Cc: Brian Gerst <brgerst@gmail.com>
+    Cc: Chang Seok <chang.seok.bae@intel.com>
+    Cc: Denys Vlasenko <dvlasenk@redhat.com>
+    Cc: H. Peter Anvin <hpa@zytor.com>
+    Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+    Cc: Linus Torvalds <torvalds@linux-foundation.org>
+    Cc: Peter Zijlstra <peterz@infradead.org>
+    Cc: Thomas Gleixner <tglx@linutronix.de>
+    Signed-off-by: Ingo Molnar <mingo@kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
+index b6840bf3940b..43cee56d5872 100644
+--- a/arch/x86/kernel/process_64.c
++++ b/arch/x86/kernel/process_64.c
+@@ -229,10 +229,19 @@ start_thread_common(struct pt_regs *regs, unsigned long new_ip,
+ 		    unsigned long new_sp,
+ 		    unsigned int _cs, unsigned int _ss, unsigned int _ds)
+ {
++	WARN_ON_ONCE(regs != current_pt_regs());
++
++	if (static_cpu_has(X86_BUG_NULL_SEG)) {
++		/* Loading zero below won't clear the base. */
++		loadsegment(fs, __USER_DS);
++		load_gs_index(__USER_DS);
++	}
++
+ 	loadsegment(fs, 0);
+ 	loadsegment(es, _ds);
+ 	loadsegment(ds, _ds);
+ 	load_gs_index(0);
++
+ 	regs->ip		= new_ip;
+ 	regs->sp		= new_sp;
+ 	regs->cs		= _cs;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1045_90ecd1c5bc55be60d96b60b937a108e4db26007c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1045_90ecd1c5bc55be60d96b60b937a108e4db26007c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

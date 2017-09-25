@@ -1,0 +1,33 @@
+commit cb14d4cebdb29df42c4a22ebe3fcf6097138663b
+Author: Jaegeuk Kim <jaegeuk@kernel.org>
+Date:   Sat Aug 12 21:33:23 2017 -0700
+
+    f2fs: check hot_data for roll-forward recovery
+    
+    commit 125c9fb1ccb53eb2ea9380df40f3c743f3fb2fed upstream.
+    
+    We need to check HOT_DATA to truncate any previous data block when doing
+    roll-forward recovery.
+    
+    Reviewed-by: Chao Yu <yuchao0@huawei.com>
+    Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/f2fs/recovery.c b/fs/f2fs/recovery.c
+index 14e88dbe671d..86d813a3f5d1 100644
+--- a/fs/f2fs/recovery.c
++++ b/fs/f2fs/recovery.c
+@@ -291,7 +291,7 @@ static int check_index_in_prev_nodes(struct f2fs_sb_info *sbi,
+ 		return 0;
+ 
+ 	/* Get the previous summary */
+-	for (i = CURSEG_WARM_DATA; i <= CURSEG_COLD_DATA; i++) {
++	for (i = CURSEG_HOT_DATA; i <= CURSEG_COLD_DATA; i++) {
+ 		struct curseg_info *curseg = CURSEG_I(sbi, i);
+ 		if (curseg->segno == segno) {
+ 			sum = curseg->sum_blk->entries[blkoff];
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1044_cb14d4cebdb29df42c4a22ebe3fcf6097138663b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1044_cb14d4cebdb29df42c4a22ebe3fcf6097138663b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,53 @@
+commit 76d3e7ff2362f1744d163bac6862215df661ed9b
+Author: Stefano Brivio <sbrivio@redhat.com>
+Date:   Fri Aug 18 14:40:53 2017 +0200
+
+    ipv6: accept 64k - 1 packet length in ip6_find_1stfragopt()
+    
+    
+    [ Upstream commit 3de33e1ba0506723ab25734e098cf280ecc34756 ]
+    
+    A packet length of exactly IPV6_MAXPLEN is allowed, we should
+    refuse parsing options only if the size is 64KiB or more.
+    
+    While at it, remove one extra variable and one assignment which
+    were also introduced by the commit that introduced the size
+    check. Checking the sum 'offset + len' and only later adding
+    'len' to 'offset' doesn't provide any advantage over directly
+    summing to 'offset' and checking it.
+    
+    Fixes: 6399f1fae4ec ("ipv6: avoid overflow of offset in ip6_find_1stfragopt")
+    Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/net/ipv6/output_core.c b/net/ipv6/output_core.c
+index abb2c307fbe8..a338bbc33cf3 100644
+--- a/net/ipv6/output_core.c
++++ b/net/ipv6/output_core.c
+@@ -86,7 +86,6 @@ int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
+ 
+ 	while (offset <= packet_len) {
+ 		struct ipv6_opt_hdr *exthdr;
+-		unsigned int len;
+ 
+ 		switch (**nexthdr) {
+ 
+@@ -112,10 +111,9 @@ int ip6_find_1stfragopt(struct sk_buff *skb, u8 **nexthdr)
+ 
+ 		exthdr = (struct ipv6_opt_hdr *)(skb_network_header(skb) +
+ 						 offset);
+-		len = ipv6_optlen(exthdr);
+-		if (len + offset >= IPV6_MAXPLEN)
++		offset += ipv6_optlen(exthdr);
++		if (offset > IPV6_MAXPLEN)
+ 			return -EINVAL;
+-		offset += len;
+ 		*nexthdr = &exthdr->nexthdr;
+ 	}
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1000_76d3e7ff2362f1744d163bac6862215df661ed9b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1000_76d3e7ff2362f1744d163bac6862215df661ed9b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

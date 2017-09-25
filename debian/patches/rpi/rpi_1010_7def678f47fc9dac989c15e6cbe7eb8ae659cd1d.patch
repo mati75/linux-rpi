@@ -1,0 +1,38 @@
+commit 7def678f47fc9dac989c15e6cbe7eb8ae659cd1d
+Author: Florian Fainelli <f.fainelli@gmail.com>
+Date:   Thu Aug 24 15:20:41 2017 -0700
+
+    net: systemport: Be drop monitor friendly
+    
+    
+    [ Upstream commit c45182eb967af11e9482168be5be41aa22e5d321 ]
+    
+    Utilize dev_consume_skb_any(cb->skb) in bcm_sysport_free_cb() which is
+    used when a TX packet is completed, as well as when the RX ring is
+    cleaned on shutdown. None of these two cases are packet drops, so be
+    drop monitor friendly.
+    
+    Suggested-by: Eric Dumazet <edumazet@gmail.com>
+    Fixes: 80105befdb4b ("net: systemport: add Broadcom SYSTEMPORT Ethernet MAC driver")
+    Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
+index 5274501428e4..a2c8086c19ca 100644
+--- a/drivers/net/ethernet/broadcom/bcmsysport.c
++++ b/drivers/net/ethernet/broadcom/bcmsysport.c
+@@ -593,7 +593,7 @@ static int bcm_sysport_set_coalesce(struct net_device *dev,
+ 
+ static void bcm_sysport_free_cb(struct bcm_sysport_cb *cb)
+ {
+-	dev_kfree_skb_any(cb->skb);
++	dev_consume_skb_any(cb->skb);
+ 	cb->skb = NULL;
+ 	dma_unmap_addr_set(cb, dma_addr, 0);
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1010_7def678f47fc9dac989c15e6cbe7eb8ae659cd1d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1010_7def678f47fc9dac989c15e6cbe7eb8ae659cd1d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

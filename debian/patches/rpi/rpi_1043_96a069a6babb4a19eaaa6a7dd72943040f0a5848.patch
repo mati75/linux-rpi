@@ -1,0 +1,36 @@
+commit 96a069a6babb4a19eaaa6a7dd72943040f0a5848
+Author: Jaegeuk Kim <jaegeuk@kernel.org>
+Date:   Thu Aug 10 17:35:04 2017 -0700
+
+    f2fs: let fill_super handle roll-forward errors
+    
+    commit afd2b4da40b3b567ef8d8e6881479345a2312a03 upstream.
+    
+    If we set CP_ERROR_FLAG in roll-forward error, f2fs is no longer to proceed
+    any IOs due to f2fs_cp_error(). But, for example, if some stale data is involved
+    on roll-forward process, we're able to get -ENOENT, getting fs stuck.
+    If we get any error, let fill_super set SBI_NEED_FSCK and try to recover back
+    to stable point.
+    
+    Reviewed-by: Chao Yu <yuchao0@huawei.com>
+    Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/f2fs/recovery.c b/fs/f2fs/recovery.c
+index 907d6b7dde6a..14e88dbe671d 100644
+--- a/fs/f2fs/recovery.c
++++ b/fs/f2fs/recovery.c
+@@ -599,8 +599,6 @@ int recover_fsync_data(struct f2fs_sb_info *sbi, bool check_only)
+ 	}
+ 
+ 	clear_sbi_flag(sbi, SBI_POR_DOING);
+-	if (err)
+-		set_ckpt_flags(sbi, CP_ERROR_FLAG);
+ 	mutex_unlock(&sbi->cp_mutex);
+ 
+ 	/* let's drop all the directory inodes for clean checkpoint */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1043_96a069a6babb4a19eaaa6a7dd72943040f0a5848.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1043_96a069a6babb4a19eaaa6a7dd72943040f0a5848.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

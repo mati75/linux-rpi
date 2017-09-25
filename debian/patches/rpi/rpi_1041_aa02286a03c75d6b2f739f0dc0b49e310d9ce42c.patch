@@ -1,0 +1,34 @@
+commit aa02286a03c75d6b2f739f0dc0b49e310d9ce42c
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Fri Sep 8 15:48:47 2017 -0700
+
+    ipv6: fix typo in fib6_net_exit()
+    
+    
+    [ Upstream commit 32a805baf0fb70b6dbedefcd7249ac7f580f9e3b ]
+    
+    IPv6 FIB should use FIB6_TABLE_HASHSZ, not FIB_TABLE_HASHSZ.
+    
+    Fixes: ba1cc08d9488 ("ipv6: fix memory leak with multiple tables during netns destruction")
+    Signed-off-by: Eric Dumazet <edumazet@google.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+index 4c4dd79724e7..fa03fa469f92 100644
+--- a/net/ipv6/ip6_fib.c
++++ b/net/ipv6/ip6_fib.c
+@@ -1922,7 +1922,7 @@ static void fib6_net_exit(struct net *net)
+ 	rt6_ifdown(net, NULL);
+ 	del_timer_sync(&net->ipv6.ip6_fib_timer);
+ 
+-	for (i = 0; i < FIB_TABLE_HASHSZ; i++) {
++	for (i = 0; i < FIB6_TABLE_HASHSZ; i++) {
+ 		struct hlist_head *head = &net->ipv6.fib_table_hash[i];
+ 		struct hlist_node *tmp;
+ 		struct fib6_table *tb;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1041_aa02286a03c75d6b2f739f0dc0b49e310d9ce42c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1041_aa02286a03c75d6b2f739f0dc0b49e310d9ce42c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

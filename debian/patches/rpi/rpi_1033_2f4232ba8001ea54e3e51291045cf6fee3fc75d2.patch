@@ -1,0 +1,94 @@
+commit 2f4232ba8001ea54e3e51291045cf6fee3fc75d2
+Author: Ido Schimmel <idosch@mellanox.com>
+Date:   Fri Sep 1 10:52:31 2017 +0200
+
+    mlxsw: spectrum: Forbid linking to devices that have uppers
+    
+    
+    [ Upstream commit 25cc72a33835ed8a6f53180a822cadab855852ac ]
+    
+    The mlxsw driver relies on NETDEV_CHANGEUPPER events to configure the
+    device in case a port is enslaved to a master netdev such as bridge or
+    bond.
+    
+    Since the driver ignores events unrelated to its ports and their
+    uppers, it's possible to engineer situations in which the device's data
+    path differs from the kernel's.
+    
+    One example to such a situation is when a port is enslaved to a bond
+    that is already enslaved to a bridge. When the bond was enslaved the
+    driver ignored the event - as the bond wasn't one of its uppers - and
+    therefore a bridge port instance isn't created in the device.
+    
+    Until such configurations are supported forbid them by checking that the
+    upper device doesn't have uppers of its own.
+    
+    Fixes: 0d65fc13042f ("mlxsw: spectrum: Implement LAG port join/leave")
+    Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+    Reported-by: Nogah Frankel <nogahf@mellanox.com>
+    Tested-by: Nogah Frankel <nogahf@mellanox.com>
+    Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 88357cee7679..940d61159b56 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -4110,6 +4110,8 @@ static int mlxsw_sp_netdevice_port_upper_event(struct net_device *dev,
+ 			return -EINVAL;
+ 		if (!info->linking)
+ 			break;
++		if (netdev_has_any_upper_dev(upper_dev))
++			return -EINVAL;
+ 		/* HW limitation forbids to put ports to multiple bridges. */
+ 		if (netif_is_bridge_master(upper_dev) &&
+ 		    !mlxsw_sp_master_bridge_check(mlxsw_sp, upper_dev))
+@@ -4274,6 +4276,10 @@ static int mlxsw_sp_netdevice_bridge_event(struct net_device *br_dev,
+ 		if (is_vlan_dev(upper_dev) &&
+ 		    br_dev != mlxsw_sp->master_bridge.dev)
+ 			return -EINVAL;
++		if (!info->linking)
++			break;
++		if (netdev_has_any_upper_dev(upper_dev))
++			return -EINVAL;
+ 		break;
+ 	case NETDEV_CHANGEUPPER:
+ 		upper_dev = info->upper_dev;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 4ed952c17fc7..663c46ee0658 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3868,6 +3868,8 @@ int netdev_walk_all_upper_dev_rcu(struct net_device *dev,
+ bool netdev_has_upper_dev_all_rcu(struct net_device *dev,
+ 				  struct net_device *upper_dev);
+ 
++bool netdev_has_any_upper_dev(struct net_device *dev);
++
+ void *netdev_lower_get_next_private(struct net_device *dev,
+ 				    struct list_head **iter);
+ void *netdev_lower_get_next_private_rcu(struct net_device *dev,
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 528edc68a64a..3a40e30c8388 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5590,12 +5590,13 @@ EXPORT_SYMBOL(netdev_has_upper_dev_all_rcu);
+  * Find out if a device is linked to an upper device and return true in case
+  * it is. The caller must hold the RTNL lock.
+  */
+-static bool netdev_has_any_upper_dev(struct net_device *dev)
++bool netdev_has_any_upper_dev(struct net_device *dev)
+ {
+ 	ASSERT_RTNL();
+ 
+ 	return !list_empty(&dev->adj_list.upper);
+ }
++EXPORT_SYMBOL(netdev_has_any_upper_dev);
+ 
+ /**
+  * netdev_master_upper_dev_get - Get master upper device
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1033_2f4232ba8001ea54e3e51291045cf6fee3fc75d2.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1033_2f4232ba8001ea54e3e51291045cf6fee3fc75d2.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,94 @@
+commit 38ca2d395e1cd24f205db3176c4ce9198f22576e
+Author: Paolo Abeni <pabeni@redhat.com>
+Date:   Fri Aug 25 14:31:01 2017 +0200
+
+    udp6: set rx_dst_cookie on rx_dst updates
+    
+    
+    [ Upstream commit 64f0f5d18a47c703c85576375cc010e83dac6a48 ]
+    
+    Currently, in the udp6 code, the dst cookie is not initialized/updated
+    concurrently with the RX dst used by early demux.
+    
+    As a result, the dst_check() in the early_demux path always fails,
+    the rx dst cache is always invalidated, and we can't really
+    leverage significant gain from the demux lookup.
+    
+    Fix it adding udp6 specific variant of sk_rx_dst_set() and use it
+    to set the dst cookie when the dst entry is really changed.
+    
+    The issue is there since the introduction of early demux for ipv6.
+    
+    Fixes: 5425077d73e0 ("net: ipv6: Add early demux handler for UDP unicast")
+    Acked-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+    Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/include/net/udp.h b/include/net/udp.h
+index 1933442cf1a6..a1bc3e7934d6 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -265,7 +265,7 @@ static inline struct sk_buff *skb_recv_udp(struct sock *sk, unsigned int flags,
+ }
+ 
+ void udp_v4_early_demux(struct sk_buff *skb);
+-void udp_sk_rx_dst_set(struct sock *sk, struct dst_entry *dst);
++bool udp_sk_rx_dst_set(struct sock *sk, struct dst_entry *dst);
+ int udp_get_port(struct sock *sk, unsigned short snum,
+ 		 int (*saddr_cmp)(const struct sock *,
+ 				  const struct sock *));
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index c991b97cbb28..2a7bff749764 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1762,13 +1762,14 @@ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ /* For TCP sockets, sk_rx_dst is protected by socket lock
+  * For UDP, we use xchg() to guard against concurrent changes.
+  */
+-void udp_sk_rx_dst_set(struct sock *sk, struct dst_entry *dst)
++bool udp_sk_rx_dst_set(struct sock *sk, struct dst_entry *dst)
+ {
+ 	struct dst_entry *old;
+ 
+ 	dst_hold(dst);
+ 	old = xchg(&sk->sk_rx_dst, dst);
+ 	dst_release(old);
++	return old != dst;
+ }
+ 
+ /*
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 592270c310f4..5c7b2a94e358 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -752,6 +752,15 @@ static int __udp6_lib_mcast_deliver(struct net *net, struct sk_buff *skb,
+ 	return 0;
+ }
+ 
++static void udp6_sk_rx_dst_set(struct sock *sk, struct dst_entry *dst)
++{
++	if (udp_sk_rx_dst_set(sk, dst)) {
++		const struct rt6_info *rt = (const struct rt6_info *)dst;
++
++		inet6_sk(sk)->rx_dst_cookie = rt6_get_cookie(rt);
++	}
++}
++
+ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 		   int proto)
+ {
+@@ -801,7 +810,7 @@ int __udp6_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
+ 		int ret;
+ 
+ 		if (unlikely(sk->sk_rx_dst != dst))
+-			udp_sk_rx_dst_set(sk, dst);
++			udp6_sk_rx_dst_set(sk, dst);
+ 
+ 		ret = udpv6_queue_rcv_skb(sk, skb);
+ 		sock_put(sk);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1014_38ca2d395e1cd24f205db3176c4ce9198f22576e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1014_38ca2d395e1cd24f205db3176c4ce9198f22576e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

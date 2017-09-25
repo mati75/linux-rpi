@@ -1,0 +1,47 @@
+commit 8aafed19d5230e0b95e57a6e9c9e4ad71c21e8ac
+Author: Arnd Bergmann <arnd@arndb.de>
+Date:   Wed Aug 23 15:59:49 2017 +0200
+
+    qlge: avoid memcpy buffer overflow
+    
+    
+    [ Upstream commit e58f95831e7468d25eb6e41f234842ecfe6f014f ]
+    
+    gcc-8.0.0 (snapshot) points out that we copy a variable-length string
+    into a fixed length field using memcpy() with the destination length,
+    and that ends up copying whatever follows the string:
+    
+        inlined from 'ql_core_dump' at drivers/net/ethernet/qlogic/qlge/qlge_dbg.c:1106:2:
+    drivers/net/ethernet/qlogic/qlge/qlge_dbg.c:708:2: error: 'memcpy' reading 15 bytes from a region of size 14 [-Werror=stringop-overflow=]
+      memcpy(seg_hdr->description, desc, (sizeof(seg_hdr->description)) - 1);
+    
+    Changing it to use strncpy() will instead zero-pad the destination,
+    which seems to be the right thing to do here.
+    
+    The bug is probably harmless, but it seems like a good idea to address
+    it in stable kernels as well, if only for the purpose of building with
+    gcc-8 without warnings.
+    
+    Fixes: a61f80261306 ("qlge: Add ethtool register dump function.")
+    Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c b/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c
+index 28ea0af89aef..e3223f2fe2ff 100644
+--- a/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c
++++ b/drivers/net/ethernet/qlogic/qlge/qlge_dbg.c
+@@ -724,7 +724,7 @@ static void ql_build_coredump_seg_header(
+ 	seg_hdr->cookie = MPI_COREDUMP_COOKIE;
+ 	seg_hdr->segNum = seg_number;
+ 	seg_hdr->segSize = seg_size;
+-	memcpy(seg_hdr->description, desc, (sizeof(seg_hdr->description)) - 1);
++	strncpy(seg_hdr->description, desc, (sizeof(seg_hdr->description)) - 1);
+ }
+ 
+ /*
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1008_8aafed19d5230e0b95e57a6e9c9e4ad71c21e8ac.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1008_8aafed19d5230e0b95e57a6e9c9e4ad71c21e8ac.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

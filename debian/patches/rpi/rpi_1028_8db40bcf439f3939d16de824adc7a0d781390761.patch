@@ -1,0 +1,41 @@
+commit 8db40bcf439f3939d16de824adc7a0d781390761
+Author: Shahar Klein <shahark@mellanox.com>
+Date:   Tue Aug 1 15:29:55 2017 +0300
+
+    net/mlx5: E-Switch, Unload the representors in the correct order
+    
+    
+    [ Upstream commit 191220396db840822fc818edf03c49f0c02eb237 ]
+    
+    When changing from switchdev to legacy mode, all the representor port
+    devices (uplink nic and reps) are cleaned up. Part of this cleaning
+    process is removing the neigh entries and the hash table containing them.
+    However, a representor neigh entry might be linked to the uplink port
+    hash table and if the uplink nic is cleaned first the cleaning of the
+    representor will end up in null deref.
+    Fix that by unloading the representors in the opposite order of load.
+    
+    Fixes: cb67b832921c ("net/mlx5e: Introduce SRIOV VF representors")
+    Signed-off-by: Shahar Klein <shahark@mellanox.com>
+    Reviewed-by: Roi Dayan <roid@mellanox.com>
+    Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index a53e982a6863..f28750bb56d6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -818,7 +818,7 @@ void esw_offloads_cleanup(struct mlx5_eswitch *esw, int nvports)
+ 	struct mlx5_eswitch_rep *rep;
+ 	int vport;
+ 
+-	for (vport = 0; vport < nvports; vport++) {
++	for (vport = nvports - 1; vport >= 0; vport--) {
+ 		rep = &esw->offloads.vport_reps[vport];
+ 		if (!rep->valid)
+ 			continue;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1028_8db40bcf439f3939d16de824adc7a0d781390761.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1028_8db40bcf439f3939d16de824adc7a0d781390761.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,35 @@
+commit b88be44f595fff3d11bb6f5ca7763ab573023da3
+Author: Tal Gilboa <talgi@mellanox.com>
+Date:   Mon Aug 28 18:45:08 2017 +0300
+
+    net/mlx5e: Fix CQ moderation mode not set properly
+    
+    
+    [ Upstream commit 1213ad28f9595a08e3877248bbba1a25c40225d6 ]
+    
+    cq_period_mode assignment was mistakenly removed so it was always set to "0",
+    which is EQE based moderation, regardless of the device CAPs and
+    requested value in ethtool.
+    
+    Fixes: 6a9764efb255 ("net/mlx5e: Isolate open_channels from priv->params")
+    Signed-off-by: Tal Gilboa <talgi@mellanox.com>
+    Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 072aa8a13a0a..00b51252b803 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -1936,6 +1936,7 @@ static void mlx5e_build_rx_cq_param(struct mlx5e_priv *priv,
+ 	}
+ 
+ 	mlx5e_build_common_cq_param(priv, param);
++	param->cq_period_mode = params->rx_cq_period_mode;
+ }
+ 
+ static void mlx5e_build_tx_cq_param(struct mlx5e_priv *priv,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1030_b88be44f595fff3d11bb6f5ca7763ab573023da3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1030_b88be44f595fff3d11bb6f5ca7763ab573023da3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
