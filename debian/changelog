@@ -116,8 +116,9 @@ linux (4.12.13-1rpi1) buster-staging; urgency=medium
   * Deversion libbabeltrace-dev and libbabeltrace-ctf-dev build-dependencys
   * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
   * Remove ext3 modules from d-i package list.
+  * Disable CONFIG_BCM_VC_SM
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 12 Sep 2017 23:37:19 +0200
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Sun, 24 Sep 2017 16:59:07 +0200
 
 linux (4.12.13-1) unstable; urgency=medium
 
