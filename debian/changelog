@@ -1,4 +1,4 @@
-linux (4.9.47-1rpi1) stretch-staging; urgency=medium
+linux (4.9.51-1rpi1) stretch-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -118,6 +118,141 @@ linux (4.9.47-1rpi1) stretch-staging; urgency=medium
   * Remove ext3 modules from d-i package list.
 
  -- Mateusz Łukasik <mati75@linuxmint.pl>  Mon, 11 Sep 2017 23:10:14 +0200
+
+linux (4.9.51-1) stretch; urgency=medium
+
+  * New upstream stable update:
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.48
+    - [x86] i2c: ismt: Don't duplicate the receive length for block reads
+    - [x86] i2c: ismt: Return EMSGSIZE for block reads with bogus length
+    - crypto: algif_skcipher - only call put_page on referenced and used pages
+    - mm, uprobes: fix multiple free of ->uprobes_state.xol_area
+    - mm, madvise: ensure poisoned pages are removed from per-cpu lists
+    - ceph: fix readpage from fscache
+    - cpumask: fix spurious cpumask_of_node() on non-NUMA multi-node configs
+    - cpuset: Fix incorrect memory_pressure control file mapping
+    - CIFS: Fix maximum SMB2 header size
+    - lib/mpi: kunmap after finishing accessing buffer
+    - drm/ttm: Fix accounting error when fail to get pages for pool
+    - [armhf,arm64] kvm: Force reading uncached stage2 PGD
+    - epoll: fix race between ep_poll_callback(POLLFREE) and
+      ep_free()/ep_remove()
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.49
+    - usb:xhci:Fix regression when ATI chipsets detected
+    - [armhf] USB: musb: fix external abort on suspend
+    - USB: core: Avoid race of async_completed() w/ usbdev_release()
+    - [x86] staging/rts5208: fix incorrect shift to extract upper nybble
+    - driver core: bus: Fix a potential double free
+    - ath10k: fix memory leak in rx ring buffer allocation
+    - Input: trackpoint - assume 3 buttons when buttons detection fails
+    - rtlwifi: rtl_pci_probe: Fix fail path of _rtl_pci_find_adapter
+    - dlm: avoid double-free on error path in dlm_device_{register,unregister}
+    - mwifiex: correct channel stat buffer overflows
+    - [s390x] mm: avoid empty zero pages for KVM guests to avoid postcopy hangs
+    - drm/nouveau/pci/msi: disable MSI on big-endian platforms by default
+    - scsi: sg: protect against races between mmap() and SG_SET_RESERVED_SIZE
+    - scsi: sg: recheck MMAP_IO request length with lock held
+    - [arm64] drm/bridge: adv7511: Use work_struct to defer hotplug handing to
+      out of irq context
+    - [arm64] drm/bridge: adv7511: Switch to using
+      drm_kms_helper_hotplug_event()
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.50
+    - [armhf] mtd: nand: mxc: Fix mxc_v1 ooblayout
+    - nvme-fabrics: generate spec-compliant UUID NQNs
+    - btrfs: resume qgroup rescan on rw remount
+    - mm/memory.c: fix mem_cgroup_oom_disable() call missing
+    - ALSA: msnd: Optimize / harden DSP and MIDI loops
+    - [arm64] dts: marvell: armada-37xx: Fix GIC maintenance interrupt
+    - [armhf] 8692/1: mm: abort uaccess retries upon fatal signal
+    - NFS: Fix 2 use after free issues in the I/O code
+    - NFS: Sync the correct byte range during synchronous writes
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.51
+    - ipv6: accept 64k - 1 packet length in ip6_find_1stfragopt()
+    - ipv6: add rcu grace period before freeing fib6_node
+    - macsec: add genl family module alias
+    - udp: on peeking bad csum, drop packets even if not at head
+    - qlge: avoid memcpy buffer overflow
+    - [x86] netvsc: fix deadlock betwen link status and removal
+    - cxgb4: Fix stack out-of-bounds read due to wrong size to t4_record_mbox()
+    - kcm: do not attach PF_KCM sockets to avoid deadlock
+    - Revert "net: phy: Correctly process PHY_HALTED in phy_stop_machine()"
+    - bridge: switchdev: Clear forward mark when transmitting packet
+    - Revert "net: use lib/percpu_counter API for fragmentation mem accounting"
+    - Revert "net: fix percpu memory leaks"
+    - gianfar: Fix Tx flow control deactivation
+    - vhost_net: correctly check tx avail during rx busy polling
+    - ip6_gre: update mtu properly in ip6gre_err
+    - ipv6: fix memory leak with multiple tables during netns destruction
+    - ipv6: fix typo in fib6_net_exit()
+    - sctp: fix missing wake ups in some situations
+    - ip_tunnel: fix setting ttl and tos value in collect_md mode
+    - f2fs: let fill_super handle roll-forward errors
+    - f2fs: check hot_data for roll-forward recovery
+    - [amd64] fsgsbase: Fully initialize FS and GS state in start_thread_common
+    - [amd64] fsgsbase: Report FSBASE and GSBASE correctly in core dumps
+    - [amd64] switch_to: Rewrite FS/GS switching yet again to fix AMD CPUs
+    - xfs: fix spurious spin_is_locked() assert failures on non-smp kernels
+    - xfs: push buffer of flush locked dquot to avoid quotacheck deadlock
+    - xfs: try to avoid blowing out the transaction reservation when bunmaping
+      a shared extent
+    - xfs: release bli from transaction properly on fs shutdown
+    - xfs: remove bli from AIL before release on transaction abort
+    - xfs: don't allow bmap on rt files
+    - xfs: free uncommitted transactions during log recovery
+    - xfs: free cowblocks and retry on buffered write ENOSPC
+    - xfs: don't crash on unexpected holes in dir/attr btrees
+    - xfs: check _btree_check_block value
+    - xfs: set firstfsb to NULLFSBLOCK before feeding it to _bmapi_write
+    - xfs: check _alloc_read_agf buffer pointer before using
+    - xfs: fix quotacheck dquot id overflow infinite loop
+    - xfs: fix multi-AG deadlock in xfs_bunmapi
+    - xfs: Fix per-inode DAX flag inheritance
+    - xfs: fix inobt inode allocation search optimization
+    - xfs: clear MS_ACTIVE after finishing log recovery
+    - xfs: don't leak quotacheck dquots when cow recovery
+    - iomap: fix integer truncation issues in the zeroing and dirtying helpers
+    - xfs: write unmount record for ro mounts
+    - xfs: toggle readonly state around xfs_log_mount_finish
+    - xfs: Properly retry failed inode items in case of error during buffer
+      writeback
+    - xfs: fix recovery failure when log record header wraps log end
+    - xfs: always verify the log tail during recovery
+    - xfs: fix log recovery corruption error due to tail overwrite
+    - xfs: handle -EFSCORRUPTED during head/tail verification
+    - xfs: stop searching for free slots in an inode chunk when there are none
+    - xfs: evict all inodes involved with log redo item
+    - xfs: check for race with xfs_reclaim_inode() in xfs_ifree_cluster()
+    - xfs: don't log dirty ranges for ordered buffers
+    - xfs: skip bmbt block ino validation during owner change
+    - xfs: move bmbt owner change to last step of extent swap
+    - xfs: disallow marking previously dirty buffers as ordered
+    - xfs: relog dirty buffers during swapext bmbt owner change
+    - xfs: disable per-inode DAX flag
+    - xfs: fix incorrect log_flushed on fsync
+    - xfs: don't set v3 xflags for v2 inodes
+    - xfs: open code end_buffer_async_write in xfs_finish_page_writeback
+    - md/raid5: release/flush io in raid5_do_work()
+    - ipv6: Fix may be used uninitialized warning in rt6_check
+
+  [ Ben Hutchings ]
+  * Fix regressions caused by fix for CVE-2016-7097 (Closes: #873026):
+    - ext4: preserve i_mode if __ext4_set_acl() fails
+    - ext4: Don't clear SGID when inheriting ACLs
+  * [mips{,64}el/loongson-3] Add support for Loongson-3A/B 3000 CPUs, thanks to
+    YunQiang Su (Closes: #871701):
+    - Add Loongson-3A R3 basic support
+    - Add NMI handler support
+    - Support 4 packages in CPU Hwmon driver
+    - IRQ balancing for PCI devices
+    - support irq_set_affinity() in i8259 chip
+    - Make enum loongson_cpu_type more clear
+  * [ppc64el] Invalidate ERAT on powersave wakeup for POWER9, thanks to
+    Michael Neuling (Closes: #868887)
+  * ip6_fib: Avoid ABI change in 4.9.51
+  * inet_frag: Limit ABI change in 4.9.51
+  * nfs: Ignore ABI change in 4.9.50
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Thu, 28 Sep 2017 19:27:56 +0200
 
 linux (4.9.47-1) stretch; urgency=medium
 
@@ -1328,6 +1463,47 @@ linux (4.9.47-1) stretch; urgency=medium
     e.g. Arndale development boards, thanks to Wei Liu (Closes: #865645).
 
  -- Ben Hutchings <ben@decadent.org.uk>  Sun, 10 Sep 2017 04:30:59 +0100
+
+linux (4.9.30-2+deb9u5) stretch-security; urgency=medium
+
+  * [amd64] mm: revert ELF_ET_DYN_BASE base changes (fixes regression of ASan)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Tue, 19 Sep 2017 02:34:05 +0100
+
+linux (4.9.30-2+deb9u4) stretch-security; urgency=high
+
+  * [x86] KVM: fix singlestepping over syscall (CVE-2017-7518)
+  * binfmt_elf: use ELF_ET_DYN_BASE only for PIE (CVE-2017-1000370,
+    CVE-2017-1000371)
+  * ALSA: timer: Fix race between read and ioctl (CVE-2017-1000380)
+  * ALSA: timer: Fix missing queue indices reset at SNDRV_TIMER_IOCTL_SELECT
+    (CVE-2017-1000380)
+  * xfrm: policy: check policy direction value (CVE-2017-11600)
+  * packet: fix tp_reserve race in packet_set_ring (CVE-2017-1000111)
+  * ipv6: Should use consistent conditional judgement for ip6 fragment
+    between __ip6_append_data and ip6_finish_output
+  * udp: consistently apply ufo or fragmentation (CVE-2017-1000112)
+  * sctp: Avoid out-of-bounds reads from address storage (CVE-2017-7558)
+  * xen: fix bio vec merging (CVE-2017-12134) (Closes: #866511)
+  * driver core: platform: fix race condition with driver_override
+    (CVE-2017-12146)
+  * nl80211: check for the required netlink attributes presence (CVE-2017-12153)
+  * [x86] kvm: nVMX: Don't allow L2 to access the hardware CR8 (CVE-2017-12154)
+  * scsi: qla2xxx: Fix an integer overflow in sysfs code (CVE-2017-14051)
+  * tcp: initialize rcv_mss to TCP_MIN_MSS instead of 0 (CVE-2017-14106)
+  * Sanitize 'move_pages()' permission checks (CVE-2017-14140)
+  * video: fbdev: aty: do not leak uninitialized padding in clk to userspace
+    (CVE-2017-14156)
+  * xfs: XFS_IS_REALTIME_INODE() should be false if no rt device present
+    (CVE-2017-14340)
+  * scsi: fix the issue that iscsi_if_rx doesn't parse nlmsg properly
+    (CVE-2017-14489)
+  * packet: Don't write vnet header beyond end of buffer (CVE-2017-14497)
+  * Bluetooth: Properly check L2CAP config option output buffer length
+    (CVE-2017-1000251) (Closes: #875881)
+  * [x86] KVM: VMX: Do not BUG() on out-of-bounds guest IRQ (CVE-2017-1000252)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 18 Sep 2017 16:40:43 +0100
 
 linux (4.9.30-2+deb9u3) stretch-security; urgency=high
 
