@@ -36,7 +36,7 @@ debian/fs-enable-link-security-restrictions-by-default.patch
 
 # Set various features runtime-disabled by default
 debian/sched-autogroup-disabled.patch
-#features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
+features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
 debian/cgroups-Document-the-Debian-memory-resource-controll.patch
 debian/yama-disable-by-default.patch
 debian/add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
@@ -684,80 +684,14 @@ bugfix/all/pie-aslr/s390-redefine-randomize_et_dyn-for-elf_et_dyn_base.patch
 bugfix/all/pie-aslr/mm-split-et_dyn-aslr-from-mmap-aslr.patch
 bugfix/all/pie-aslr/mm-fold-arch_randomize_brk-into-arch_has_elf_randomi.patch
 bugfix/all/pie-aslr/binfmt_elf-use-elf_et_dyn_base-only-for-pie.patch
-<<<<<<< HEAD
-=======
 bugfix/all/pie-aslr/mm-revert-x86_64-and-arm64-elf_et_dyn_base-base-chan.patch
->>>>>>> debian/3.16.48-1
 
 # Security fixes
 bugfix/all/timer-restrict-timer_stats-to-initial-pid-namespace.patch
 bugfix/all/mbcache-reschedule-before-restarting-iteration-in-mb_cache_entry_alloc.patch
-<<<<<<< HEAD
-bugfix/all/ping-implement-proper-locking.patch
-bugfix/all/xfrm_user-validate-xfrm_msg_newae-xfrma_replay_esn_val-replay_window.patch
-bugfix/all/xfrm_user-validate-xfrm_msg_newae-incoming-esn-size-harder.patch
-bugfix/x86/vmwgfx-null-pointer-dereference-in-vmw_surface_define_ioctl.patch
-bugfix/x86/drm-vmwgfx-fix-integer-overflow-in-vmw_surface_define_ioctl.patch
-bugfix/all/net-packet-fix-overflow-in-check-for-priv-area-size.patch
-bugfix/all/net-packet-fix-overflow-in-check-for-tp_frame_nr.patch
-bugfix/all/net-packet-fix-overflow-in-check-for-tp_reserve.patch
-bugfix/all/mm-mempolicy.c-fix-error-handling-in-set_mempolicy-a.patch
-bugfix/all/crypto-ahash-fix-einprogress-notification-callback.patch
-bugfix/all/usb-iowarrior-fix-null-deref-at-probe.patch
-bugfix/all/keys-special-dot-prefixed-keyring-name-bug-fix.patch
-bugfix/all/keys-reinstate-eperm-for-a-key-type-name-beginning-w.patch
-bugfix/all/keys-disallow-keyrings-beginning-with-.-to-be-joined.patch
-bugfix/all/keys-fix-keyctl_set_reqkey_keyring-to-not-leak-threa.patch
-bugfix/all/mm-huge_memory.c-fix-up-mm-huge_memory.c-respect-fol.patch
-bugfix/all/tracing-use-strlcpy-instead-of-strcpy-in-__trace_fin.patch
-bugfix/all/ipx-call-ipxitf_put-in-ioctl-error-path.patch
-bugfix/all/nfsd-check-for-oversized-nfsv2-v3-arguments.patch
-bugfix/all/nfsd4-minor-nfsv2-v3-write-decoding-cleanup.patch
-bugfix/all/nfsd-stricter-decoding-of-write-like-nfsv2-v3-ops.patch
-bugfix/all/media-dvb-usb-v2-avoid-use-after-free.patch
-bugfix/all/dccp-tcp-do-not-inherit-mc_list-from-parent.patch
-bugfix/all/usb-serial-io_ti-fix-information-leak-in-completion-.patch
-bugfix/all/usb-serial-omninet-fix-reference-leaks-at-open.patch
-bugfix/all/ipv6-prevent-overrun-when-parsing-v6-header-options.patch
-bugfix/all/ipv6-check-ip6_find_1stfragopt-return-value-properly.patch
-bugfix/all/ipv6-xfrm-handle-errors-reported-by-xfrm6_find_1stfr.patch
-bugfix/all/ipv6-fix-leak-in-ipv6_gso_segment.patch
-bugfix/all/sctp-do-not-inherit-ipv6_-mc-ac-fl-_list-from-parent.patch
-bugfix/all/ipv6-dccp-do-not-inherit-ipv6_mc_list-from-parent.patch
-bugfix/all/ipv6-fix-out-of-bound-writes-in-__ip6_append_data.patch
-bugfix/all/mm-larger-stack-guard-gap-between-vmas.patch
-bugfix/all/mm-fix-new-crash-in-unmapped_area_topdown.patch
-bugfix/all/regulator-core-Fix-regualtor_ena_gpio_free-not-to-ac.patch
-bugfix/x86/drm-vmwgfx-limit-the-number-of-mip-levels-in-vmw_gb_.patch
-bugfix/all/rxrpc-Fix-several-cases-where-a-padded-len-isn-t-che.patch
-bugfix/all/brcmfmac-fix-possible-buffer-overflow-in-brcmf_cfg80.patch
-bugfix/all/ipv6-avoid-overflow-of-offset-in-ip6_find_1stfragopt.patch
-bugfix/x86/mm-Tighten-x86-dev-mem-with-zeroing-reads.patch
-bugfix/x86/drm-vmwgfx-Make-sure-backup_handle-is-always-valid.patch
-bugfix/all/xen-blkback-don-t-leak-stack-data-via-response-ring.patch
-bugfix/all/mqueue-fix-a-use-after-free-in-sys_mq_notify.patch
-bugfix/all/char-lp-fix-possible-integer-overflow-in-lp_setup.patch
-bugfix/all/fs-exec.c-account-for-argv-envp-pointers.patch
-bugfix/all/dentry-name-snapshots.patch
-bugfix/x86/kvm-x86-fix-singlestepping-over-syscall.patch
-bugfix/all/alsa-timer-fix-race-between-read-and-ioctl.patch
-bugfix/all/alsa-timer-fix-missing-queue-indices-reset-at.patch
-bugfix/all/timerfd-protect-the-might-cancel-mechanism-proper.patch
-bugfix/all/xfrm-policy-check-policy-direction-value.patch
-bugfix/all/packet-fix-tp_reserve-race-in-packet_set_ring.patch
-bugfix/all/ipv6-should-use-consistent-conditional-judgement-for.patch
-bugfix/all/udp-consistently-apply-ufo-or-fragmentation.patch
-bugfix/all/xen-fix-bio-vec-merging.patch
 bugfix/all/nl80211-check-for-the-required-netlink-attributes-presence.patch
 bugfix/x86/kvm-nvmx-don-t-allow-l2-to-access-the-hardware-cr8.patch
 bugfix/all/scsi-qla2xxx-fix-an-integer-overflow-in-sysfs-code.patch
-bugfix/all/tcp-initialize-rcv_mss-to-tcp_min_mss-instead-of-0.patch
-bugfix/all/sanitize-move_pages-permission-checks.patch
-=======
-bugfix/all/nl80211-check-for-the-required-netlink-attributes-presence.patch
-bugfix/x86/kvm-nvmx-don-t-allow-l2-to-access-the-hardware-cr8.patch
-bugfix/all/scsi-qla2xxx-fix-an-integer-overflow-in-sysfs-code.patch
->>>>>>> debian/3.16.48-1
 bugfix/all/video-fbdev-aty-do-not-leak-uninitialized-padding-in.patch
 bugfix/all/xfs-xfs_is_realtime_inode-should-be-false-if-no-rt-d.patch
 bugfix/all/scsi-fix-the-issue-that-iscsi_if_rx-doesn-t-parse-nlmsg-properly.patch
@@ -821,7 +755,10 @@ debian/revert-x86-panic-replace-smp_send_stop-with-kdump-friendly-version.patch
 debian/net-avoid-abi-change-for-net-fix-sk_mem_reclaim_partial.patch
 debian/vfs-avoid-abi-change-for-mnt-add-a-per-mount-namespace-limit.patch
 debian/mmc-avoid-abi-change-for-mmc-core-annotate-cmd_hdr-as-__le32.patch
-<<<<<<< HEAD
+debian/revert-scsi-scsi_error-count-medium-access-timeout-only-once.patch
+debian/ttm-avoid-abi-change-for-ttm_ref_object_add-require_existed.patch
+debian/ptrace-avoid-abi-change-in-3.16.48.patch
+debian/xfrm-avoid-abi-change-in-3.16.48.patch
 
 rpi/rpi_1000_df585c81fd08256cfa2aa67d178b11d109606083.patch
 rpi/rpi_1001_d911fd1e5c1448caf47977e08050c2f79447f786.patch
@@ -919,10 +856,3 @@ rpi/rpi_1092_ad7559876771c85a5da8b89687291b5294d2b559.patch
 rpi/rpi_1093_952a6ac6911ee697117eaf0f8c42ff6582d351a6.patch
 rpi/rpi_1094_377c82aa1d31b37f1096096b0e4c65beb0bc5c49.patch
 rpi/rpi_9999_other_changes.patch
-
-=======
-debian/revert-scsi-scsi_error-count-medium-access-timeout-only-once.patch
-debian/ttm-avoid-abi-change-for-ttm_ref_object_add-require_existed.patch
-debian/ptrace-avoid-abi-change-in-3.16.48.patch
-debian/xfrm-avoid-abi-change-in-3.16.48.patch
->>>>>>> debian/3.16.48-1
