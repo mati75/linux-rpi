@@ -244,10 +244,19 @@ bugfix/all/ecryptfs-fix-handling-of-directory-opening.patch
 bugfix/all/-xen-blkfront-fix-accounting-of-reqs-when-migrating.patch
 bugfix/all/locking-mutex-don-t-assume-task_running.patch
 bugfix/all/SUNRPC-fix-refcounting-problems-with-auth_gss-messag.patch
-bugfix/all/ext4-fix-fencepost-in-s_first_meta_bg-validation.patch
 bugfix/all/ixgbe-do-not-call-check_link-for-ethtool-in-ixgbe_ge.patch
 bugfix/all/ipv6-fix-a-refcnt-leak-with-peer-addr.patch
 bugfix/all/ipv6-use-addrconf_get_prefix_route-to-remove-peer-ad.patch
+bugfix/all/ext2-don-t-clear-sgid-when-inheriting-acls.patch
+bugfix/all/hfsplus-don-t-clear-sgid-when-inheriting-acls.patch
+bugfix/all/reiserfs-don-t-clear-sgid-when-inheriting-acls.patch
+bugfix/all/btrfs-don-t-clear-sgid-when-inheriting-acls.patch
+bugfix/all/jfs-don-t-clear-sgid-when-inheriting-acls.patch
+bugfix/all/xfs-don-t-clear-sgid-when-inheriting-acls.patch
+bugfix/all/f2fs-don-t-clear-sgid-when-inheriting-acls.patch
+bugfix/all/ext4-preserve-i_mode-if-__ext4_set_acl-fails.patch
+bugfix/all/ext4-don-t-clear-sgid-when-inheriting-acls.patch
+bugfix/all/vfs-avoid-creation-of-inode-number-0-in-get_next_ino.patch
 
 # memfd_create() & kdbus backport
 features/all/kdbus/mm-allow-drivers-to-prevent-new-writable-mappings.patch
@@ -675,10 +684,15 @@ bugfix/all/pie-aslr/s390-redefine-randomize_et_dyn-for-elf_et_dyn_base.patch
 bugfix/all/pie-aslr/mm-split-et_dyn-aslr-from-mmap-aslr.patch
 bugfix/all/pie-aslr/mm-fold-arch_randomize_brk-into-arch_has_elf_randomi.patch
 bugfix/all/pie-aslr/binfmt_elf-use-elf_et_dyn_base-only-for-pie.patch
+<<<<<<< HEAD
+=======
+bugfix/all/pie-aslr/mm-revert-x86_64-and-arm64-elf_et_dyn_base-base-chan.patch
+>>>>>>> debian/3.16.48-1
 
 # Security fixes
 bugfix/all/timer-restrict-timer_stats-to-initial-pid-namespace.patch
 bugfix/all/mbcache-reschedule-before-restarting-iteration-in-mb_cache_entry_alloc.patch
+<<<<<<< HEAD
 bugfix/all/ping-implement-proper-locking.patch
 bugfix/all/xfrm_user-validate-xfrm_msg_newae-xfrma_replay_esn_val-replay_window.patch
 bugfix/all/xfrm_user-validate-xfrm_msg_newae-incoming-esn-size-harder.patch
@@ -739,6 +753,11 @@ bugfix/x86/kvm-nvmx-don-t-allow-l2-to-access-the-hardware-cr8.patch
 bugfix/all/scsi-qla2xxx-fix-an-integer-overflow-in-sysfs-code.patch
 bugfix/all/tcp-initialize-rcv_mss-to-tcp_min_mss-instead-of-0.patch
 bugfix/all/sanitize-move_pages-permission-checks.patch
+=======
+bugfix/all/nl80211-check-for-the-required-netlink-attributes-presence.patch
+bugfix/x86/kvm-nvmx-don-t-allow-l2-to-access-the-hardware-cr8.patch
+bugfix/all/scsi-qla2xxx-fix-an-integer-overflow-in-sysfs-code.patch
+>>>>>>> debian/3.16.48-1
 bugfix/all/video-fbdev-aty-do-not-leak-uninitialized-padding-in.patch
 bugfix/all/xfs-xfs_is_realtime_inode-should-be-false-if-no-rt-d.patch
 bugfix/all/scsi-fix-the-issue-that-iscsi_if_rx-doesn-t-parse-nlmsg-properly.patch
@@ -802,6 +821,7 @@ debian/revert-x86-panic-replace-smp_send_stop-with-kdump-friendly-version.patch
 debian/net-avoid-abi-change-for-net-fix-sk_mem_reclaim_partial.patch
 debian/vfs-avoid-abi-change-for-mnt-add-a-per-mount-namespace-limit.patch
 debian/mmc-avoid-abi-change-for-mmc-core-annotate-cmd_hdr-as-__le32.patch
+<<<<<<< HEAD
 
 rpi/rpi_1000_df585c81fd08256cfa2aa67d178b11d109606083.patch
 rpi/rpi_1001_d911fd1e5c1448caf47977e08050c2f79447f786.patch
@@ -900,3 +920,9 @@ rpi/rpi_1093_952a6ac6911ee697117eaf0f8c42ff6582d351a6.patch
 rpi/rpi_1094_377c82aa1d31b37f1096096b0e4c65beb0bc5c49.patch
 rpi/rpi_9999_other_changes.patch
 
+=======
+debian/revert-scsi-scsi_error-count-medium-access-timeout-only-once.patch
+debian/ttm-avoid-abi-change-for-ttm_ref_object_add-require_existed.patch
+debian/ptrace-avoid-abi-change-in-3.16.48.patch
+debian/xfrm-avoid-abi-change-in-3.16.48.patch
+>>>>>>> debian/3.16.48-1
