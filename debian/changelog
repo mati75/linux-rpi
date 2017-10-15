@@ -1,4 +1,4 @@
-linux (4.13.4-1rpi1) buster-staging; urgency=medium
+linux (4.13.4-2rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -118,6 +118,28 @@ linux (4.13.4-1rpi1) buster-staging; urgency=medium
   * Remove ext3 modules from d-i package list.
 
  -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 05 Oct 2017 08:43:51 +0200
+
+linux (4.13.4-2) unstable; urgency=medium
+
+  [ Ben Hutchings ]
+  * [armhf,arm64] thermal: Enable BCM2835_THERMAL as module (Closes: #877699)
+
+  [ Salvatore Bonaccorso ]
+  * brcmfmac: add length check in brcmf_cfg80211_escan_handler()
+    (CVE-2017-0786)
+  * [powerpc*] Use emergency stack for kernel TM Bad Thing program
+    (CVE-2017-1000255)
+  * [powerpc*] Fix illegal TM state in signal handler
+  * mac80211: fix deadlock in driver-managed RX BA session start.
+    Thanks to Eric Côté (Closes: #878092)
+  * KEYS: prevent KEYCTL_READ on negative key (CVE-2017-12192)
+  * waitid(): Add missing access_ok() checks (CVE-2017-5123)
+  * ALSA: seq: Fix use-after-free at creating a port (CVE-2017-15265)
+  * [x86] KVM: nVMX: update last_nonleaf_level when initializing nested EPT
+    (CVE-2017-12188)
+  * [x86] KVM: MMU: always terminate page walks at level 1 (CVE-2017-12188)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Sun, 15 Oct 2017 08:57:36 +0200
 
 linux (4.13.4-1) unstable; urgency=medium
 
