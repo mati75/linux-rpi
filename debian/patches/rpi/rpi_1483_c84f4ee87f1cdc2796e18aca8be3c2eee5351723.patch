@@ -1,0 +1,28 @@
+commit c84f4ee87f1cdc2796e18aca8be3c2eee5351723
+Author: Alex Deucher <alexander.deucher@amd.com>
+Date:   Fri Sep 15 11:55:27 2017 -0400
+
+    drm/radeon: disable hard reset in hibernate for APUs
+    
+    commit 820608548737e315c6f93e3099b4e65bde062334 upstream.
+    
+    Fixes a hibernation regression on APUs.
+    
+    Bug: https://bugzilla.kernel.org/show_bug.cgi?id=191571
+    Fixes: 274ad65c9d02bdc (drm/radeon: hard reset r600 and newer GPU when hibernating.)
+    Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/gpu/drm/radeon/radeon_device.c b/drivers/gpu/drm/radeon/radeon_device.c
+index 3b21ca5a6c81..82b01123c386 100644
+--- a/drivers/gpu/drm/radeon/radeon_device.c
++++ b/drivers/gpu/drm/radeon/radeon_device.c
+@@ -1674,7 +1674,7 @@ int radeon_suspend_kms(struct drm_device *dev, bool suspend,
+ 	radeon_agp_suspend(rdev);
+ 
+ 	pci_save_state(dev->pdev);
+-	if (freeze && rdev->family >= CHIP_CEDAR) {
++	if (freeze && rdev->family >= CHIP_CEDAR && !(rdev->flags & RADEON_IS_IGP)) {
+ 		rdev->asic->asic_reset(rdev, true);
+ 		pci_restore_state(dev->pdev);
+ 	} else if (suspend) {

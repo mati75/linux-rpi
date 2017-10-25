@@ -1,0 +1,61 @@
+commit 5e1ac911c13da7731caeaa5eac52e818f1e5574c
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Sun Feb 26 01:13:02 2017 +0000
+
+    SQUASH: Add LOCO-V2 overlay from last commit
+
+diff --git a/arch/arm/boot/dts/overlays/dionaudio-loco-v2-overlay.dts b/arch/arm/boot/dts/overlays/dionaudio-loco-v2-overlay.dts
+new file mode 100644
+index 000000000000..a1af93de3011
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/dionaudio-loco-v2-overlay.dts
+@@ -0,0 +1,49 @@
++/*
++ * Definitions for Dion Audio LOCO-V2 DAC-AMP
++ *  eg. dtoverlay=dionaudio-loco-v2
++ *
++ * PCM5242 DAC (in software mode) and TPA3255 AMP.
++ */
++
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target = <&sound>;
++		frag0: __overlay__ {
++			compatible = "dionaudio,dionaudio-loco-v2";
++			i2s-controller = <&i2s>;
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&i2s>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target = <&i2c1>;
++		__overlay__ {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "okay";
++
++			pcm5122@4c {
++				#sound-dai-cells = <0>;
++				compatible = "ti,pcm5122";
++				reg = <0x4d>;
++				status = "okay";
++			};
++		};
++	};
++
++	__overrides__ {
++		24db_digital_gain = <&frag0>,"dionaudio,24db_digital_gain?";
++	};
++};

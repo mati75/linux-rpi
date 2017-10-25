@@ -1,0 +1,38 @@
+commit ed1ee7b11052ac53b43e124986a744e40a3780aa
+Author: Kevin Cernekee <cernekee@chromium.org>
+Date:   Sat Sep 16 21:08:22 2017 -0700
+
+    brcmfmac: Avoid possible out-of-bounds read
+    
+    In brcmf_p2p_notify_rx_mgmt_p2p_probereq(), chanspec is assigned before
+    the length of rxframe is validated.  This could lead to uninitialized
+    data being accessed (but not printed).  Since we already have a
+    perfectly good endian-swapped copy of rxframe->chanspec in ch.chspec,
+    and ch.chspec is not modified by decchspec(), avoid the extra
+    assignment and use ch.chspec in the debug print.
+    
+    Suggested-by: Mattias Nissler <mnissler@chromium.org>
+    Signed-off-by: Kevin Cernekee <cernekee@chromium.org>
+    Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
+index 85d949e03f79..10571ef8dfe0 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/p2p.c
+@@ -1853,7 +1853,6 @@ s32 brcmf_p2p_notify_rx_mgmt_p2p_probereq(struct brcmf_if *ifp,
+ 	struct afx_hdl *afx_hdl = &p2p->afx_hdl;
+ 	struct brcmf_cfg80211_vif *vif = ifp->vif;
+ 	struct brcmf_rx_mgmt_data *rxframe = (struct brcmf_rx_mgmt_data *)data;
+-	u16 chanspec = be16_to_cpu(rxframe->chanspec);
+ 	struct brcmu_chan ch;
+ 	u8 *mgmt_frame;
+ 	u32 mgmt_frame_len;
+@@ -1906,7 +1905,7 @@ s32 brcmf_p2p_notify_rx_mgmt_p2p_probereq(struct brcmf_if *ifp,
+ 	cfg80211_rx_mgmt(&vif->wdev, freq, 0, mgmt_frame, mgmt_frame_len, 0);
+ 
+ 	brcmf_dbg(INFO, "mgmt_frame_len (%d) , e->datalen (%d), chanspec (%04x), freq (%d)\n",
+-		  mgmt_frame_len, e->datalen, chanspec, freq);
++		  mgmt_frame_len, e->datalen, ch.chspec, freq);
+ 
+ 	return 0;
+ }

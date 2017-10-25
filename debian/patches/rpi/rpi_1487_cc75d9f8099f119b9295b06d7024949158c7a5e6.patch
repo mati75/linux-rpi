@@ -1,0 +1,37 @@
+commit cc75d9f8099f119b9295b06d7024949158c7a5e6
+Author: LEROY Christophe <christophe.leroy@c-s.fr>
+Date:   Wed Sep 13 12:44:57 2017 +0200
+
+    crypto: talitos - fix hashing
+    
+    commit 886a27c0fc8a34633aadb0986dba11d8c150ae2e upstream.
+    
+    md5sum on some files gives wrong result
+    
+    Exemple:
+    
+    With the md5sum from libkcapi:
+    c15115c05bad51113f81bdaee735dd09  test
+    
+    With the original md5sum:
+    bbdf41d80ba7e8b2b7be3a0772be76cb  test
+    
+    This patch fixes this issue
+    
+    Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+    Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/crypto/talitos.c b/drivers/crypto/talitos.c
+index d5e73003a0cc..e2d323fa2437 100644
+--- a/drivers/crypto/talitos.c
++++ b/drivers/crypto/talitos.c
+@@ -1769,7 +1769,7 @@ static int common_nonsnoop_hash(struct talitos_edesc *edesc,
+ 
+ 	sg_count = edesc->src_nents ?: 1;
+ 	if (is_sec1 && sg_count > 1)
+-		sg_copy_to_buffer(areq->src, sg_count, edesc->buf, length);
++		sg_copy_to_buffer(req_ctx->psrc, sg_count, edesc->buf, length);
+ 	else
+ 		sg_count = dma_map_sg(dev, req_ctx->psrc, sg_count,
+ 				      DMA_TO_DEVICE);

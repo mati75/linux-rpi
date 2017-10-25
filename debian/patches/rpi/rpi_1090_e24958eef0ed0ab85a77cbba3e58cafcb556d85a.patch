@@ -1,0 +1,23 @@
+commit e24958eef0ed0ab85a77cbba3e58cafcb556d85a
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Dec 17 13:37:07 2015 +0000
+
+    hci_h5: Don't send conf_req when ACTIVE
+    
+    Without this patch, a modem and kernel can continuously bombard each
+    other with conf_req and conf_rsp messages, in a demented game of tag.
+
+diff --git a/drivers/bluetooth/hci_h5.c b/drivers/bluetooth/hci_h5.c
+index 0879d64b1caf..5161ab30fd53 100644
+--- a/drivers/bluetooth/hci_h5.c
++++ b/drivers/bluetooth/hci_h5.c
+@@ -310,7 +310,8 @@ static void h5_handle_internal_rx(struct hci_uart *hu)
+ 		h5_link_control(hu, conf_req, 3);
+ 	} else if (memcmp(data, conf_req, 2) == 0) {
+ 		h5_link_control(hu, conf_rsp, 2);
+-		h5_link_control(hu, conf_req, 3);
++		if (h5->state != H5_ACTIVE)
++		    h5_link_control(hu, conf_req, 3);
+ 	} else if (memcmp(data, conf_rsp, 2) == 0) {
+ 		if (H5_HDR_LEN(hdr) > 2)
+ 			h5->tx_win = (data[2] & 0x07);

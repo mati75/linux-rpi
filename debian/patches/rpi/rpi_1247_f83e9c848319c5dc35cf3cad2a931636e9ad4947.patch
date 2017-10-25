@@ -1,0 +1,21 @@
+commit f83e9c848319c5dc35cf3cad2a931636e9ad4947
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Wed May 10 12:47:46 2017 +0100
+
+    dwcotg: Allow to build without FIQ on ARM64
+    
+    Signed-off-by: popcornmix <popcornmix@gmail.com>
+
+diff --git a/drivers/usb/host/Kconfig b/drivers/usb/host/Kconfig
+index 5a5f6c925f43..c50476b3d724 100644
+--- a/drivers/usb/host/Kconfig
++++ b/drivers/usb/host/Kconfig
+@@ -764,7 +764,7 @@ config USB_HWA_HCD
+ 
+ config USB_DWCOTG
+ 	tristate "Synopsis DWC host support"
+-	depends on USB && FIQ
++	depends on USB && (FIQ || ARM64)
+ 	help
+ 	  The Synopsis DWC controller is a dual-role
+ 	  host/peripheral/OTG ("On The Go") USB controllers.

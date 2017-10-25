@@ -1,0 +1,18 @@
+commit 9d20415ae3e19a9f4f8523312b4ea3671620b621
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Wed Aug 16 22:01:33 2017 +0100
+
+    config: Enable CONFIG_BRCMDBG temporarily for debugging on pi0
+
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 23360b1b1319..d0a9d90b6873 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -520,6 +520,7 @@ CONFIG_B43=m
+ CONFIG_B43LEGACY=m
+ CONFIG_BRCMFMAC=m
+ CONFIG_BRCMFMAC_USB=y
++CONFIG_BRCMDBG=y
+ CONFIG_HOSTAP=m
+ CONFIG_P54_COMMON=m
+ CONFIG_P54_USB=m

@@ -1,0 +1,34 @@
+commit 871cd3dd14bc65be796434743d27dd4b7af3ef47
+Author: Boris Brezillon <boris.brezillon@free-electrons.com>
+Date:   Thu Dec 1 22:00:20 2016 +0100
+
+    clk: bcm: Allow rate change propagation to PLLH_AUX on VEC clock
+    
+    The VEC clock requires needs to be set at exactly 108MHz. Allow rate
+    change propagation on PLLH_AUX to match this requirement wihtout
+    impacting other IPs (PLLH is currently only used by the HDMI encoder,
+    which cannot be enabled when the VEC encoder is enabled).
+    
+    Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+    Reviewed-by: Eric Anholt <eric@anholt.net>
+    Signed-off-by: Stephen Boyd <sboyd@codeaurora.org>
+    (cherry picked from commit d86d46af84855403c00018be1c3e7bc190f2a6cd)
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index dafaa6b22724..0453d7c6a639 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -1870,7 +1870,12 @@ static const struct bcm2835_clk_desc clk_desc_array[] = {
+ 		.ctl_reg = CM_VECCTL,
+ 		.div_reg = CM_VECDIV,
+ 		.int_bits = 4,
+-		.frac_bits = 0),
++		.frac_bits = 0,
++		/*
++		 * Allow rate change propagation only on PLLH_AUX which is
++		 * assigned index 7 in the parent array.
++		 */
++		.set_rate_parent = BIT(7)),
+ 
+ 	/* dsi clocks */
+ 	[BCM2835_CLOCK_DSI0E]	= REGISTER_PER_CLK(

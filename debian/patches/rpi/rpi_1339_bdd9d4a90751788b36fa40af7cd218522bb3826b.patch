@@ -1,0 +1,103 @@
+commit bdd9d4a90751788b36fa40af7cd218522bb3826b
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Fri Aug 18 18:46:20 2017 +0100
+
+    vcsm: Provide new ioctl to clean/invalidate a 2D block
+
+diff --git a/drivers/char/broadcom/vc_sm/vmcs_sm.c b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+index 7d417214f428..cc8a3969cf38 100644
+--- a/drivers/char/broadcom/vc_sm/vmcs_sm.c
++++ b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+@@ -2814,6 +2814,51 @@ static long vc_sm_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 			}
+ 		}
+ 		break;
++	/* Flush/Invalidate the cache for a given mapping. */
++	case VMCS_SM_CMD_CLEAN_INVALID2:
++		{
++				int i, j;
++				struct vmcs_sm_ioctl_clean_invalid2 ioparam;
++				struct vmcs_sm_ioctl_clean_invalid_block *block = NULL;
++
++				/* Get parameter data. */
++				if (copy_from_user(&ioparam,
++						   (void *)arg, sizeof(ioparam)) != 0) {
++					pr_err("[%s]: failed to copy-from-user header for cmd %x\n",
++							__func__, cmdnr);
++					ret = -EFAULT;
++					goto out;
++				}
++				block = kzalloc(ioparam.op_count * sizeof(struct vmcs_sm_ioctl_clean_invalid_block), GFP_KERNEL);
++				if (!block) {
++					ret = -EFAULT;
++					goto out;
++				}
++				if (copy_from_user(block,
++						   (void *)(arg + sizeof(ioparam)), ioparam.op_count * sizeof(struct vmcs_sm_ioctl_clean_invalid_block)) != 0) {
++					pr_err("[%s]: failed to copy-from-user payload for cmd %x\n",
++							__func__, cmdnr);
++					ret = -EFAULT;
++					goto out;
++				}
++
++				for (i=0; i<ioparam.op_count; i++) {
++					struct vmcs_sm_ioctl_clean_invalid_block *op = block + i;
++					for (j = 0; j < op->block_count; ++j) {
++						extern void v7_dma_inv_range(void *start, void *end);
++						extern void v7_dma_clean_range(void *start, void *end);
++						unsigned long base = (unsigned long)op->start_address + j * op->inter_block_stride;
++						unsigned long end = base + op->block_size;
++						/* L1/L2 cache clean/invalidate */
++						if (op->invalidate_mode == 1)
++							v7_dma_inv_range((void *)base, (void *)end);
++						else
++							v7_dma_clean_range((void *)base, (void *)end);
++					}
++				}
++				kfree(block);
++			}
++		break;
+ 
+ 	default:
+ 		{
+diff --git a/include/linux/broadcom/vmcs_sm_ioctl.h b/include/linux/broadcom/vmcs_sm_ioctl.h
+index 334f36d0d697..2de7f1f41070 100644
+--- a/include/linux/broadcom/vmcs_sm_ioctl.h
++++ b/include/linux/broadcom/vmcs_sm_ioctl.h
+@@ -62,6 +62,7 @@ enum vmcs_sm_cmd_e {
+ 	VMCS_SM_CMD_HOST_WALK_PID_MAP,
+ 
+ 	VMCS_SM_CMD_CLEAN_INVALID,
++	VMCS_SM_CMD_CLEAN_INVALID2,
+ 
+ 	VMCS_SM_CMD_LAST	/* Do no delete */
+ };
+@@ -175,6 +176,18 @@ struct vmcs_sm_ioctl_clean_invalid {
+ 	} s[8];
+ };
+ 
++struct vmcs_sm_ioctl_clean_invalid2 {
++	uint8_t op_count;
++	uint8_t zero[3];
++	struct vmcs_sm_ioctl_clean_invalid_block {
++		uint16_t invalidate_mode;
++		uint16_t block_count;
++		void *   start_address;
++		uint32_t block_size;
++		uint32_t inter_block_stride;
++	} s[0];
++};
++
+ /* IOCTL numbers */
+ #define VMCS_SM_IOCTL_MEM_ALLOC\
+ 	_IOR(VMCS_SM_MAGIC_TYPE, VMCS_SM_CMD_ALLOC,\
+@@ -206,6 +219,9 @@ struct vmcs_sm_ioctl_clean_invalid {
+ #define VMCS_SM_IOCTL_MEM_CLEAN_INVALID\
+ 	_IOR(VMCS_SM_MAGIC_TYPE, VMCS_SM_CMD_CLEAN_INVALID,\
+ 	 struct vmcs_sm_ioctl_clean_invalid)
++#define VMCS_SM_IOCTL_MEM_CLEAN_INVALID2\
++	_IOR(VMCS_SM_MAGIC_TYPE, VMCS_SM_CMD_CLEAN_INVALID2,\
++	 struct vmcs_sm_ioctl_clean_invalid2)
+ 
+ #define VMCS_SM_IOCTL_SIZE_USR_HDL\
+ 	_IOR(VMCS_SM_MAGIC_TYPE, VMCS_SM_CMD_SIZE_USR_HANDLE,\

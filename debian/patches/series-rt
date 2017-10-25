@@ -204,7 +204,6 @@ features/all/rt/0203-hrtimer-Move-schedule_work-call-to-helper-thread.patch
 features/all/rt/0204-locking-percpu-rwsem-Remove-preempt_disable-variants.patch
 features/all/rt/0205-fs-namespace-preemption-fix.patch
 features/all/rt/0206-mm-Protect-activate_mm-by-preempt_-disable-enable-_r.patch
-features/all/rt/0207-block-Turn-off-warning-which-is-bogus-on-RT.patch
 features/all/rt/0208-fs-ntfs-disable-interrupt-only-on-RT.patch
 features/all/rt/0209-fs-jbd2-pull-your-plug-when-waiting-for-space.patch
 features/all/rt/0210-x86-Convert-mce-timer-to-hrtimer.patch
@@ -330,3 +329,7 @@ features/all/rt/0329-md-disable-bcache.patch
 features/all/rt/0330-workqueue-Prevent-deadlock-stall-on-RT.patch
 features/all/rt/0331-Add-localversion-for-RT-release.patch
 features/all/rt/0332-Linux-4.9.47-rt37-REBASE.patch
+#features/all/rt/signals-allow-rt-tasks-to-cache-one-sigqueue-struct.patch
+#features/all/rt/printk-kill.patch
+#features/all/rt/printk-27force_early_printk-27-boot-param-to-help-with-debugging.patch
+#features/all/rt/sched-mmdrop-delayed.patch

@@ -1,0 +1,33 @@
+commit 695542ac4e9c13407263a9087d4388f9ec820593
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Mon Jan 16 16:33:54 2017 +0000
+
+    config: Add CONFIG_TCP_CONG_BBR
+    See: https://github.com/raspberrypi/linux/issues/1784
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 12e8155c175d..22ade0fe5a15 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -99,6 +99,8 @@ CONFIG_INET_XFRM_MODE_TRANSPORT=m
+ CONFIG_INET_XFRM_MODE_TUNNEL=m
+ CONFIG_INET_XFRM_MODE_BEET=m
+ CONFIG_INET_DIAG=m
++CONFIG_TCP_CONG_ADVANCED=y
++CONFIG_TCP_CONG_BBR=m
+ CONFIG_IPV6=m
+ CONFIG_IPV6_ROUTER_PREF=y
+ CONFIG_INET6_AH=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 8acee9f31202..219f67051a25 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -95,6 +95,8 @@ CONFIG_INET_XFRM_MODE_TRANSPORT=m
+ CONFIG_INET_XFRM_MODE_TUNNEL=m
+ CONFIG_INET_XFRM_MODE_BEET=m
+ CONFIG_INET_DIAG=m
++CONFIG_TCP_CONG_ADVANCED=y
++CONFIG_TCP_CONG_BBR=m
+ CONFIG_IPV6=m
+ CONFIG_IPV6_ROUTER_PREF=y
+ CONFIG_INET6_AH=m

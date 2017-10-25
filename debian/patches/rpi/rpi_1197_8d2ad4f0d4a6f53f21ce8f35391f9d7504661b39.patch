@@ -1,0 +1,36 @@
+commit 8d2ad4f0d4a6f53f21ce8f35391f9d7504661b39
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Fri Mar 10 14:43:15 2017 +0000
+
+    bcm2835-v4l2: Fix buffer overflow problem
+    
+    https://github.com/raspberrypi/linux/issues/1447
+    port_parameter_get() failed to account for the header
+    (u32 id and u32 size) in the size before memcpying
+    the response into the response buffer, so overrunning
+    the provided buffer by 8 bytes.
+    
+    Account for those bytes, and also a belt-and-braces
+    check to ensure we never copy more than *value_size
+    bytes into value.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/media/platform/bcm2835/mmal-vchiq.c b/drivers/media/platform/bcm2835/mmal-vchiq.c
+index 781322542d5a..e4b243b33f58 100644
+--- a/drivers/media/platform/bcm2835/mmal-vchiq.c
++++ b/drivers/media/platform/bcm2835/mmal-vchiq.c
+@@ -1315,7 +1315,12 @@ static int port_parameter_get(struct vchiq_mmal_instance *instance,
+ 	}
+ 
+ 	ret = -rmsg->u.port_parameter_get_reply.status;
+-	if (ret) {
++	/* port_parameter_get_reply.size includes the header,
++	 * whilst *value_size doesn't.
++	 */
++	rmsg->u.port_parameter_get_reply.size -= (2 * sizeof(u32));
++
++	if (ret || rmsg->u.port_parameter_get_reply.size > *value_size) {
+ 		/* Copy only as much as we have space for
+ 		 * but report true size of parameter
+ 		 */

@@ -1,0 +1,26 @@
+commit 2605e958dd2eac462e1c4b30b49e9580c4464f1c
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Feb 26 09:58:22 2015 +0000
+
+    pinctrl-bcm2835: Only request the interrupts listed in the DTB
+    
+    Although the GPIO controller can generate three interrupts (four counting
+    the common one), the device tree files currently only specify two. In the
+    absence of the third, simply don't register that interrupt (as opposed to
+    registering 0), which has the effect of making it impossible to generate
+    interrupts for GPIOs 46-53 which, since they share pins with the SD card
+    interface, is unlikely to be a problem.
+
+diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+index 107ad7d58de8..644bdecbcfcb 100644
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -1042,6 +1042,8 @@ static int bcm2835_pinctrl_probe(struct platform_device *pdev)
+ 		int len;
+ 		char *name;
+ 		pc->irq[i] = irq_of_parse_and_map(np, i);
++		if (pc->irq[i] == 0)
++			break;
+ 		pc->irq_data[i].pc = pc;
+ 		pc->irq_data[i].irqgroup = i;
+ 

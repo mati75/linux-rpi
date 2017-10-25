@@ -1,0 +1,38 @@
+commit 41fbffadbad773f1fb4a392126d8bb4d1926475c
+Author: Tang Junhui <tang.junhui@zte.com.cn>
+Date:   Wed Sep 6 14:25:53 2017 +0800
+
+    bcache: do not subtract sectors_to_gc for bypassed IO
+    
+    commit 69daf03adef5f7bc13e0ac86b4b8007df1767aab upstream.
+    
+    Since bypassed IOs use no bucket, so do not subtract sectors_to_gc to
+    trigger gc thread.
+    
+    Signed-off-by: tang.junhui <tang.junhui@zte.com.cn>
+    Acked-by: Coly Li <colyli@suse.de>
+    Reviewed-by: Eric Wheeler <bcache@linux.ewheeler.net>
+    Reviewed-by: Christoph Hellwig <hch@lst.de>
+    Signed-off-by: Jens Axboe <axboe@kernel.dk>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/md/bcache/request.c b/drivers/md/bcache/request.c
+index a37c1776f2e3..e0f1c6d534fe 100644
+--- a/drivers/md/bcache/request.c
++++ b/drivers/md/bcache/request.c
+@@ -196,12 +196,12 @@ static void bch_data_insert_start(struct closure *cl)
+ 	struct data_insert_op *op = container_of(cl, struct data_insert_op, cl);
+ 	struct bio *bio = op->bio, *n;
+ 
+-	if (atomic_sub_return(bio_sectors(bio), &op->c->sectors_to_gc) < 0)
+-		wake_up_gc(op->c);
+-
+ 	if (op->bypass)
+ 		return bch_data_invalidate(cl);
+ 
++	if (atomic_sub_return(bio_sectors(bio), &op->c->sectors_to_gc) < 0)
++		wake_up_gc(op->c);
++
+ 	/*
+ 	 * Journal writes are marked REQ_PREFLUSH; if the original write was a
+ 	 * flush, it'll wait on the journal write.

@@ -1,0 +1,25 @@
+commit 4ded7f85c871b5edd6a3bb4f166670f5b8ae052c
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Oct 6 13:23:32 2017 +0100
+
+    brcmfmac: request_firmware_direct is quieter
+    
+    Since we don't have any CLM-capable firmware yet, silence the warning
+    of its absence by using request_firmware_direct, which should also
+    be marginally quicker.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+index 678dbb1dc7b0..297fbd7db6a2 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+@@ -194,7 +194,7 @@ int brcmf_c_process_clm_blob(struct brcmf_if *ifp)
+ 		return err;
+ 	}
+ 
+-	err = request_firmware(&clm, clm_name, dev);
++	err = request_firmware_direct(&clm, clm_name, dev);
+ 	if (err) {
+ 		if (err == -ENOENT)
+ 			return 0;

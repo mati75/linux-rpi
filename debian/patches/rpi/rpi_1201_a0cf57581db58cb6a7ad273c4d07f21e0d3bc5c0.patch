@@ -1,0 +1,32 @@
+commit a0cf57581db58cb6a7ad273c4d07f21e0d3bc5c0
+Author: K. Y. Srinivasan <kys@microsoft.com>
+Date:   Thu Dec 22 16:54:00 2016 -0800
+
+    Drivers: hv: vmbus: Fix a rescind handling bug
+    
+    commit ccb61f8a99e6c29df4fb96a65dad4fad740d5be9 upstream.
+    
+    The host can rescind a channel that has been offered to the
+    guest and once the channel is rescinded, the host does not
+    respond to any requests on that channel. Deal with the case where
+    the guest may be blocked waiting for a response from the host.
+    
+    Signed-off-by: K. Y. Srinivasan <kys@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+index 1606e7f08f4b..9aff4f6f5423 100644
+--- a/drivers/hv/channel.c
++++ b/drivers/hv/channel.c
+@@ -506,6 +506,11 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
+ 
+ 	wait_for_completion(&info->waitevent);
+ 
++	if (channel->rescind) {
++		ret = -ENODEV;
++		goto post_msg_err;
++	}
++
+ post_msg_err:
+ 	/*
+ 	 * If the channel has been rescinded;

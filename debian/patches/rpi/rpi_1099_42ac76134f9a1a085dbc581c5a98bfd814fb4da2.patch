@@ -1,0 +1,43 @@
+commit 42ac76134f9a1a085dbc581c5a98bfd814fb4da2
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Oct 3 10:16:03 2016 -0700
+
+    staging/vchi: Update for rename of page_cache_release() to put_page().
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
+index 8c7f31f8d395..862fabf5682c 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
+@@ -438,7 +438,7 @@ create_pagelist(char __user *buf, size_t count, unsigned short type,
+ 			while (actual_pages > 0)
+ 			{
+ 				actual_pages--;
+-				page_cache_release(pages[actual_pages]);
++				put_page(pages[actual_pages]);
+ 			}
+ 			kfree(pagelist);
+ 			if (actual_pages == 0)
+@@ -577,7 +577,7 @@ free_pagelist(PAGELIST_T *pagelist, int actual)
+ 				offset = 0;
+ 				set_page_dirty(pg);
+ 			}
+-			page_cache_release(pg);
++			put_page(pg);
+ 		}
+ 	}
+ 
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index 085d37588c59..5a2b8fb459eb 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -1530,7 +1530,7 @@ dump_phys_mem(void *virt_addr, uint32_t num_bytes)
+ 		kunmap(page);
+ 
+ 	for (page_idx = 0; page_idx < num_pages; page_idx++)
+-		page_cache_release(pages[page_idx]);
++		put_page(pages[page_idx]);
+ 
+ 	kfree(pages);
+ }

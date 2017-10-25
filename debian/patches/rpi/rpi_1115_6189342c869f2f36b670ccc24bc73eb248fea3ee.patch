@@ -1,0 +1,20 @@
+commit 6189342c869f2f36b670ccc24bc73eb248fea3ee
+Author: Aaron Shaw <shawaj@gmail.com>
+Date:   Tue Jan 10 16:05:41 2017 +0000
+
+    Add driver_name property
+    
+    Add driver name property for use with 5.1 passthrough audio in LibreElec and other Kodi based OSs
+
+diff --git a/sound/soc/bcm/justboom-dac.c b/sound/soc/bcm/justboom-dac.c
+index 8fd50dbe6815..05a224ec712d 100644
+--- a/sound/soc/bcm/justboom-dac.c
++++ b/sound/soc/bcm/justboom-dac.c
+@@ -98,6 +98,7 @@ static struct snd_soc_dai_link snd_rpi_justboom_dac_dai[] = {
+ /* audio machine driver */
+ static struct snd_soc_card snd_rpi_justboom_dac = {
+ 	.name         = "snd_rpi_justboom_dac",
++	.driver_name  = "JustBoomDac",
+ 	.owner        = THIS_MODULE,
+ 	.dai_link     = snd_rpi_justboom_dac_dai,
+ 	.num_links    = ARRAY_SIZE(snd_rpi_justboom_dac_dai),

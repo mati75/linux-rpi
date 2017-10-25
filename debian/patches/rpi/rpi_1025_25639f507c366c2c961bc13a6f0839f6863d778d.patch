@@ -1,0 +1,26 @@
+commit 25639f507c366c2c961bc13a6f0839f6863d778d
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Tue Dec 6 17:05:39 2016 +0000
+
+    bcm2835-rng: Avoid initialising if already enabled
+    
+    Avoids the 0x40000 cycles of warmup again if firmware has already used it
+
+diff --git a/drivers/char/hw_random/bcm2835-rng.c b/drivers/char/hw_random/bcm2835-rng.c
+index 574211a49549..e66c0fca8c60 100644
+--- a/drivers/char/hw_random/bcm2835-rng.c
++++ b/drivers/char/hw_random/bcm2835-rng.c
+@@ -102,9 +102,10 @@ static int bcm2835_rng_probe(struct platform_device *pdev)
+ 		rng_setup(rng_base);
+ 
+ 	/* set warm-up count & enable */
+-	__raw_writel(RNG_WARMUP_COUNT, rng_base + RNG_STATUS);
+-	__raw_writel(RNG_RBGEN, rng_base + RNG_CTRL);
+-
++	if (!(__raw_readl(rng_base + RNG_CTRL) & RNG_RBGEN)) {
++		__raw_writel(RNG_WARMUP_COUNT, rng_base + RNG_STATUS);
++		__raw_writel(RNG_RBGEN, rng_base + RNG_CTRL);
++	}
+ 	/* register driver */
+ 	err = hwrng_register(&bcm2835_rng_ops);
+ 	if (err) {

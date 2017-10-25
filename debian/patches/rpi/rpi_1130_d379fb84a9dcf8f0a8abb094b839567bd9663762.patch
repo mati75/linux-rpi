@@ -1,0 +1,26 @@
+commit d379fb84a9dcf8f0a8abb094b839567bd9663762
+Author: Michael Zoran <mzoran@crowfest.net>
+Date:   Sat Jan 14 21:46:04 2017 -0800
+
+    ARM64: Use dwc_otg driver by default for USB.
+    
+    If it breaks on anybody, they can use the standard device tree
+    overlays to switch back to the dwc2 driver.
+    
+    Signed-off-by: Michael Zoran <mzoran@crowfest.net>
+
+diff --git a/arch/arm/boot/dts/bcm2710.dtsi b/arch/arm/boot/dts/bcm2710.dtsi
+index f6def5d7e5d6..3e134a120861 100644
+--- a/arch/arm/boot/dts/bcm2710.dtsi
++++ b/arch/arm/boot/dts/bcm2710.dtsi
+@@ -146,10 +146,3 @@
+ 	interrupts = <8>;
+ };
+ 
+-#ifdef RPI364
+-&usb {
+-	compatible = "brcm,bcm2835-usb";
+-	reg = <0x7e980000 0x10000>;
+-	interrupts = <1 9>;
+-};
+-#endif

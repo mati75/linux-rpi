@@ -1,0 +1,27 @@
+commit 0bbebf9f53a3ca48d123651f3af74ba2f1e388c0
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Sun Sep 24 22:43:16 2017 +0100
+
+    vc-sm: Fix a printf of a dma_addr_t from %u to %pad
+    
+    Avoids issues when other build parameters result in
+    dma_addr_t being a 64 bit value.
+    See #2196.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/char/broadcom/vc_sm/vmcs_sm.c b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+index 3d9cd0591d27..754f29e88968 100644
+--- a/drivers/char/broadcom/vc_sm/vmcs_sm.c
++++ b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+@@ -575,8 +575,8 @@ static int vc_sm_global_state_show(struct seq_file *s, void *v)
+ 				   resource->attach);
+ 			seq_printf(s, "           SGT          %p\n",
+ 				   resource->sgt);
+-			seq_printf(s, "           DMA_ADDR     0x%08X\n",
+-				   resource->dma_addr);
++			seq_printf(s, "           DMA_ADDR     %pad\n",
++				   &resource->dma_addr);
+ 		}
+ 	}
+ 	seq_printf(s, "\n\nTotal resource count:   %d\n\n", resource_count);

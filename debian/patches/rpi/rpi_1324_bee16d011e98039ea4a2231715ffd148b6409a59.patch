@@ -1,0 +1,139 @@
+commit bee16d011e98039ea4a2231715ffd148b6409a59
+Author: Noralf Trønnes <noralf@tronnes.org>
+Date:   Sun Jul 16 00:13:36 2017 +0200
+
+    BCM270X_DT: Add PaPiRus overlay
+    
+    Add Device Tree overlay for the PaPiRus ePaper Screens by Pi Supply.
+    
+    Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index c50b1dfa9d73..758fc6e2cc27 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -64,6 +64,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	mmc.dtbo \
+ 	mpu6050.dtbo \
+ 	mz61581.dtbo \
++	papirus.dtbo \
+ 	pi3-act-led.dtbo \
+ 	pi3-disable-bt.dtbo \
+ 	pi3-disable-wifi.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index e6d777a601c9..16c0a9e043ec 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1001,6 +1001,17 @@ Params: speed                   Display SPI bus speed
+         xohms                   Touchpanel sensitivity (X-plate resistance)
+ 
+ 
++Name:   papirus
++Info:   PaPiRus ePaper Screen by Pi Supply (both HAT and pHAT)
++Load:   dtoverlay=papirus,<param>=<val>
++Params: panel                   Display panel (required):
++                                1.44": e1144cs021
++                                2.0":  e2200cs021
++                                2.7":  e2271cs021
++
++        speed                   Display SPI bus speed
++
++
+ [ The pcf2127-rtc overlay has been deleted. See i2c-rtc. ]
+ 
+ 
+diff --git a/arch/arm/boot/dts/overlays/papirus-overlay.dts b/arch/arm/boot/dts/overlays/papirus-overlay.dts
+new file mode 100644
+index 000000000000..58eb8847f9ed
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/papirus-overlay.dts
+@@ -0,0 +1,89 @@
++/* PaPiRus ePaper Screen by Pi Supply */
++
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target = <&i2c_arm>;
++		__overlay__ {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "okay";
++
++			display_temp: lm75@48 {
++				compatible = "lm75b";
++				reg = <0x48>;
++				status = "okay";
++				#thermal-sensor-cells = <0>;
++			};
++		};
++	};
++
++	fragment@1 {
++		target-path = "/";
++		__overlay__ {
++			thermal-zones {
++				display {
++					polling-delay-passive = <0>;
++					polling-delay = <0>;
++					thermal-sensors = <&display_temp>;
++				};
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&spi0>;
++		__overlay__ {
++			status = "okay";
++
++			spidev@0{
++				status = "disabled";
++			};
++		};
++	};
++
++	fragment@3 {
++		target = <&gpio>;
++		__overlay__ {
++			repaper_pins: repaper_pins {
++				brcm,pins = <14 15 23 24 25>;
++				brcm,function = <1 1 1 1 0>; /* out out out out in */
++			};
++		};
++	};
++
++	fragment@4 {
++		target = <&spi0>;
++		__overlay__ {
++			/* needed to avoid dtc warning */
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			repaper: repaper@0{
++				compatible = "not_set";
++				reg = <0>;
++				pinctrl-names = "default";
++				pinctrl-0 = <&repaper_pins>;
++
++				spi-max-frequency = <8000000>;
++
++				panel-on-gpios = <&gpio 23 0>;
++				border-gpios = <&gpio 14 0>;
++				discharge-gpios = <&gpio 15 0>;
++				reset-gpios = <&gpio 24 0>;
++				busy-gpios = <&gpio 25 0>;
++
++				repaper-thermal-zone = "display";
++			};
++		};
++	};
++
++	__overrides__ {
++		panel = <&repaper>, "compatible";
++		speed = <&repaper>, "spi-max-frequency:0";
++	};
++};

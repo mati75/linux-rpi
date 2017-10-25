@@ -1,0 +1,47 @@
+commit 0f732731594f8a36b4dd0516818d270f6c99feb9
+Author: Myungho Jung <mhjungk@gmail.com>
+Date:   Wed Apr 19 15:24:50 2017 -0700
+
+    timer/sysclt: Restrict timer migration sysctl values to 0 and 1
+    
+    commit b94bf594cf8ed67cdd0439e70fa939783471597a upstream.
+    
+    timer_migration sysctl acts as a boolean switch, so the allowed values
+    should be restricted to 0 and 1.
+    
+    Add the necessary extra fields to the sysctl table entry to enforce that.
+    
+    [ tglx: Rewrote changelog ]
+    
+    Signed-off-by: Myungho Jung <mhjungk@gmail.com>
+    Link: http://lkml.kernel.org/r/1492640690-3550-1-git-send-email-mhjungk@gmail.com
+    Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+    Cc: Kazuhiro Hayashi <kazuhiro3.hayashi@toshiba.co.jp>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index bc15d6c4eb66..f498aa1d9f0d 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -1201,6 +1201,8 @@ static struct ctl_table kern_table[] = {
+ 		.maxlen		= sizeof(unsigned int),
+ 		.mode		= 0644,
+ 		.proc_handler	= timer_migration_handler,
++		.extra1		= &zero,
++		.extra2		= &one,
+ 	},
+ #endif
+ #ifdef CONFIG_BPF_SYSCALL
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index df445cde8a1e..7d670362891a 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -240,7 +240,7 @@ int timer_migration_handler(struct ctl_table *table, int write,
+ 	int ret;
+ 
+ 	mutex_lock(&mutex);
+-	ret = proc_dointvec(table, write, buffer, lenp, ppos);
++	ret = proc_dointvec_minmax(table, write, buffer, lenp, ppos);
+ 	if (!ret && write)
+ 		timers_update_migration(false);
+ 	mutex_unlock(&mutex);

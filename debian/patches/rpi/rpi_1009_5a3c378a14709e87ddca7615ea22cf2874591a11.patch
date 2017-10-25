@@ -1,0 +1,21 @@
+commit 5a3c378a14709e87ddca7615ea22cf2874591a11
+Author: notro <notro@tronnes.org>
+Date:   Thu Jul 10 13:59:47 2014 +0200
+
+    pinctrl-bcm2835: Set base to 0 give expected gpio numbering
+    
+    Signed-off-by: Noralf Tronnes <notro@tronnes.org>
+
+diff --git a/drivers/pinctrl/bcm/pinctrl-bcm2835.c b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+index fa77165fab2c..d11e2e4ea189 100644
+--- a/drivers/pinctrl/bcm/pinctrl-bcm2835.c
++++ b/drivers/pinctrl/bcm/pinctrl-bcm2835.c
+@@ -386,7 +386,7 @@ static struct gpio_chip bcm2835_gpio_chip = {
+ 	.get = bcm2835_gpio_get,
+ 	.set = bcm2835_gpio_set,
+ 	.to_irq = bcm2835_gpio_to_irq,
+-	.base = -1,
++	.base = 0,
+ 	.ngpio = BCM2835_NUM_GPIOS,
+ 	.can_sleep = false,
+ };

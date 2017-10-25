@@ -1,0 +1,38 @@
+commit f0748934f5d392f27fdf5669d5891908b667abda
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jan 23 11:41:54 2017 -0800
+
+    BCM270X: Disable VEC unless vc4-kms-v3d is present.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/arch/arm/boot/dts/bcm2708-rpi.dtsi b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+index 46cf8602c3b9..1f5f40b9c7cb 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+@@ -107,3 +107,7 @@
+ &usb {
+ 	power-domains = <&power RPI_POWER_DOMAIN_USB>;
+ };
++
++&vec {
++	status = "disabled";
++};
+diff --git a/arch/arm/boot/dts/overlays/vc4-kms-v3d-overlay.dts b/arch/arm/boot/dts/overlays/vc4-kms-v3d-overlay.dts
+index f25cd9a39368..a8ef8c905166 100644
+--- a/arch/arm/boot/dts/overlays/vc4-kms-v3d-overlay.dts
++++ b/arch/arm/boot/dts/overlays/vc4-kms-v3d-overlay.dts
+@@ -148,6 +148,13 @@
+ 		};
+ 	};
+ 
++	fragment@18 {
++		target = <&vec>;
++		__overlay__  {
++			status = "okay";
++		};
++	};
++
+ 	__overrides__ {
+ 		cma-256 = <0>,"+0-1-2-3-4";
+ 		cma-192 = <0>,"-0+1-2-3-4";

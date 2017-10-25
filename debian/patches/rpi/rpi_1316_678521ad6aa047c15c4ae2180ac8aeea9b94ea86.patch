@@ -1,0 +1,31 @@
+commit 678521ad6aa047c15c4ae2180ac8aeea9b94ea86
+Author: Noralf Trønnes <noralf@tronnes.org>
+Date:   Thu Feb 23 14:29:55 2017 +0100
+
+    drm/tinydrm: mipi-dbi: Silence: ‘cmd’ may be used uninitialized
+    
+    Fix this warning:
+    drivers/gpu/drm/tinydrm/mipi-dbi.c: In function ‘mipi_dbi_debugfs_command_write’:
+    drivers/gpu/drm/tinydrm/mipi-dbi.c:905:8: warning: ‘cmd’ may be used uninitialized in this function [-Wmaybe-uninitialized]
+      ret = mipi_dbi_command_buf(mipi, cmd, parameters, i);
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    cmd can't be used uninitialized, but to satisfy the compiler,
+    initialize it to zero.
+    
+    Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+diff --git a/drivers/gpu/drm/tinydrm/mipi-dbi.c b/drivers/gpu/drm/tinydrm/mipi-dbi.c
+index 80dfac7ba7ed..3f7892eb8e67 100644
+--- a/drivers/gpu/drm/tinydrm/mipi-dbi.c
++++ b/drivers/gpu/drm/tinydrm/mipi-dbi.c
+@@ -861,7 +861,7 @@ static ssize_t mipi_dbi_debugfs_command_write(struct file *file,
+ {
+ 	struct seq_file *m = file->private_data;
+ 	struct mipi_dbi *mipi = m->private;
+-	u8 val, cmd, parameters[64];
++	u8 val, cmd = 0, parameters[64];
+ 	char *buf, *pos, *token;
+ 	unsigned int i;
+ 	int ret;

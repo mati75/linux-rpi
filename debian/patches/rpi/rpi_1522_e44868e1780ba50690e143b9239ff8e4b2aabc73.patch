@@ -1,0 +1,105 @@
+commit e44868e1780ba50690e143b9239ff8e4b2aabc73
+Author: Andreas Gruenbacher <agruenba@redhat.com>
+Date:   Tue Sep 19 07:15:35 2017 -0500
+
+    gfs2: Fix debugfs glocks dump
+    
+    commit 10201655b085df8e000822e496e5d4016a167a36 upstream.
+    
+    The switch to rhashtables (commit 88ffbf3e03) broke the debugfs glock
+    dump (/sys/kernel/debug/gfs2/<device>/glocks) for dumps bigger than a
+    single buffer: the right function for restarting an rhashtable iteration
+    from the beginning of the hash table is rhashtable_walk_enter;
+    rhashtable_walk_stop + rhashtable_walk_start will just resume from the
+    current position.
+    
+    The upstream commit doesn't directly apply to 4.9.y because 4.9.y
+    doesn't have the following mainline commits:
+    
+      92ecd73a887c4a2b94daf5fc35179d75d1c4ef95
+        gfs2: Deduplicate gfs2_{glocks,glstats}_open
+      cc37a62785a584f4875788689f3fd1fa6e4eb291
+        gfs2: Replace rhashtable_walk_init with rhashtable_walk_enter
+    
+    Signed-off-by: Andreas Gruenbacher <agruenba@redhat.com>
+    Signed-off-by: Bob Peterson <rpeterso@redhat.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/gfs2/glock.c b/fs/gfs2/glock.c
+index 7bff6f46f5da..f7cae1629c6c 100644
+--- a/fs/gfs2/glock.c
++++ b/fs/gfs2/glock.c
+@@ -1836,13 +1836,9 @@ static void *gfs2_glock_seq_start(struct seq_file *seq, loff_t *pos)
+ {
+ 	struct gfs2_glock_iter *gi = seq->private;
+ 	loff_t n = *pos;
+-	int ret;
+-
+-	if (gi->last_pos <= *pos)
+-		n = (*pos - gi->last_pos);
+ 
+-	ret = rhashtable_walk_start(&gi->hti);
+-	if (ret)
++	rhashtable_walk_enter(&gl_hash_table, &gi->hti);
++	if (rhashtable_walk_start(&gi->hti) != 0)
+ 		return NULL;
+ 
+ 	do {
+@@ -1850,6 +1846,7 @@ static void *gfs2_glock_seq_start(struct seq_file *seq, loff_t *pos)
+ 	} while (gi->gl && n--);
+ 
+ 	gi->last_pos = *pos;
++
+ 	return gi->gl;
+ }
+ 
+@@ -1861,6 +1858,7 @@ static void *gfs2_glock_seq_next(struct seq_file *seq, void *iter_ptr,
+ 	(*pos)++;
+ 	gi->last_pos = *pos;
+ 	gfs2_glock_iter_next(gi);
++
+ 	return gi->gl;
+ }
+ 
+@@ -1870,6 +1868,7 @@ static void gfs2_glock_seq_stop(struct seq_file *seq, void *iter_ptr)
+ 
+ 	gi->gl = NULL;
+ 	rhashtable_walk_stop(&gi->hti);
++	rhashtable_walk_exit(&gi->hti);
+ }
+ 
+ static int gfs2_glock_seq_show(struct seq_file *seq, void *iter_ptr)
+@@ -1932,12 +1931,10 @@ static int gfs2_glocks_open(struct inode *inode, struct file *file)
+ 		struct gfs2_glock_iter *gi = seq->private;
+ 
+ 		gi->sdp = inode->i_private;
+-		gi->last_pos = 0;
+ 		seq->buf = kmalloc(GFS2_SEQ_GOODSIZE, GFP_KERNEL | __GFP_NOWARN);
+ 		if (seq->buf)
+ 			seq->size = GFS2_SEQ_GOODSIZE;
+ 		gi->gl = NULL;
+-		ret = rhashtable_walk_init(&gl_hash_table, &gi->hti, GFP_KERNEL);
+ 	}
+ 	return ret;
+ }
+@@ -1948,7 +1945,6 @@ static int gfs2_glocks_release(struct inode *inode, struct file *file)
+ 	struct gfs2_glock_iter *gi = seq->private;
+ 
+ 	gi->gl = NULL;
+-	rhashtable_walk_exit(&gi->hti);
+ 	return seq_release_private(inode, file);
+ }
+ 
+@@ -1960,12 +1956,10 @@ static int gfs2_glstats_open(struct inode *inode, struct file *file)
+ 		struct seq_file *seq = file->private_data;
+ 		struct gfs2_glock_iter *gi = seq->private;
+ 		gi->sdp = inode->i_private;
+-		gi->last_pos = 0;
+ 		seq->buf = kmalloc(GFS2_SEQ_GOODSIZE, GFP_KERNEL | __GFP_NOWARN);
+ 		if (seq->buf)
+ 			seq->size = GFS2_SEQ_GOODSIZE;
+ 		gi->gl = NULL;
+-		ret = rhashtable_walk_init(&gl_hash_table, &gi->hti, GFP_KERNEL);
+ 	}
+ 	return ret;
+ }

@@ -1,0 +1,22 @@
+commit d77157e826429325005b501d1c2e9928c45bcc96
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Oct 3 10:21:17 2016 -0700
+
+    drivers/vchi: Remove dependency on CONFIG_BROKEN.
+    
+    The driver builds now.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/staging/vc04_services/Kconfig b/drivers/staging/vc04_services/Kconfig
+index 9676fb29075a..db8e1beb89f9 100644
+--- a/drivers/staging/vc04_services/Kconfig
++++ b/drivers/staging/vc04_services/Kconfig
+@@ -1,6 +1,6 @@
+ config BCM2708_VCHIQ
+ 	tristate "Videocore VCHIQ"
+-	depends on RASPBERRYPI_FIRMWARE && BROKEN
++	depends on RASPBERRYPI_FIRMWARE
+ 	default y
+ 	help
+ 		Kernel to VideoCore communication interface for the

@@ -1,0 +1,636 @@
+commit 8de000d05b51ec04aeaee40f129ba8fbb6a5aa57
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Jul 25 11:27:17 2017 -0700
+
+    drm/vc4: Add an ioctl for labeling GEM BOs for summary stats
+    
+    This has proven immensely useful for debugging memory leaks and
+    overallocation (which is a rather serious concern on the platform,
+    given that we typically run at about 256MB of CMA out of up to 1GB
+    total memory, with framebuffers that are about 8MB ecah).
+    
+    The state of the art without this is to dump debug logs from every GL
+    application, guess as to kernel allocations based on bo_stats, and try
+    to merge that all together into a global picture of memory allocation
+    state.  With this, you can add a couple of calls to the debug build of
+    the 3D driver and get a pretty detailed view of GPU memory usage from
+    /debug/dri/0/bo_stats (or when we debug print to dmesg on allocation
+    failure).
+    
+    The Mesa side currently labels at the gallium resource level (so you
+    see that a 1920x20 pixmap has been created, presumably for the window
+    system panel), but we could extend that to be even more useful with
+    glObjectLabel() names being sent all the way down to the kernel.
+    
+    (partial) example of sorted debugfs output with Mesa labeling all
+    resources:
+    
+                   kernel BO cache:  16392kb BOs (3)
+           tiling shadow 1920x1080:   8160kb BOs (1)
+           resource 1920x1080@32/0:   8160kb BOs (1)
+    scanout resource 1920x1080@32/0:   8100kb BOs (1)
+                            kernel:   8100kb BOs (1)
+    
+    v2: Use strndup_user(), use lockdep assertion instead of just a
+        comment, fix an array[-1] reference, extend comment about name
+        freeing.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+    Link: https://patchwork.freedesktop.org/patch/msgid/20170725182718.31468-2-eric@anholt.net
+    Reviewed-by: Chris Wilson <chris@chris-wilson.co.uk>
+    (cherry picked from commit f30994622b2bf8e4fa224237ac65304b27a9cb6a)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_bo.c b/drivers/gpu/drm/vc4/vc4_bo.c
+index b20e9c829876..bc37c5f70301 100644
+--- a/drivers/gpu/drm/vc4/vc4_bo.c
++++ b/drivers/gpu/drm/vc4/vc4_bo.c
+@@ -21,21 +21,35 @@
+ #include "vc4_drv.h"
+ #include "uapi/drm/vc4_drm.h"
+ 
++static const char * const bo_type_names[] = {
++	"kernel",
++	"V3D",
++	"V3D shader",
++	"dumb",
++	"binner",
++	"RCL",
++	"BCL",
++	"kernel BO cache",
++};
++
++static bool is_user_label(int label)
++{
++	return label >= VC4_BO_TYPE_COUNT;
++}
++
+ static void vc4_bo_stats_dump(struct vc4_dev *vc4)
+ {
+-	DRM_INFO("num bos allocated: %d\n",
+-		 vc4->bo_stats.num_allocated);
+-	DRM_INFO("size bos allocated: %dkb\n",
+-		 vc4->bo_stats.size_allocated / 1024);
+-	DRM_INFO("num bos used: %d\n",
+-		 vc4->bo_stats.num_allocated - vc4->bo_stats.num_cached);
+-	DRM_INFO("size bos used: %dkb\n",
+-		 (vc4->bo_stats.size_allocated -
+-		  vc4->bo_stats.size_cached) / 1024);
+-	DRM_INFO("num bos cached: %d\n",
+-		 vc4->bo_stats.num_cached);
+-	DRM_INFO("size bos cached: %dkb\n",
+-		 vc4->bo_stats.size_cached / 1024);
++	int i;
++
++	for (i = 0; i < vc4->num_labels; i++) {
++		if (!vc4->bo_labels[i].num_allocated)
++			continue;
++
++		DRM_INFO("%30s: %6dkb BOs (%d)\n",
++			 vc4->bo_labels[i].name,
++			 vc4->bo_labels[i].size_allocated / 1024,
++			 vc4->bo_labels[i].num_allocated);
++	}
+ }
+ 
+ #ifdef CONFIG_DEBUG_FS
+@@ -44,30 +58,103 @@ int vc4_bo_stats_debugfs(struct seq_file *m, void *unused)
+ 	struct drm_info_node *node = (struct drm_info_node *)m->private;
+ 	struct drm_device *dev = node->minor->dev;
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
+-	struct vc4_bo_stats stats;
++	int i;
+ 
+-	/* Take a snapshot of the current stats with the lock held. */
+ 	mutex_lock(&vc4->bo_lock);
+-	stats = vc4->bo_stats;
++	for (i = 0; i < vc4->num_labels; i++) {
++		if (!vc4->bo_labels[i].num_allocated)
++			continue;
++
++		seq_printf(m, "%30s: %6dkb BOs (%d)\n",
++			   vc4->bo_labels[i].name,
++			   vc4->bo_labels[i].size_allocated / 1024,
++			   vc4->bo_labels[i].num_allocated);
++	}
+ 	mutex_unlock(&vc4->bo_lock);
+ 
+-	seq_printf(m, "num bos allocated: %d\n",
+-		   stats.num_allocated);
+-	seq_printf(m, "size bos allocated: %dkb\n",
+-		   stats.size_allocated / 1024);
+-	seq_printf(m, "num bos used: %d\n",
+-		   stats.num_allocated - stats.num_cached);
+-	seq_printf(m, "size bos used: %dkb\n",
+-		   (stats.size_allocated - stats.size_cached) / 1024);
+-	seq_printf(m, "num bos cached: %d\n",
+-		   stats.num_cached);
+-	seq_printf(m, "size bos cached: %dkb\n",
+-		   stats.size_cached / 1024);
+-
+ 	return 0;
+ }
+ #endif
+ 
++/* Takes ownership of *name and returns the appropriate slot for it in
++ * the bo_labels[] array, extending it as necessary.
++ *
++ * This is inefficient and could use a hash table instead of walking
++ * an array and strcmp()ing.  However, the assumption is that user
++ * labeling will be infrequent (scanout buffers and other long-lived
++ * objects, or debug driver builds), so we can live with it for now.
++ */
++static int vc4_get_user_label(struct vc4_dev *vc4, const char *name)
++{
++	int i;
++	int free_slot = -1;
++
++	for (i = 0; i < vc4->num_labels; i++) {
++		if (!vc4->bo_labels[i].name) {
++			free_slot = i;
++		} else if (strcmp(vc4->bo_labels[i].name, name) == 0) {
++			kfree(name);
++			return i;
++		}
++	}
++
++	if (free_slot != -1) {
++		WARN_ON(vc4->bo_labels[free_slot].num_allocated != 0);
++		vc4->bo_labels[free_slot].name = name;
++		return free_slot;
++	} else {
++		u32 new_label_count = vc4->num_labels + 1;
++		struct vc4_label *new_labels =
++			krealloc(vc4->bo_labels,
++				 new_label_count * sizeof(*new_labels),
++				 GFP_KERNEL);
++
++		if (!new_labels) {
++			kfree(name);
++			return -1;
++		}
++
++		free_slot = vc4->num_labels;
++		vc4->bo_labels = new_labels;
++		vc4->num_labels = new_label_count;
++
++		vc4->bo_labels[free_slot].name = name;
++		vc4->bo_labels[free_slot].num_allocated = 0;
++		vc4->bo_labels[free_slot].size_allocated = 0;
++
++		return free_slot;
++	}
++}
++
++static void vc4_bo_set_label(struct drm_gem_object *gem_obj, int label)
++{
++	struct vc4_bo *bo = to_vc4_bo(gem_obj);
++	struct vc4_dev *vc4 = to_vc4_dev(gem_obj->dev);
++
++	lockdep_assert_held(&vc4->bo_lock);
++
++	if (label != -1) {
++		vc4->bo_labels[label].num_allocated++;
++		vc4->bo_labels[label].size_allocated += gem_obj->size;
++	}
++
++	vc4->bo_labels[bo->label].num_allocated--;
++	vc4->bo_labels[bo->label].size_allocated -= gem_obj->size;
++
++	if (vc4->bo_labels[bo->label].num_allocated == 0 &&
++	    is_user_label(bo->label)) {
++		/* Free user BO label slots on last unreference.
++		 * Slots are just where we track the stats for a given
++		 * name, and once a name is unused we can reuse that
++		 * slot.
++		 */
++		kfree(vc4->bo_labels[bo->label].name);
++		vc4->bo_labels[bo->label].name = NULL;
++	}
++
++	bo->label = label;
++}
++
+ static uint32_t bo_page_index(size_t size)
+ {
+ 	return (size / PAGE_SIZE) - 1;
+@@ -77,7 +164,8 @@ static uint32_t bo_page_index(size_t size)
+ static void vc4_bo_destroy(struct vc4_bo *bo)
+ {
+ 	struct drm_gem_object *obj = &bo->base.base;
+-	struct vc4_dev *vc4 = to_vc4_dev(obj->dev);
++
++	vc4_bo_set_label(obj, -1);
+ 
+ 	if (bo->validated_shader) {
+ 		kfree(bo->validated_shader->texture_samples);
+@@ -85,20 +173,12 @@ static void vc4_bo_destroy(struct vc4_bo *bo)
+ 		bo->validated_shader = NULL;
+ 	}
+ 
+-	vc4->bo_stats.num_allocated--;
+-	vc4->bo_stats.size_allocated -= obj->size;
+ 	drm_gem_cma_free_object(obj);
+ }
+ 
+ /* Must be called with bo_lock held. */
+ static void vc4_bo_remove_from_cache(struct vc4_bo *bo)
+ {
+-	struct drm_gem_object *obj = &bo->base.base;
+-	struct vc4_dev *vc4 = to_vc4_dev(obj->dev);
+-
+-	vc4->bo_stats.num_cached--;
+-	vc4->bo_stats.size_cached -= obj->size;
+-
+ 	list_del(&bo->unref_head);
+ 	list_del(&bo->size_head);
+ }
+@@ -159,7 +239,8 @@ static void vc4_bo_cache_purge(struct drm_device *dev)
+ }
+ 
+ static struct vc4_bo *vc4_bo_get_from_cache(struct drm_device *dev,
+-					    uint32_t size)
++					    uint32_t size,
++					    enum vc4_kernel_bo_type type)
+ {
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
+ 	uint32_t page_index = bo_page_index(size);
+@@ -180,6 +261,8 @@ static struct vc4_bo *vc4_bo_get_from_cache(struct drm_device *dev,
+ 	kref_init(&bo->base.base.refcount);
+ 
+ out:
++	if (bo)
++		vc4_bo_set_label(&bo->base.base, type);
+ 	mutex_unlock(&vc4->bo_lock);
+ 	return bo;
+ }
+@@ -200,15 +283,16 @@ struct drm_gem_object *vc4_create_object(struct drm_device *dev, size_t size)
+ 		return ERR_PTR(-ENOMEM);
+ 
+ 	mutex_lock(&vc4->bo_lock);
+-	vc4->bo_stats.num_allocated++;
+-	vc4->bo_stats.size_allocated += size;
++	bo->label = VC4_BO_TYPE_KERNEL;
++	vc4->bo_labels[VC4_BO_TYPE_KERNEL].num_allocated++;
++	vc4->bo_labels[VC4_BO_TYPE_KERNEL].size_allocated += size;
+ 	mutex_unlock(&vc4->bo_lock);
+ 
+ 	return &bo->base.base;
+ }
+ 
+ struct vc4_bo *vc4_bo_create(struct drm_device *dev, size_t unaligned_size,
+-			     bool allow_unzeroed)
++			     bool allow_unzeroed, enum vc4_kernel_bo_type type)
+ {
+ 	size_t size = roundup(unaligned_size, PAGE_SIZE);
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
+@@ -219,7 +303,7 @@ struct vc4_bo *vc4_bo_create(struct drm_device *dev, size_t unaligned_size,
+ 		return ERR_PTR(-EINVAL);
+ 
+ 	/* First, try to get a vc4_bo from the kernel BO cache. */
+-	bo = vc4_bo_get_from_cache(dev, size);
++	bo = vc4_bo_get_from_cache(dev, size, type);
+ 	if (bo) {
+ 		if (!allow_unzeroed)
+ 			memset(bo->base.vaddr, 0, bo->base.base.size);
+@@ -241,8 +325,13 @@ struct vc4_bo *vc4_bo_create(struct drm_device *dev, size_t unaligned_size,
+ 			return ERR_PTR(-ENOMEM);
+ 		}
+ 	}
++	bo = to_vc4_bo(&cma_obj->base);
+ 
+-	return to_vc4_bo(&cma_obj->base);
++	mutex_lock(&vc4->bo_lock);
++	vc4_bo_set_label(&cma_obj->base, type);
++	mutex_unlock(&vc4->bo_lock);
++
++	return bo;
+ }
+ 
+ int vc4_dumb_create(struct drm_file *file_priv,
+@@ -259,7 +348,7 @@ int vc4_dumb_create(struct drm_file *file_priv,
+ 	if (args->size < args->pitch * args->height)
+ 		args->size = args->pitch * args->height;
+ 
+-	bo = vc4_bo_create(dev, args->size, false);
++	bo = vc4_bo_create(dev, args->size, false, VC4_BO_TYPE_DUMB);
+ 	if (IS_ERR(bo))
+ 		return PTR_ERR(bo);
+ 
+@@ -346,8 +435,7 @@ void vc4_free_object(struct drm_gem_object *gem_bo)
+ 	list_add(&bo->size_head, cache_list);
+ 	list_add(&bo->unref_head, &vc4->bo_cache.time_list);
+ 
+-	vc4->bo_stats.num_cached++;
+-	vc4->bo_stats.size_cached += gem_bo->size;
++	vc4_bo_set_label(&bo->base.base, VC4_BO_TYPE_KERNEL_CACHE);
+ 
+ 	vc4_bo_cache_free_old(dev);
+ 
+@@ -456,7 +544,7 @@ int vc4_create_bo_ioctl(struct drm_device *dev, void *data,
+ 	 * We can't allocate from the BO cache, because the BOs don't
+ 	 * get zeroed, and that might leak data between users.
+ 	 */
+-	bo = vc4_bo_create(dev, args->size, false);
++	bo = vc4_bo_create(dev, args->size, false, VC4_BO_TYPE_V3D);
+ 	if (IS_ERR(bo))
+ 		return PTR_ERR(bo);
+ 
+@@ -509,7 +597,7 @@ vc4_create_shader_bo_ioctl(struct drm_device *dev, void *data,
+ 		return -EINVAL;
+ 	}
+ 
+-	bo = vc4_bo_create(dev, args->size, true);
++	bo = vc4_bo_create(dev, args->size, true, VC4_BO_TYPE_V3D_SHADER);
+ 	if (IS_ERR(bo))
+ 		return PTR_ERR(bo);
+ 
+@@ -625,9 +713,24 @@ int vc4_get_tiling_ioctl(struct drm_device *dev, void *data,
+ 	return 0;
+ }
+ 
+-void vc4_bo_cache_init(struct drm_device *dev)
++int vc4_bo_cache_init(struct drm_device *dev)
+ {
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
++	int i;
++
++	/* Create the initial set of BO labels that the kernel will
++	 * use.  This lets us avoid a bunch of string reallocation in
++	 * the kernel's draw and BO allocation paths.
++	 */
++	vc4->bo_labels = kcalloc(VC4_BO_TYPE_COUNT, sizeof(*vc4->bo_labels),
++				 GFP_KERNEL);
++	if (!vc4->bo_labels)
++		return -ENOMEM;
++	vc4->num_labels = VC4_BO_TYPE_COUNT;
++
++	BUILD_BUG_ON(ARRAY_SIZE(bo_type_names) != VC4_BO_TYPE_COUNT);
++	for (i = 0; i < VC4_BO_TYPE_COUNT; i++)
++		vc4->bo_labels[i].name = bo_type_names[i];
+ 
+ 	mutex_init(&vc4->bo_lock);
+ 
+@@ -637,19 +740,66 @@ void vc4_bo_cache_init(struct drm_device *dev)
+ 	setup_timer(&vc4->bo_cache.time_timer,
+ 		    vc4_bo_cache_time_timer,
+ 		    (unsigned long)dev);
++
++	return 0;
+ }
+ 
+ void vc4_bo_cache_destroy(struct drm_device *dev)
+ {
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
++	int i;
+ 
+ 	del_timer(&vc4->bo_cache.time_timer);
+ 	cancel_work_sync(&vc4->bo_cache.time_work);
+ 
+ 	vc4_bo_cache_purge(dev);
+ 
+-	if (vc4->bo_stats.num_allocated) {
+-		DRM_ERROR("Destroying BO cache while BOs still allocated:\n");
+-		vc4_bo_stats_dump(vc4);
++	for (i = 0; i < vc4->num_labels; i++) {
++		if (vc4->bo_labels[i].num_allocated) {
++			DRM_ERROR("Destroying BO cache with %d %s "
++				  "BOs still allocated\n",
++				  vc4->bo_labels[i].num_allocated,
++				  vc4->bo_labels[i].name);
++		}
++
++		if (is_user_label(i))
++			kfree(vc4->bo_labels[i].name);
++	}
++	kfree(vc4->bo_labels);
++}
++
++int vc4_label_bo_ioctl(struct drm_device *dev, void *data,
++		       struct drm_file *file_priv)
++{
++	struct vc4_dev *vc4 = to_vc4_dev(dev);
++	struct drm_vc4_label_bo *args = data;
++	char *name;
++	struct drm_gem_object *gem_obj;
++	int ret = 0, label;
++
++	if (!args->len)
++		return -EINVAL;
++
++	name = strndup_user(u64_to_user_ptr(args->name), args->len + 1);
++	if (IS_ERR(name))
++		return PTR_ERR(name);
++
++	gem_obj = drm_gem_object_lookup(file_priv, args->handle);
++	if (!gem_obj) {
++		DRM_ERROR("Failed to look up GEM BO %d\n", args->handle);
++		kfree(name);
++		return -ENOENT;
+ 	}
++
++	mutex_lock(&vc4->bo_lock);
++	label = vc4_get_user_label(vc4, name);
++	if (label != -1)
++		vc4_bo_set_label(gem_obj, label);
++	else
++		ret = -ENOMEM;
++	mutex_unlock(&vc4->bo_lock);
++
++	drm_gem_object_unreference_unlocked(gem_obj);
++
++	return ret;
+ }
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
+index f528edc4b389..e28fb8323a23 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.c
++++ b/drivers/gpu/drm/vc4/vc4_drv.c
+@@ -126,6 +126,7 @@ static const struct drm_ioctl_desc vc4_drm_ioctls[] = {
+ 	DRM_IOCTL_DEF_DRV(VC4_GET_PARAM, vc4_get_param_ioctl, DRM_RENDER_ALLOW),
+ 	DRM_IOCTL_DEF_DRV(VC4_SET_TILING, vc4_set_tiling_ioctl, DRM_RENDER_ALLOW),
+ 	DRM_IOCTL_DEF_DRV(VC4_GET_TILING, vc4_get_tiling_ioctl, DRM_RENDER_ALLOW),
++	DRM_IOCTL_DEF_DRV(VC4_LABEL_BO, vc4_label_bo_ioctl, DRM_RENDER_ALLOW),
+ };
+ 
+ static struct drm_driver vc4_drm_driver = {
+@@ -246,7 +247,9 @@ static int vc4_drm_bind(struct device *dev)
+ 	vc4->dev = drm;
+ 	drm->dev_private = vc4;
+ 
+-	vc4_bo_cache_init(drm);
++	ret = vc4_bo_cache_init(drm);
++	if (ret)
++		goto dev_unref;
+ 
+ 	drm_mode_config_init(drm);
+ 
+@@ -270,8 +273,9 @@ static int vc4_drm_bind(struct device *dev)
+ 	component_unbind_all(dev, drm);
+ gem_destroy:
+ 	vc4_gem_destroy(drm);
+-	drm_dev_unref(drm);
+ 	vc4_bo_cache_destroy(drm);
++dev_unref:
++	drm_dev_unref(drm);
+ 	return ret;
+ }
+ 
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.h b/drivers/gpu/drm/vc4/vc4_drv.h
+index fcf1c4578373..585da9b8cdfe 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.h
++++ b/drivers/gpu/drm/vc4/vc4_drv.h
+@@ -9,6 +9,24 @@
+ #include "drmP.h"
+ #include "drm_gem_cma_helper.h"
+ 
++/* Don't forget to update vc4_bo.c: bo_type_names[] when adding to
++ * this.
++ */
++enum vc4_kernel_bo_type {
++	/* Any kernel allocation (gem_create_object hook) before it
++	 * gets another type set.
++	 */
++	VC4_BO_TYPE_KERNEL,
++	VC4_BO_TYPE_V3D,
++	VC4_BO_TYPE_V3D_SHADER,
++	VC4_BO_TYPE_DUMB,
++	VC4_BO_TYPE_BIN,
++	VC4_BO_TYPE_RCL,
++	VC4_BO_TYPE_BCL,
++	VC4_BO_TYPE_KERNEL_CACHE,
++	VC4_BO_TYPE_COUNT
++};
++
+ struct vc4_dev {
+ 	struct drm_device *dev;
+ 
+@@ -48,14 +66,14 @@ struct vc4_dev {
+ 		struct timer_list time_timer;
+ 	} bo_cache;
+ 
+-	struct vc4_bo_stats {
++	u32 num_labels;
++	struct vc4_label {
++		const char *name;
+ 		u32 num_allocated;
+ 		u32 size_allocated;
+-		u32 num_cached;
+-		u32 size_cached;
+-	} bo_stats;
++	} *bo_labels;
+ 
+-	/* Protects bo_cache and the BO stats. */
++	/* Protects bo_cache and bo_labels. */
+ 	struct mutex bo_lock;
+ 
+ 	/* Sequence number for the last job queued in bin_job_list.
+@@ -165,6 +183,11 @@ struct vc4_bo {
+ 	 * DRM_IOCTL_VC4_CREATE_SHADER_BO.
+ 	 */
+ 	struct vc4_validated_shader_info *validated_shader;
++
++	/* One of enum vc4_kernel_bo_type, or VC4_BO_TYPE_COUNT + i
++	 * for user-allocated labels.
++	 */
++	int label;
+ };
+ 
+ static inline struct vc4_bo *
+@@ -440,7 +463,7 @@ struct vc4_validated_shader_info {
+ struct drm_gem_object *vc4_create_object(struct drm_device *dev, size_t size);
+ void vc4_free_object(struct drm_gem_object *gem_obj);
+ struct vc4_bo *vc4_bo_create(struct drm_device *dev, size_t size,
+-			     bool from_cache);
++			     bool from_cache, enum vc4_kernel_bo_type type);
+ int vc4_dumb_create(struct drm_file *file_priv,
+ 		    struct drm_device *dev,
+ 		    struct drm_mode_create_dumb *args);
+@@ -458,10 +481,12 @@ int vc4_get_tiling_ioctl(struct drm_device *dev, void *data,
+ 			 struct drm_file *file_priv);
+ int vc4_get_hang_state_ioctl(struct drm_device *dev, void *data,
+ 			     struct drm_file *file_priv);
++int vc4_label_bo_ioctl(struct drm_device *dev, void *data,
++		       struct drm_file *file_priv);
+ int vc4_mmap(struct file *filp, struct vm_area_struct *vma);
+ int vc4_prime_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma);
+ void *vc4_prime_vmap(struct drm_gem_object *obj);
+-void vc4_bo_cache_init(struct drm_device *dev);
++int vc4_bo_cache_init(struct drm_device *dev);
+ void vc4_bo_cache_destroy(struct drm_device *dev);
+ int vc4_bo_stats_debugfs(struct seq_file *m, void *arg);
+ 
+diff --git a/drivers/gpu/drm/vc4/vc4_gem.c b/drivers/gpu/drm/vc4/vc4_gem.c
+index 7e90ea170299..adb94d573a18 100644
+--- a/drivers/gpu/drm/vc4/vc4_gem.c
++++ b/drivers/gpu/drm/vc4/vc4_gem.c
+@@ -645,7 +645,7 @@ vc4_get_bcl(struct drm_device *dev, struct vc4_exec_info *exec)
+ 		goto fail;
+ 	}
+ 
+-	bo = vc4_bo_create(dev, exec_size, true);
++	bo = vc4_bo_create(dev, exec_size, true, VC4_BO_TYPE_BCL);
+ 	if (IS_ERR(bo)) {
+ 		DRM_ERROR("Couldn't allocate BO for binning\n");
+ 		ret = PTR_ERR(bo);
+diff --git a/drivers/gpu/drm/vc4/vc4_render_cl.c b/drivers/gpu/drm/vc4/vc4_render_cl.c
+index 6face6aa0890..eb2794b12efe 100644
+--- a/drivers/gpu/drm/vc4/vc4_render_cl.c
++++ b/drivers/gpu/drm/vc4/vc4_render_cl.c
+@@ -316,7 +316,7 @@ static int vc4_create_rcl_bo(struct drm_device *dev, struct vc4_exec_info *exec,
+ 
+ 	size += xtiles * ytiles * loop_body_size;
+ 
+-	setup->rcl = &vc4_bo_create(dev, size, true)->base;
++	setup->rcl = &vc4_bo_create(dev, size, true, VC4_BO_TYPE_RCL)->base;
+ 	if (IS_ERR(setup->rcl))
+ 		return PTR_ERR(setup->rcl);
+ 	list_add_tail(&to_vc4_bo(&setup->rcl->base)->unref_head,
+diff --git a/drivers/gpu/drm/vc4/vc4_v3d.c b/drivers/gpu/drm/vc4/vc4_v3d.c
+index 77ed4ef3b8c8..5a980e6692bc 100644
+--- a/drivers/gpu/drm/vc4/vc4_v3d.c
++++ b/drivers/gpu/drm/vc4/vc4_v3d.c
+@@ -235,7 +235,8 @@ vc4_allocate_bin_bo(struct drm_device *drm)
+ 	INIT_LIST_HEAD(&list);
+ 
+ 	while (true) {
+-		struct vc4_bo *bo = vc4_bo_create(drm, size, true);
++		struct vc4_bo *bo = vc4_bo_create(drm, size, true,
++						  VC4_BO_TYPE_BIN);
+ 
+ 		if (IS_ERR(bo)) {
+ 			ret = PTR_ERR(bo);
+diff --git a/include/uapi/drm/vc4_drm.h b/include/uapi/drm/vc4_drm.h
+index 6ac4c5c014cb..551628e571f9 100644
+--- a/include/uapi/drm/vc4_drm.h
++++ b/include/uapi/drm/vc4_drm.h
+@@ -40,6 +40,7 @@ extern "C" {
+ #define DRM_VC4_GET_PARAM                         0x07
+ #define DRM_VC4_SET_TILING                        0x08
+ #define DRM_VC4_GET_TILING                        0x09
++#define DRM_VC4_LABEL_BO                          0x0a
+ 
+ #define DRM_IOCTL_VC4_SUBMIT_CL           DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_SUBMIT_CL, struct drm_vc4_submit_cl)
+ #define DRM_IOCTL_VC4_WAIT_SEQNO          DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_WAIT_SEQNO, struct drm_vc4_wait_seqno)
+@@ -51,6 +52,7 @@ extern "C" {
+ #define DRM_IOCTL_VC4_GET_PARAM           DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_GET_PARAM, struct drm_vc4_get_param)
+ #define DRM_IOCTL_VC4_SET_TILING          DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_SET_TILING, struct drm_vc4_set_tiling)
+ #define DRM_IOCTL_VC4_GET_TILING          DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_GET_TILING, struct drm_vc4_get_tiling)
++#define DRM_IOCTL_VC4_LABEL_BO            DRM_IOWR(DRM_COMMAND_BASE + DRM_VC4_LABEL_BO, struct drm_vc4_label_bo)
+ 
+ struct drm_vc4_submit_rcl_surface {
+ 	__u32 hindex; /* Handle index, or ~0 if not present. */
+@@ -311,6 +313,15 @@ struct drm_vc4_set_tiling {
+ 	__u64 modifier;
+ };
+ 
++/**
++ * struct drm_vc4_label_bo - Attach a name to a BO for debug purposes.
++ */
++struct drm_vc4_label_bo {
++	__u32 handle;
++	__u32 len;
++	__u64 name;
++};
++
+ #if defined(__cplusplus)
+ }
+ #endif

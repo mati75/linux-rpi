@@ -1,0 +1,53 @@
+commit b1425061a45955a7d654531a5a01f64a22a42ca6
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Mar 23 17:08:44 2017 +0000
+
+    BCM270X_DT: Enable AUX interrupt controller in DT
+    
+    See: https://github.com/raspberrypi/linux/issues/1484
+         https://github.com/raspberrypi/linux/issues/1573
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index d3cc586661f9..348c71bbc913 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -216,12 +216,16 @@
+ 			#clock-cells = <1>;
+ 			reg = <0x7e215000 0x8>;
+ 			clocks = <&clocks BCM2835_CLOCK_VPU>;
++			interrupts = <1 29>;
++			interrupt-controller;
++			#interrupt-cells = <1>;
+ 		};
+ 
+ 		uart1: serial@7e215040 {
+ 			compatible = "brcm,bcm2835-aux-uart";
+ 			reg = <0x7e215040 0x40>;
+-			interrupts = <1 29>;
++			interrupt-parent = <&aux>;
++			interrupts = <0>;
+ 			clocks = <&aux BCM2835_AUX_CLOCK_UART>;
+ 			status = "disabled";
+ 		};
+@@ -229,7 +233,8 @@
+ 		spi1: spi@7e215080 {
+ 			compatible = "brcm,bcm2835-aux-spi";
+ 			reg = <0x7e215080 0x40>;
+-			interrupts = <1 29>;
++			interrupt-parent = <&aux>;
++			interrupts = <1>;
+ 			clocks = <&aux BCM2835_AUX_CLOCK_SPI1>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -239,7 +244,8 @@
+ 		spi2: spi@7e2150c0 {
+ 			compatible = "brcm,bcm2835-aux-spi";
+ 			reg = <0x7e2150c0 0x40>;
+-			interrupts = <1 29>;
++			interrupt-parent = <&aux>;
++			interrupts = <2>;
+ 			clocks = <&aux BCM2835_AUX_CLOCK_SPI2>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;

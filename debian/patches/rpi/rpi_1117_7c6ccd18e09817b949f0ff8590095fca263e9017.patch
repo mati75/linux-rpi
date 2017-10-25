@@ -1,0 +1,58 @@
+commit 7c6ccd18e09817b949f0ff8590095fca263e9017
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Jan 11 13:01:21 2017 +0000
+
+    BCM270X_DT: Add pi3-disable-wifi overlay
+    
+    pi3-disable-wifi is a minimal overlay to disable the onboard WiFi.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index 11dba3171284..f1191c1ded82 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -51,6 +51,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	mz61581.dtbo \
+ 	pi3-act-led.dtbo \
+ 	pi3-disable-bt.dtbo \
++	pi3-disable-wifi.dtbo \
+ 	pi3-miniuart-bt.dtbo \
+ 	piscreen.dtbo \
+ 	piscreen2r.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index e8fa4ccb44c3..34109c69416c 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -800,6 +800,12 @@ Load:   dtoverlay=pi3-disable-bt
+ Params: <None>
+ 
+ 
++Name:   pi3-disable-wifi
++Info:   Disable Pi3 onboard WiFi
++Load:   dtoverlay=pi3-disable-wifi
++Params: <None>
++
++
+ Name:   pi3-miniuart-bt
+ Info:   Switch Pi3 Bluetooth function to use the mini-UART (ttyS0) and restore
+         UART0/ttyAMA0 over GPIOs 14 & 15. Note that this may reduce the maximum
+diff --git a/arch/arm/boot/dts/overlays/pi3-disable-wifi-overlay.dts b/arch/arm/boot/dts/overlays/pi3-disable-wifi-overlay.dts
+new file mode 100644
+index 000000000000..017199554bf2
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/pi3-disable-wifi-overlay.dts
+@@ -0,0 +1,13 @@
++/dts-v1/;
++/plugin/;
++
++/{
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target = <&mmc>;
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++};

@@ -108,7 +108,9 @@ clean: debian/control
 	rm -f drivers/usb/gadget/function/f_obex.c.1
 	rm -f drivers/usb/gadget/function/f_serial.c.1
 	rm -f drivers/usb/gadget/function/f_subset.c.1
-
+	chmod 644 arch/arm/boot/dts/overlays/mcp3008-overlay.dts
+	chmod 644 drivers/net/wireless/realtek/rtl8192cu/clean drivers/net/wireless/realtek/rtl8192cu/ifcfg-wlan0 drivers/net/wireless/realtek/rtl8192cu/runwpa drivers/net/wireless/realtek/rtl8192cu/wlan0dhcp scripts/knlinfo scripts/mkknlimg sound/arm/bcm2835-ctl.c sound/arm/bcm2835-pcm.c sound/arm/bcm2835-vchiq.c sound/arm/bcm2835.h arch/arm/boot/dts/overlays/mcp2515-can0-overlay.dts
+	rm -f Documentation/sphinx/*.pyc
 
 
 CONTROL_FILES = debian/changelog $(wildcard debian/templates/*.in)

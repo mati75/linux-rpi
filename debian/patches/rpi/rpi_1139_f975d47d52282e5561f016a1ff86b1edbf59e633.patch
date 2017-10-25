@@ -1,0 +1,33 @@
+commit f975d47d52282e5561f016a1ff86b1edbf59e633
+Author: Matthias Reichl <hias@horus.com>
+Date:   Sun Jan 22 12:49:36 2017 +0100
+
+    BCM270x DT: expose 3.3V and 5V system rails
+    
+    Signed-off-by: Matthias Reichl <hias@horus.com>
+
+diff --git a/arch/arm/boot/dts/bcm270x.dtsi b/arch/arm/boot/dts/bcm270x.dtsi
+index a46cb4a8b141..36d853715f23 100644
+--- a/arch/arm/boot/dts/bcm270x.dtsi
++++ b/arch/arm/boot/dts/bcm270x.dtsi
+@@ -138,4 +138,20 @@
+ 			status = "disabled";
+ 		};
+ 	};
++
++	vdd_5v0_reg: fixedregulator_5v0 {
++		compatible = "regulator-fixed";
++		regulator-name = "5v0";
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		regulator-always-on;
++	};
++
++	vdd_3v3_reg: fixedregulator_3v3 {
++		compatible = "regulator-fixed";
++		regulator-name = "3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		regulator-always-on;
++	};
+ };

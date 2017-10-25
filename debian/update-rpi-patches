@@ -1,15 +1,18 @@
 #!/bin/bash -ev
 
+echo this script is not currently in use, kept arround for historic reasons and reference.
+exit 1
+
 #note: useful filterdiff command when bringing stuff forward
 #filterdiff -p1 -xdebian/patches/rpi/* -x*.postinst -x*.preinst -x*.prerm -x*.postrm -x*/config.defines.dump -xdebian/control.md5sum -xdebian/*.templates -xdebian/po/*.po -xdebian/rules.gen linux-3.18.debdiff > linux-3.18.debdiff.filtered
 
 set -x
 set -e
 debdir=`pwd`
-upstream_tag=v4.9.51
-rpi_branch=rpi-4.9.y
-rpi_tree=rpi/${rpi_branch}
-#rpi_tree=d00322d695cfce3ce9ec15efebe411b34142ad41
+upstream_tag=v4.4.6
+rpi_branch=rpi-4.4.y
+#rpi_tree=rpi/${rpi_branch}
+rpi_tree=af9619cc3b0e8f8dc1cb2aebe4c95c86d41d90e9
 patch_dir=${debdir}/debian/patches
 rpi_patches=${patch_dir}/rpi
 upstream_gitrepo=git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git

@@ -1,0 +1,135 @@
+commit 0871fa6c31d9d449316adbe8f8dac4fe5ac5ecea
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Aug 24 16:16:16 2017 +0100
+
+    brcmfmac: Disable ARP offloading when promiscuous
+    
+    This is a test patch for brcmfmac from Franky Lin at Broadcom to disable
+    ARP offloading when in promiscuous mode, re-enabling the ability to
+    sniff ARP packets over WiFi.
+    
+    See: https://github.com/raspberrypi/linux/issues/2171
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index 11e73bff0f47..bb5b54b0d508 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -481,47 +481,6 @@ send_key_to_dongle(struct brcmf_if *ifp, struct brcmf_wsec_key *key)
+ 	return err;
+ }
+ 
+-static s32
+-brcmf_configure_arp_nd_offload(struct brcmf_if *ifp, bool enable)
+-{
+-	s32 err;
+-	u32 mode;
+-
+-	if (enable)
+-		mode = BRCMF_ARP_OL_AGENT | BRCMF_ARP_OL_PEER_AUTO_REPLY;
+-	else
+-		mode = 0;
+-
+-	/* Try to set and enable ARP offload feature, this may fail, then it  */
+-	/* is simply not supported and err 0 will be returned                 */
+-	err = brcmf_fil_iovar_int_set(ifp, "arp_ol", mode);
+-	if (err) {
+-		brcmf_dbg(TRACE, "failed to set ARP offload mode to 0x%x, err = %d\n",
+-			  mode, err);
+-		err = 0;
+-	} else {
+-		err = brcmf_fil_iovar_int_set(ifp, "arpoe", enable);
+-		if (err) {
+-			brcmf_dbg(TRACE, "failed to configure (%d) ARP offload err = %d\n",
+-				  enable, err);
+-			err = 0;
+-		} else
+-			brcmf_dbg(TRACE, "successfully configured (%d) ARP offload to 0x%x\n",
+-				  enable, mode);
+-	}
+-
+-	err = brcmf_fil_iovar_int_set(ifp, "ndoe", enable);
+-	if (err) {
+-		brcmf_dbg(TRACE, "failed to configure (%d) ND offload err = %d\n",
+-			  enable, err);
+-		err = 0;
+-	} else
+-		brcmf_dbg(TRACE, "successfully configured (%d) ND offload to 0x%x\n",
+-			  enable, mode);
+-
+-	return err;
+-}
+-
+ static void
+ brcmf_cfg80211_update_proto_addr_mode(struct wireless_dev *wdev)
+ {
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+index f877301c9454..ef4085cda90e 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+@@ -71,6 +71,43 @@ struct brcmf_if *brcmf_get_ifp(struct brcmf_pub *drvr, int ifidx)
+ 	return ifp;
+ }
+ 
++void brcmf_configure_arp_nd_offload(struct brcmf_if *ifp, bool enable)
++{
++	s32 err;
++	u32 mode;
++
++	if (enable)
++		mode = BRCMF_ARP_OL_AGENT | BRCMF_ARP_OL_PEER_AUTO_REPLY;
++	else
++		mode = 0;
++
++	/* Try to set and enable ARP offload feature, this may fail, then it  */
++	/* is simply not supported and err 0 will be returned                 */
++	err = brcmf_fil_iovar_int_set(ifp, "arp_ol", mode);
++	if (err) {
++		brcmf_dbg(TRACE, "failed to set ARP offload mode to 0x%x, err = %d\n",
++			  mode, err);
++		err = 0;
++	} else {
++		err = brcmf_fil_iovar_int_set(ifp, "arpoe", enable);
++		if (err) {
++			brcmf_dbg(TRACE, "failed to configure (%d) ARP offload err = %d\n",
++				  enable, err);
++			err = 0;
++		} else
++			brcmf_dbg(TRACE, "successfully configured (%d) ARP offload to 0x%x\n",
++				  enable, mode);
++	}
++
++	err = brcmf_fil_iovar_int_set(ifp, "ndoe", enable);
++	if (err)
++		brcmf_dbg(TRACE, "failed to configure (%d) ND offload err = %d\n",
++			  enable, err);
++	else
++		brcmf_dbg(TRACE, "successfully configured (%d) ND offload to 0x%x\n",
++			  enable, mode);
++}
++
+ static void _brcmf_set_multicast_list(struct work_struct *work)
+ {
+ 	struct brcmf_if *ifp;
+@@ -134,6 +171,8 @@ static void _brcmf_set_multicast_list(struct work_struct *work)
+ 	if (err < 0)
+ 		brcmf_err("Setting BRCMF_C_SET_PROMISC failed, %d\n",
+ 			  err);
++
++	brcmf_configure_arp_nd_offload(ifp, !cmd_value);
+ }
+ 
+ #if IS_ENABLED(CONFIG_IPV6)
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.h
+index c94dcab260d0..ba699fadd4dc 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.h
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.h
+@@ -208,6 +208,7 @@ int brcmf_netdev_wait_pend8021x(struct brcmf_if *ifp);
+ char *brcmf_ifname(struct brcmf_if *ifp);
+ struct brcmf_if *brcmf_get_ifp(struct brcmf_pub *drvr, int ifidx);
+ int brcmf_net_attach(struct brcmf_if *ifp, bool rtnl_locked);
++void brcmf_configure_arp_nd_offload(struct brcmf_if *ifp, bool enable);
+ struct brcmf_if *brcmf_add_if(struct brcmf_pub *drvr, s32 bsscfgidx, s32 ifidx,
+ 			      bool is_p2pdev, const char *name, u8 *mac_addr);
+ void brcmf_remove_interface(struct brcmf_if *ifp, bool rtnl_locked);

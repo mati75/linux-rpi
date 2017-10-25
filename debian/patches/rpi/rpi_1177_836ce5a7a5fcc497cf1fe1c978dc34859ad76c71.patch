@@ -1,0 +1,28 @@
+commit 836ce5a7a5fcc497cf1fe1c978dc34859ad76c71
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Feb 13 17:20:08 2017 +0000
+
+    clk-bcm2835: Mark used PLLs and dividers CRITICAL
+    
+    The VPU configures and relies on several PLLs and dividers. Mark all
+    enabled dividers and their PLLs as CRITICAL to prevent the kernel from
+    switching them off.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index 136e5d28f9ea..4192863778c8 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -1366,6 +1366,11 @@ bcm2835_register_pll_divider(struct bcm2835_cprman *cprman,
+ 	divider->div.hw.init = &init;
+ 	divider->div.table = NULL;
+ 
++	if (!(cprman_read(cprman, data->cm_reg) & data->hold_mask)) {
++		init.flags |= CLK_IS_CRITICAL;
++		divider->div.flags |= CLK_IS_CRITICAL;
++	}
++
+ 	divider->cprman = cprman;
+ 	divider->data = data;
+ 

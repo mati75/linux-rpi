@@ -1,0 +1,27 @@
+commit e6416646923f7aadf20766dbf9d06571e7960542
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Aug 2 12:48:04 2017 -0700
+
+    drm/vc4: Fix double destroy of the BO cache on teardown.
+    
+    It's also destroyed from the top level vc4_drv.c initialization, which
+    is where the cache was actually initialized from.
+    
+    This used to just involve duplicate del_timer() and cancel_work_sync()
+    being called, but it started causing kmalloc issues once we
+    double-freed the new BO label array.
+    
+    Fixes: 1908a876f909 ("drm/vc4: Add an ioctl for labeling GEM BOs for summary stats")
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/gpu/drm/vc4/vc4_gem.c b/drivers/gpu/drm/vc4/vc4_gem.c
+index a5029ab49068..066e7009358c 100644
+--- a/drivers/gpu/drm/vc4/vc4_gem.c
++++ b/drivers/gpu/drm/vc4/vc4_gem.c
+@@ -964,6 +964,4 @@ vc4_gem_destroy(struct drm_device *dev)
+ 
+ 	if (vc4->hang_state)
+ 		vc4_free_hang_state(dev, vc4->hang_state);
+-
+-	vc4_bo_cache_destroy(dev);
+ }

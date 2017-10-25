@@ -1,0 +1,25 @@
+commit 1f4f2e3b351516d72ce354b881c7203acc4f215b
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Mar 23 10:06:56 2017 +0000
+
+    ASoC: Add prompt for ICS43432 codec
+    
+    Without a prompt string, a config setting can't be included in a
+    defconfig. Give CONFIG_SND_SOC_ICS43432 a prompt so that Pi soundcards
+    can use the driver.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 9824cdd04b0c..c0b88d43df0d 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -535,7 +535,7 @@ config SND_SOC_HDAC_HDMI
+ 	select HDMI
+ 
+ config SND_SOC_ICS43432
+-	tristate
++	tristate "InvenSense ICS43432 I2S microphone codec"
+ 
+ config SND_SOC_INNO_RK3036
+ 	tristate "Inno codec driver for RK3036 SoC"

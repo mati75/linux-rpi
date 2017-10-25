@@ -1,0 +1,46 @@
+commit 619bde43a6e398fba3306f07e5408d25fc523ff5
+Author: Noralf Trønnes <noralf@tronnes.org>
+Date:   Thu Feb 23 14:29:57 2017 +0100
+
+    drm/tinydrm: helpers: Properly fix backlight dependency
+    
+    BACKLIGHT_CLASS_DEVICE was selected in the last version of the
+    tinydrm patchset to fix the backlight dependency, but the
+    ifdef CONFIG_BACKLIGHT_CLASS_DEVICE was forgotten. Fix that.
+    
+    Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+diff --git a/include/drm/tinydrm/tinydrm-helpers.h b/include/drm/tinydrm/tinydrm-helpers.h
+index 78175fe6ab22..9b9b6cfe3ba5 100644
+--- a/include/drm/tinydrm/tinydrm-helpers.h
++++ b/include/drm/tinydrm/tinydrm-helpers.h
+@@ -44,28 +44,9 @@ void tinydrm_xrgb8888_to_rgb565(u16 *dst, void *vaddr,
+ 				struct drm_framebuffer *fb,
+ 				struct drm_clip_rect *clip, bool swap);
+ 
+-#ifdef CONFIG_BACKLIGHT_CLASS_DEVICE
+ struct backlight_device *tinydrm_of_find_backlight(struct device *dev);
+ int tinydrm_enable_backlight(struct backlight_device *backlight);
+ int tinydrm_disable_backlight(struct backlight_device *backlight);
+-#else
+-static inline struct backlight_device *
+-tinydrm_of_find_backlight(struct device *dev)
+-{
+-	return NULL;
+-}
+-
+-static inline int tinydrm_enable_backlight(struct backlight_device *backlight)
+-{
+-	return 0;
+-}
+-
+-static inline int
+-tinydrm_disable_backlight(struct backlight_device *backlight)
+-{
+-	return 0;
+-}
+-#endif
+ 
+ size_t tinydrm_spi_max_transfer_size(struct spi_device *spi, size_t max_len);
+ bool tinydrm_spi_bpw_supported(struct spi_device *spi, u8 bpw);

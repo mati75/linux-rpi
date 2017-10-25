@@ -1,0 +1,18 @@
+commit 820ab4a852d14339236e4265d20d4207bed43772
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Tue Aug 15 16:48:46 2017 +0100
+
+    config: Enable CONFIG_BRCMDBG temporarily for debugging
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index b35e737d7996..1cbfeb00889c 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -524,6 +524,7 @@ CONFIG_B43=m
+ CONFIG_B43LEGACY=m
+ CONFIG_BRCMFMAC=m
+ CONFIG_BRCMFMAC_USB=y
++CONFIG_BRCMDBG=y
+ CONFIG_HOSTAP=m
+ CONFIG_P54_COMMON=m
+ CONFIG_P54_USB=m

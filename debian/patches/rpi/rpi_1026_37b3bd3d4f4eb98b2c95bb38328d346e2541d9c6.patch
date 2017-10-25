@@ -1,0 +1,19 @@
+commit 37b3bd3d4f4eb98b2c95bb38328d346e2541d9c6
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Aug 24 16:28:44 2016 +0100
+
+    kbuild: Ignore dtco targets when filtering symbols
+
+diff --git a/scripts/Kbuild.include b/scripts/Kbuild.include
+index b133c7e76d1a..39331f8edfd5 100644
+--- a/scripts/Kbuild.include
++++ b/scripts/Kbuild.include
+@@ -285,7 +285,7 @@ ksym_dep_filter =                                                            \
+ 	    $(CPP) $(call flags_nodeps,c_flags) -D__KSYM_DEPS__ $< ;;        \
+ 	  as_*_S|cpp_s_S)                                                    \
+ 	    $(CPP) $(call flags_nodeps,a_flags) -D__KSYM_DEPS__ $< ;;        \
+-	  boot*|build*|*cpp_lds_S|dtc|host*|vdso*) : ;;                      \
++	  boot*|build*|*cpp_lds_S|dtc*|host*|vdso*) : ;;                     \
+ 	  *) echo "Don't know how to preprocess $(1)" >&2; false ;;          \
+ 	esac | tr ";" "\n" | sed -rn 's/^.*=== __KSYM_(.*) ===.*$$/KSYM_\1/p'
+ 

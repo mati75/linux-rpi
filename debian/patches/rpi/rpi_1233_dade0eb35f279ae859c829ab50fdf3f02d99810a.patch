@@ -1,0 +1,32 @@
+commit dade0eb35f279ae859c829ab50fdf3f02d99810a
+Author: Scott Ellis <scott@jumpnowtek.com>
+Date:   Tue Apr 25 10:46:09 2017 -0400
+
+    config: Enable TI TMP102 temp sensor module
+    
+    Signed-off-by: Scott Ellis <scott@jumpnowtek.com>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 868f8cea9139..d5624bbf15a6 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -658,6 +658,7 @@ CONFIG_SENSORS_SHT21=m
+ CONFIG_SENSORS_SHTC1=m
+ CONFIG_SENSORS_ADS1015=m
+ CONFIG_SENSORS_INA2XX=m
++CONFIG_SENSORS_TMP102=m
+ CONFIG_THERMAL=y
+ CONFIG_THERMAL_BCM2835=y
+ CONFIG_WATCHDOG=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 7948b445f123..a338c313de9e 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -651,6 +651,7 @@ CONFIG_SENSORS_SHT21=m
+ CONFIG_SENSORS_SHTC1=m
+ CONFIG_SENSORS_ADS1015=m
+ CONFIG_SENSORS_INA2XX=m
++CONFIG_SENSORS_TMP102=m
+ CONFIG_THERMAL=y
+ CONFIG_THERMAL_BCM2835=y
+ CONFIG_WATCHDOG=y

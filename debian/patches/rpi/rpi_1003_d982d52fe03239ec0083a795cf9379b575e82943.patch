@@ -1,0 +1,27 @@
+commit d982d52fe03239ec0083a795cf9379b575e82943
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Mar 13 12:43:36 2015 +0000
+
+    Protect __release_resource against resources without parents
+    
+    Without this patch, removing a device tree overlay can crash here.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/kernel/resource.c b/kernel/resource.c
+index 9b5f04404152..f8a9af6e6b91 100644
+--- a/kernel/resource.c
++++ b/kernel/resource.c
+@@ -246,6 +246,12 @@ static int __release_resource(struct resource *old, bool release_child)
+ {
+ 	struct resource *tmp, **p, *chd;
+ 
++	if (!old->parent) {
++		WARN(old->sibling, "sibling but no parent");
++		if (old->sibling)
++			return -EINVAL;
++		return 0;
++	}
+ 	p = &old->parent->child;
+ 	for (;;) {
+ 		tmp = *p;

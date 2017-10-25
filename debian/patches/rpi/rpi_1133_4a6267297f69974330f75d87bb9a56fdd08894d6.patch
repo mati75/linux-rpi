@@ -1,0 +1,95 @@
+commit 4a6267297f69974330f75d87bb9a56fdd08894d6
+Author: chris johnson <plasticchris@gmail.com>
+Date:   Sun Jan 22 03:27:31 2017 +0000
+
+    ASoC: A simple-card overlay for ADAU7002
+    
+    Usage: `dtoverlay=adau7002-simple`
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index 45fafd5c39bd..842098be7776 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -2,6 +2,7 @@
+ 
+ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	adau1977-adc.dtbo \
++	adau7002-simple.dtbo \
+ 	ads1015.dtbo \
+ 	ads7846.dtbo \
+ 	akkordion-iqdacplus.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index 4992a6203a55..2f542a810c3f 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -168,6 +168,12 @@ Load:   dtoverlay=adau1977-adc
+ Params: <None>
+ 
+ 
++Name:   adau7002-simple
++Info:   Overlay for the activation of ADAU7002 stereo PDM to I2S converter.
++Load:   dtoverlay=adau7002-simple,<param>=<val>
++Params: card-name               Override the default, "adau7002", card name.
++
++
+ Name:   ads1015
+ Info:   Overlay for activation of Texas Instruments ADS1015 ADC over I2C
+ Load:   dtoverlay=ads1015,<param>=<val>
+diff --git a/arch/arm/boot/dts/overlays/adau7002-simple-overlay.dts b/arch/arm/boot/dts/overlays/adau7002-simple-overlay.dts
+new file mode 100644
+index 000000000000..e67e6625d796
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/adau7002-simple-overlay.dts
+@@ -0,0 +1,52 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++    compatible = "brcm,bcm2708";
++
++    fragment@0 {
++        target = <&i2s>;
++        __overlay__ {
++            status = "okay";
++        };
++    };
++
++    fragment@1 {
++        target-path = "/";
++        __overlay__ {
++                adau7002_codec: adau7002-codec {
++                #sound-dai-cells = <0>;
++                compatible = "adi,adau7002";
++/*                IOVDD-supply = <&supply>;*/
++                status = "okay";
++            };
++        };
++    };
++
++    fragment@2 {
++        target = <&sound>;
++            sound_overlay: __overlay__ {
++            compatible = "simple-audio-card";
++            simple-audio-card,format = "i2s";
++            simple-audio-card,name = "adau7002";
++            simple-audio-card,bitclock-slave = <&dailink0_slave>;
++            simple-audio-card,frame-slave = <&dailink0_slave>;
++            simple-audio-card,widgets =
++                    "Microphone", "Microphone Jack";
++            simple-audio-card,routing =
++                    "PDM_DAT", "Microphone Jack";
++            status = "okay";
++            simple-audio-card,cpu {
++                sound-dai = <&i2s>;
++            };
++            dailink0_slave: simple-audio-card,codec {
++                sound-dai = <&adau7002_codec>;
++            };
++        };
++    };
++
++
++    __overrides__ {
++        card-name = <&sound_overlay>,"simple-audio-card,name";
++    };
++};

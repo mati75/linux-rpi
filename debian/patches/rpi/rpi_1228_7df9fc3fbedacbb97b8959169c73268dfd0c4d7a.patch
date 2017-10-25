@@ -1,0 +1,26 @@
+commit 7df9fc3fbedacbb97b8959169c73268dfd0c4d7a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Apr 12 17:52:56 2017 -0700
+
+    panel-raspberrypi-touchscreen: Fix NULL deref if probe order goes wrong.
+    
+    If the i2c driver hadn't pobed before the panel driver probes, then
+    the client would be NULL but we were looking for an ERR_PTR in the
+    error case.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
+index 7f315f04b109..b57b7ad9aa4c 100644
+--- a/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
++++ b/drivers/gpu/drm/panel/panel-raspberrypi-touchscreen.c
+@@ -404,6 +404,9 @@ static struct i2c_client *rpi_touchscreen_get_i2c(struct device *dev,
+ 
+ 	of_node_put(node);
+ 
++	if (!client)
++		return ERR_PTR(-EPROBE_DEFER);
++
+ 	return client;
+ }
+ 

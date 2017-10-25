@@ -1,0 +1,51 @@
+commit 3dcacfdeccd4c0454a72dc6a47881cbdbc589a55
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Jun 7 08:53:36 2017 +0100
+
+    overlays: Fix i2c-rtc order and fragment numbering
+    
+    See: https://github.com/raspberrypi/linux/issues/2059
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/i2c-rtc-overlay.dts b/arch/arm/boot/dts/overlays/i2c-rtc-overlay.dts
+index b73f902289c8..6140f172a86b 100644
+--- a/arch/arm/boot/dts/overlays/i2c-rtc-overlay.dts
++++ b/arch/arm/boot/dts/overlays/i2c-rtc-overlay.dts
+@@ -60,9 +60,9 @@
+ 			#size-cells = <0>;
+ 			status = "okay";
+ 
+-			mcp7940x: mcp7940x@6f {
+-				compatible = "microchip,mcp7940x";
+-				reg = <0x6f>;
++			ds3231: ds3231@68 {
++				compatible = "maxim,ds3231";
++				reg = <0x68>;
+ 				status = "okay";
+ 			};
+ 		};
+@@ -75,8 +75,8 @@
+ 			#size-cells = <0>;
+ 			status = "okay";
+ 
+-			mcp7941x: mcp7941x@6f {
+-				compatible = "microchip,mcp7941x";
++			mcp7940x: mcp7940x@6f {
++				compatible = "microchip,mcp7940x";
+ 				reg = <0x6f>;
+ 				status = "okay";
+ 			};
+@@ -90,9 +90,9 @@
+ 			#size-cells = <0>;
+ 			status = "okay";
+ 
+-			ds3231: ds3231@68 {
+-				compatible = "maxim,ds3231";
+-				reg = <0x68>;
++			mcp7941x: mcp7941x@6f {
++				compatible = "microchip,mcp7941x";
++				reg = <0x6f>;
+ 				status = "okay";
+ 			};
+ 		};

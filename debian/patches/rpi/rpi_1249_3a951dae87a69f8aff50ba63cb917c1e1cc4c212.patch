@@ -1,0 +1,21 @@
+commit 3a951dae87a69f8aff50ba63cb917c1e1cc4c212
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu May 11 22:00:20 2017 +0100
+
+    SQUASH: BCM270X_DT: Fix typo in mmc overlay
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/mmc-overlay.dts b/arch/arm/boot/dts/overlays/mmc-overlay.dts
+index 64f1ff6684b1..88251ad65391 100644
+--- a/arch/arm/boot/dts/overlays/mmc-overlay.dts
++++ b/arch/arm/boot/dts/overlays/mmc-overlay.dts
+@@ -21,7 +21,7 @@
+ 			mmc_pins: mmc_pins {
+ 				brcm,pins = <48 49 50 51 52 53>;
+ 				brcm,function = <7>; /* alt3 */
+-				brcm.pull = <0 2 2 2 2 2>;
++				brcm,pull = <0 2 2 2 2 2>;
+ 			};
+ 		};
+ 	};

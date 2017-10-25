@@ -1,0 +1,25 @@
+commit 330fda9bd2e94dd3906e773eb4959e601e5b7254
+Author: Boris Brezillon <boris.brezillon@free-electrons.com>
+Date:   Thu Feb 2 11:37:36 2017 +0100
+
+    ARM: dts: bcm283x: Add HDMI audio related properties
+    
+    Add the dmas and dma-names properties to support HDMI audio.
+    
+    Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+    (cherry picked from commit d46d2c6380c10e80e99f6af9067356128bffac6b)
+
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 348c71bbc913..7d58cd79ac6b 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -339,6 +339,8 @@
+ 			clocks = <&clocks BCM2835_PLLH_PIX>,
+ 				 <&clocks BCM2835_CLOCK_HSM>;
+ 			clock-names = "pixel", "hdmi";
++			dmas = <&dma 17>;
++			dma-names = "audio-rx";
+ 			status = "disabled";
+ 		};
+ 

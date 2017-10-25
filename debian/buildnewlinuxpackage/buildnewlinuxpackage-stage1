@@ -28,6 +28,11 @@ if grep ^debian/patches/series$ ../conflicts ; then
     git add debian/patches/series
 fi
 
+if grep ^debian/patches/series-rt$ ../conflicts ; then
+    $scriptdir/fixupseries debian/patches/series-rt
+    git add debian/patches/series-rt
+fi
+
 if grep ^debian/config/defines$ ../conflicts ; then
     ($scriptdir/fixupcontrol debian/config/defines .. && git add debian/config/defines) || true
 fi

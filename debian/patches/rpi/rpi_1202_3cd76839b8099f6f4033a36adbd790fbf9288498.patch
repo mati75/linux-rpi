@@ -1,0 +1,26 @@
+commit 3cd76839b8099f6f4033a36adbd790fbf9288498
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Tue Mar 7 12:18:20 2017 +0000
+
+    BCM270X_DT: Invert Pi3 power LED to match fw change
+    
+    Firmware expgpio driver reworked due to complaint over
+    hotplug detect.
+    Requires power LED to change sense as firmware is no longer
+    inverting the read value.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+index 173103aaca50..b21d2866d204 100644
+--- a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+@@ -175,7 +175,7 @@
+ 	pwr_led: pwr {
+ 		label = "led1";
+ 		linux,default-trigger = "input";
+-		gpios = <&expgpio 7 GPIO_ACTIVE_LOW>;
++		gpios = <&expgpio 7 0>;
+ 	};
+ };
+ 

@@ -1,0 +1,72 @@
+commit f30cc67f3c4019640d7624c179b70b75b2bf64bd
+Author: Aleksandar Markovic <aleksandar.markovic@imgtec.com>
+Date:   Mon Jun 19 17:50:12 2017 +0200
+
+    MIPS: math-emu: Handle zero accumulator case in MADDF and MSUBF separately
+    
+    commit ddbfff7429a75d954bf5bdff9f2222bceb4c236a upstream.
+    
+    If accumulator value is zero, just return the value of previously
+    calculated product. This brings logic in MADDF/MSUBF implementation
+    closer to the logic in ADD/SUB case.
+    
+    Signed-off-by: Miodrag Dinic <miodrag.dinic@imgtec.com>
+    Signed-off-by: Goran Ferenc <goran.ferenc@imgtec.com>
+    Signed-off-by: Aleksandar Markovic <aleksandar.markovic@imgtec.com>
+    Cc: James.Hogan@imgtec.com
+    Cc: Paul.Burton@imgtec.com
+    Cc: Raghu.Gandham@imgtec.com
+    Cc: Leonid.Yegoshin@imgtec.com
+    Cc: Douglas.Leung@imgtec.com
+    Cc: Petar.Jovanovic@imgtec.com
+    Cc: linux-mips@linux-mips.org
+    Patchwork: https://patchwork.linux-mips.org/patch/16512/
+    Signed-off-by: Ralf Baechle <ralf@linux-mips.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/mips/math-emu/dp_maddf.c b/arch/mips/math-emu/dp_maddf.c
+index 4a2d03c72959..caa62f20a888 100644
+--- a/arch/mips/math-emu/dp_maddf.c
++++ b/arch/mips/math-emu/dp_maddf.c
+@@ -54,7 +54,7 @@ static union ieee754dp _dp_maddf(union ieee754dp z, union ieee754dp x,
+ 		return ieee754dp_nanxcpt(z);
+ 	case IEEE754_CLASS_DNORM:
+ 		DPDNORMZ;
+-	/* QNAN is handled separately below */
++	/* QNAN and ZERO cases are handled separately below */
+ 	}
+ 
+ 	switch (CLPAIR(xc, yc)) {
+@@ -210,6 +210,9 @@ static union ieee754dp _dp_maddf(union ieee754dp z, union ieee754dp x,
+ 	}
+ 	assert(rm & (DP_HIDDEN_BIT << 3));
+ 
++	if (zc == IEEE754_CLASS_ZERO)
++		return ieee754dp_format(rs, re, rm);
++
+ 	/* And now the addition */
+ 	assert(zm & DP_HIDDEN_BIT);
+ 
+diff --git a/arch/mips/math-emu/sp_maddf.c b/arch/mips/math-emu/sp_maddf.c
+index a8cd8b4f235e..c91d5e5d9b5f 100644
+--- a/arch/mips/math-emu/sp_maddf.c
++++ b/arch/mips/math-emu/sp_maddf.c
+@@ -54,7 +54,7 @@ static union ieee754sp _sp_maddf(union ieee754sp z, union ieee754sp x,
+ 		return ieee754sp_nanxcpt(z);
+ 	case IEEE754_CLASS_DNORM:
+ 		SPDNORMZ;
+-	/* QNAN is handled separately below */
++	/* QNAN and ZERO cases are handled separately below */
+ 	}
+ 
+ 	switch (CLPAIR(xc, yc)) {
+@@ -203,6 +203,9 @@ static union ieee754sp _sp_maddf(union ieee754sp z, union ieee754sp x,
+ 	}
+ 	assert(rm & (SP_HIDDEN_BIT << 3));
+ 
++	if (zc == IEEE754_CLASS_ZERO)
++		return ieee754sp_format(rs, re, rm);
++
+ 	/* And now the addition */
+ 
+ 	assert(zm & SP_HIDDEN_BIT);

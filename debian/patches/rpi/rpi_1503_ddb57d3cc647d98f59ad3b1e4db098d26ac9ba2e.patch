@@ -1,0 +1,28 @@
+commit ddb57d3cc647d98f59ad3b1e4db098d26ac9ba2e
+Author: Christoph Hellwig <hch@lst.de>
+Date:   Thu Sep 7 13:54:35 2017 +0200
+
+    bsg-lib: don't free job in bsg_prepare_job
+    
+    commit f507b54dccfd8000c517d740bc45f20c74532d18 upstream.
+    
+    The job structure is allocated as part of the request, so we should not
+    free it in the error path of bsg_prepare_job.
+    
+    Signed-off-by: Christoph Hellwig <hch@lst.de>
+    Reviewed-by: Ming Lei <ming.lei@redhat.com>
+    Signed-off-by: Jens Axboe <axboe@kernel.dk>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/block/bsg-lib.c b/block/bsg-lib.c
+index 650f427d915b..341b8d858e67 100644
+--- a/block/bsg-lib.c
++++ b/block/bsg-lib.c
+@@ -147,7 +147,6 @@ static int bsg_create_job(struct device *dev, struct request *req)
+ failjob_rls_rqst_payload:
+ 	kfree(job->request_payload.sg_list);
+ failjob_rls_job:
+-	kfree(job);
+ 	return -ENOMEM;
+ }
+ 

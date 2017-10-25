@@ -1,0 +1,71 @@
+commit 464c13b5791d1812b12828a21bbd3a7f1a91c6b1
+Author: Jason A. Donenfeld <Jason@zx2c4.com>
+Date:   Wed Sep 20 16:58:38 2017 +0200
+
+    security/keys: properly zero out sensitive key material in big_key
+    
+    commit 910801809b2e40a4baedd080ef5d80b4a180e70e upstream.
+    
+    Error paths forgot to zero out sensitive material, so this patch changes
+    some kfrees into a kzfrees.
+    
+    Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+    Signed-off-by: David Howells <dhowells@redhat.com>
+    Reviewed-by: Eric Biggers <ebiggers3@gmail.com>
+    Cc: Herbert Xu <herbert@gondor.apana.org.au>
+    Cc: Kirill Marinushkin <k.marinushkin@gmail.com>
+    Cc: security@kernel.org
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/security/keys/big_key.c b/security/keys/big_key.c
+index 835c1ab30d01..1c93c077d119 100644
+--- a/security/keys/big_key.c
++++ b/security/keys/big_key.c
+@@ -194,7 +194,7 @@ int big_key_preparse(struct key_preparsed_payload *prep)
+ 		*path = file->f_path;
+ 		path_get(path);
+ 		fput(file);
+-		kfree(data);
++		kzfree(data);
+ 	} else {
+ 		/* Just store the data in a buffer */
+ 		void *data = kmalloc(datalen, GFP_KERNEL);
+@@ -210,9 +210,9 @@ int big_key_preparse(struct key_preparsed_payload *prep)
+ err_fput:
+ 	fput(file);
+ err_enckey:
+-	kfree(enckey);
++	kzfree(enckey);
+ error:
+-	kfree(data);
++	kzfree(data);
+ 	return ret;
+ }
+ 
+@@ -226,7 +226,7 @@ void big_key_free_preparse(struct key_preparsed_payload *prep)
+ 
+ 		path_put(path);
+ 	}
+-	kfree(prep->payload.data[big_key_data]);
++	kzfree(prep->payload.data[big_key_data]);
+ }
+ 
+ /*
+@@ -258,7 +258,7 @@ void big_key_destroy(struct key *key)
+ 		path->mnt = NULL;
+ 		path->dentry = NULL;
+ 	}
+-	kfree(key->payload.data[big_key_data]);
++	kzfree(key->payload.data[big_key_data]);
+ 	key->payload.data[big_key_data] = NULL;
+ }
+ 
+@@ -326,7 +326,7 @@ long big_key_read(const struct key *key, char __user *buffer, size_t buflen)
+ err_fput:
+ 		fput(file);
+ error:
+-		kfree(data);
++		kzfree(data);
+ 	} else {
+ 		ret = datalen;
+ 		if (copy_to_user(buffer, key->payload.data[big_key_data],

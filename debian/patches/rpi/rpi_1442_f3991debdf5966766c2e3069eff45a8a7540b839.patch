@@ -1,0 +1,29 @@
+commit f3991debdf5966766c2e3069eff45a8a7540b839
+Author: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Date:   Fri Sep 1 12:04:09 2017 -0400
+
+    ftrace: Fix selftest goto location on error
+    
+    commit 46320a6acc4fb58f04bcf78c4c942cc43b20f986 upstream.
+    
+    In the second iteration of trace_selftest_ops(), the error goto label is
+    wrong in the case where trace_selftest_test_global_cnt is off. In the
+    case of error, it leaks the dynamic ops that was allocated.
+    
+    Fixes: 95950c2e ("ftrace: Add self-tests for multiple function trace users")
+    Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
+index b0f86ea77881..ca70d11b8aa7 100644
+--- a/kernel/trace/trace_selftest.c
++++ b/kernel/trace/trace_selftest.c
+@@ -272,7 +272,7 @@ static int trace_selftest_ops(struct trace_array *tr, int cnt)
+ 		goto out_free;
+ 	if (cnt > 1) {
+ 		if (trace_selftest_test_global_cnt == 0)
+-			goto out;
++			goto out_free;
+ 	}
+ 	if (trace_selftest_test_dyn_cnt == 0)
+ 		goto out_free;

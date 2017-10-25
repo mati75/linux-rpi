@@ -21,12 +21,6 @@ fi
 
 # Rpi diversion hack
 mkdir -p /usr/share/rpikernelhack
-dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/@image-stem@-$version --rename $image_path
-dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/config-$version --rename /boot/config-$version
-dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/System.map-$version --rename /boot/System.map-$version
-
-# Rpi diversion hack
-mkdir -p /usr/share/rpikernelhack
 dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/$kimage-$version --rename /boot/$kimage-$version
 dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/config-$version --rename /boot/config-$version
 dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/System.map-$version --rename /boot/System.map-$version

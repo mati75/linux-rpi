@@ -1,0 +1,21 @@
+commit 1f73e9b548492b86e248d63f9cc3b363bd298404
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Fri May 5 13:23:10 2017 +0100
+
+    Revert "serial: 8250: Don't crash when nr_uarts is 0"
+    
+    This reverts commit 9c297d9ebd0d8c6d5e6e8675d527d6a221613abc.
+
+diff --git a/drivers/tty/serial/8250/8250_core.c b/drivers/tty/serial/8250/8250_core.c
+index cf9c7d2e3f95..e8819aa20415 100644
+--- a/drivers/tty/serial/8250/8250_core.c
++++ b/drivers/tty/serial/8250/8250_core.c
+@@ -509,8 +509,6 @@ static void __init serial8250_isa_init_ports(void)
+ 
+ 	if (nr_uarts > UART_NR)
+ 		nr_uarts = UART_NR;
+-	if (!nr_uarts)
+-		return;
+ 
+ 	for (i = 0; i < nr_uarts; i++) {
+ 		struct uart_8250_port *up = &serial8250_ports[i];

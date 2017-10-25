@@ -1,0 +1,180 @@
+commit 3c778784672d3503ccae70d3e2d98c5eb0190a95
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jun 5 12:16:10 2017 -0700
+
+    drm/vc4: Add T-format scanout support.
+    
+    The T tiling format is what V3D uses for textures, with no raster
+    support at all until later revisions of the hardware (and always at a
+    large 3D performance penalty).  If we can't scan out V3D's format,
+    then we often need to do a relayout at some stage of the pipeline,
+    either right before texturing from the scanout buffer (common in X11
+    without a compositor) or between a tiled screen buffer right before
+    scanout (an option I've considered in trying to resolve this
+    inconsistency, but which means needing to use the dirty fb ioctl and
+    having some update policy).
+    
+    T-format scanout lets us avoid either of those shadow copies, for a
+    massive, obvious performance improvement to X11 window dragging
+    without a compositor.  Unfortunately, enabling a compositor to work
+    around the discrepancy has turned out to be too costly in memory
+    consumption for the Raspbian distribution.
+    
+    Because the HVS operates a scanline at a time, compositing from T does
+    increase the memory bandwidth cost of scanout.  On my 1920x1080@32bpp
+    display on a RPi3, we go from about 15% of system memory bandwidth
+    with linear to about 20% with tiled.  However, for X11 this still ends
+    up being a huge performance win in active usage.
+    
+    This patch doesn't yet handle src_x/src_y offsetting within the tiled
+    buffer.  However, we fail to do so for untiled buffers already.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
+index 14d69bb4967d..62c5f7df0f1a 100644
+--- a/drivers/gpu/drm/vc4/vc4_plane.c
++++ b/drivers/gpu/drm/vc4/vc4_plane.c
+@@ -22,6 +22,7 @@
+ #include "vc4_regs.h"
+ #include "drm_atomic.h"
+ #include "drm_atomic_helper.h"
++#include "drm_fourcc.h"
+ #include "drm_fb_cma_helper.h"
+ #include "drm_plane_helper.h"
+ 
+@@ -499,8 +500,8 @@ static int vc4_plane_mode_set(struct drm_plane *plane,
+ 	u32 ctl0_offset = vc4_state->dlist_count;
+ 	const struct hvs_format *format = vc4_get_hvs_format(fb->pixel_format);
+ 	int num_planes = drm_format_num_planes(format->drm);
+-	u32 scl0, scl1;
+-	u32 lbm_size;
++	u32 scl0, scl1, pitch0;
++	u32 lbm_size, tiling = SCALER_CTL0_TILING_LINEAR;
+ 	unsigned long irqflags;
+ 	int ret, i;
+ 
+@@ -541,11 +542,31 @@ static int vc4_plane_mode_set(struct drm_plane *plane,
+ 		scl1 = vc4_get_scl_field(state, 0);
+ 	}
+ 
++	switch (fb->modifier[0]) {
++	case DRM_FORMAT_MOD_NONE:
++		tiling = SCALER_CTL0_TILING_LINEAR;
++		pitch0 = VC4_SET_FIELD(fb->pitches[0], SCALER_SRC_PITCH);
++		break;
++	case DRM_FORMAT_MOD_BROADCOM_VC4_T_TILED:
++		tiling = SCALER_CTL0_TILING_256B_OR_T;
++
++		pitch0 = (VC4_SET_FIELD(0, SCALER_PITCH0_TILE_Y_OFFSET),
++			  VC4_SET_FIELD(0, SCALER_PITCH0_TILE_WIDTH_L),
++			  VC4_SET_FIELD((vc4_state->src_w[0] + 31) >> 5,
++					SCALER_PITCH0_TILE_WIDTH_R));
++		break;
++	default:
++		DRM_DEBUG_KMS("Unsupported FB tiling flag 0x%16llx",
++			      (long long)fb->modifier[0]);
++		return -EINVAL;
++	}
++
+ 	/* Control word */
+ 	vc4_dlist_write(vc4_state,
+ 			SCALER_CTL0_VALID |
+ 			(format->pixel_order << SCALER_CTL0_ORDER_SHIFT) |
+ 			(format->hvs << SCALER_CTL0_PIXEL_FORMAT_SHIFT) |
++			VC4_SET_FIELD(tiling, SCALER_CTL0_TILING) |
+ 			(vc4_state->is_unity ? SCALER_CTL0_UNITY : 0) |
+ 			VC4_SET_FIELD(scl0, SCALER_CTL0_SCL0) |
+ 			VC4_SET_FIELD(scl1, SCALER_CTL0_SCL1));
+@@ -599,8 +620,11 @@ static int vc4_plane_mode_set(struct drm_plane *plane,
+ 	for (i = 0; i < num_planes; i++)
+ 		vc4_dlist_write(vc4_state, 0xc0c0c0c0);
+ 
+-	/* Pitch word 0/1/2 */
+-	for (i = 0; i < num_planes; i++) {
++	/* Pitch word 0 */
++	vc4_dlist_write(vc4_state, pitch0);
++
++	/* Pitch word 1/2 */
++	for (i = 1; i < num_planes; i++) {
+ 		vc4_dlist_write(vc4_state,
+ 				VC4_SET_FIELD(fb->pitches[i], SCALER_SRC_PITCH));
+ 	}
+diff --git a/drivers/gpu/drm/vc4/vc4_regs.h b/drivers/gpu/drm/vc4/vc4_regs.h
+index 932093936178..d382c34c1b9e 100644
+--- a/drivers/gpu/drm/vc4/vc4_regs.h
++++ b/drivers/gpu/drm/vc4/vc4_regs.h
+@@ -709,6 +709,13 @@ enum hvs_pixel_format {
+ #define SCALER_CTL0_SIZE_MASK			VC4_MASK(29, 24)
+ #define SCALER_CTL0_SIZE_SHIFT			24
+ 
++#define SCALER_CTL0_TILING_MASK			VC4_MASK(21, 20)
++#define SCALER_CTL0_TILING_SHIFT		20
++#define SCALER_CTL0_TILING_LINEAR		0
++#define SCALER_CTL0_TILING_64B			1
++#define SCALER_CTL0_TILING_128B			2
++#define SCALER_CTL0_TILING_256B_OR_T		3
++
+ #define SCALER_CTL0_HFLIP                       BIT(16)
+ #define SCALER_CTL0_VFLIP                       BIT(15)
+ 
+@@ -838,7 +845,19 @@ enum hvs_pixel_format {
+ #define SCALER_PPF_KERNEL_OFFSET_SHIFT		0
+ #define SCALER_PPF_KERNEL_UNCACHED		BIT(31)
+ 
++/* PITCH0/1/2 fields for raster. */
+ #define SCALER_SRC_PITCH_MASK			VC4_MASK(15, 0)
+ #define SCALER_SRC_PITCH_SHIFT			0
+ 
++/* PITCH0 fields for T-tiled. */
++#define SCALER_PITCH0_TILE_WIDTH_L_MASK		VC4_MASK(22, 16)
++#define SCALER_PITCH0_TILE_WIDTH_L_SHIFT	16
++#define SCALER_PITCH0_TILE_LINE_DIR		BIT(15)
++#define SCALER_PITCH0_TILE_INITIAL_LINE_DIR	BIT(14)
++/* Y offset within a tile. */
++#define SCALER_PITCH0_TILE_Y_OFFSET_MASK	VC4_MASK(13, 7)
++#define SCALER_PITCH0_TILE_Y_OFFSET_SHIFT	7
++#define SCALER_PITCH0_TILE_WIDTH_R_MASK		VC4_MASK(6, 0)
++#define SCALER_PITCH0_TILE_WIDTH_R_SHIFT	0
++
+ #endif /* VC4_REGS_H */
+diff --git a/include/uapi/drm/drm_fourcc.h b/include/uapi/drm/drm_fourcc.h
+index a5890bf44c0a..4fccf9b898b1 100644
+--- a/include/uapi/drm/drm_fourcc.h
++++ b/include/uapi/drm/drm_fourcc.h
+@@ -159,6 +159,7 @@ extern "C" {
+ #define DRM_FORMAT_MOD_VENDOR_NV      0x03
+ #define DRM_FORMAT_MOD_VENDOR_SAMSUNG 0x04
+ #define DRM_FORMAT_MOD_VENDOR_QCOM    0x05
++#define DRM_FORMAT_MOD_VENDOR_BROADCOM 0x07
+ /* add more to the end as needed */
+ 
+ #define fourcc_mod_code(vendor, val) \
+@@ -233,6 +234,27 @@ extern "C" {
+  */
+ #define DRM_FORMAT_MOD_SAMSUNG_64_32_TILE	fourcc_mod_code(SAMSUNG, 1)
+ 
++/*
++ * Broadcom VC4 "T" format
++ *
++ * This is the primary layout that the V3D GPU can texture from (it
++ * can't do linear).  The T format has:
++ *
++ * - 64b utiles of pixels in a raster-order grid according to cpp.  It's 4x4
++ *   pixels at 32 bit depth.
++ *
++ * - 1k subtiles made of a 4x4 raster-order grid of 64b utiles (so usually
++ *   16x16 pixels).
++ *
++ * - 4k tiles made of a 2x2 grid of 1k subtiles (so usually 32x32 pixels).  On
++ *   even 4k tile rows, they're arranged as (BL, TL, TR, BR), and on odd rows
++ *   they're (TR, BR, BL, TL), where bottom left is start of memory.
++ *
++ * - an image made of 4k tiles in rows either left-to-right (even rows of 4k
++ *   tiles) or right-to-left (odd rows of 4k tiles).
++ */
++#define DRM_FORMAT_MOD_BROADCOM_VC4_T_TILED fourcc_mod_code(BROADCOM, 1)
++
+ #if defined(__cplusplus)
+ }
+ #endif

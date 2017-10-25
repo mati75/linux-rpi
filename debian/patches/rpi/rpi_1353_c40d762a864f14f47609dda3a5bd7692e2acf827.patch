@@ -1,0 +1,97 @@
+commit c40d762a864f14f47609dda3a5bd7692e2acf827
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Fri Aug 25 17:09:38 2017 +0100
+
+    vcsm: Allow build with multi-platform v6-v7
+
+diff --git a/arch/arm/mm/cache-v6.S b/arch/arm/mm/cache-v6.S
+index 45d221ea805e..1ee5bc3a1018 100644
+--- a/arch/arm/mm/cache-v6.S
++++ b/arch/arm/mm/cache-v6.S
+@@ -201,8 +201,7 @@ ENTRY(v6_flush_kern_dcache_area)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-ENTRY(rpi_dma_inv_range)
+-v6_dma_inv_range:
++ENTRY(v6_dma_inv_range)
+ #ifdef CONFIG_DMA_CACHE_RWFO
+ 	ldrb	r2, [r0]			@ read for ownership
+ 	strb	r2, [r0]			@ write for ownership
+@@ -247,8 +246,7 @@ v6_dma_inv_range:
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-ENTRY(rpi_dma_clean_range)
+-v6_dma_clean_range:
++ENTRY(v6_dma_clean_range)
+ 	bic	r0, r0, #D_CACHE_LINE_SIZE - 1
+ 1:
+ #ifdef CONFIG_DMA_CACHE_RWFO
+diff --git a/arch/arm/mm/cache-v7.S b/arch/arm/mm/cache-v7.S
+index 48a81f3757d4..2ddf36403d1c 100644
+--- a/arch/arm/mm/cache-v7.S
++++ b/arch/arm/mm/cache-v7.S
+@@ -349,8 +349,7 @@ ENDPROC(v7_flush_kern_dcache_area)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-ENTRY(rpi_dma_inv_range)
+-v7_dma_inv_range:
++ENTRY(v7_dma_inv_range)
+ 	dcache_line_size r2, r3
+ 	sub	r3, r2, #1
+ 	tst	r0, r3
+@@ -378,8 +377,7 @@ ENDPROC(v7_dma_inv_range)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-ENTRY(rpi_dma_clean_range)
+-v7_dma_clean_range:
++ENTRY(v7_dma_clean_range)
+ 	dcache_line_size r2, r3
+ 	sub	r3, r2, #1
+ 	bic	r0, r0, r3
+diff --git a/drivers/char/broadcom/vc_sm/vmcs_sm.c b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+index dda21c2fe746..1dd5d227980a 100644
+--- a/drivers/char/broadcom/vc_sm/vmcs_sm.c
++++ b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+@@ -2845,15 +2845,31 @@ static long vc_sm_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 				for (i=0; i<ioparam.op_count; i++) {
+ 					struct vmcs_sm_ioctl_clean_invalid_block *op = block + i;
+ 					for (j = 0; j < op->block_count; ++j) {
+-						extern void rpi_dma_inv_range(void *start, void *end);
+-						extern void rpi_dma_clean_range(void *start, void *end);
++
++
++						extern void v6_dma_inv_range(void *start, void *end);
++						extern void v6_dma_clean_range(void *start, void *end);
+ 						unsigned long base = (unsigned long)op->start_address + j * op->inter_block_stride;
+ 						unsigned long end = base + op->block_size;
+-						/* L1/L2 cache clean/invalidate */
+-						if (op->invalidate_mode == 1)
+-							rpi_dma_inv_range((void *)base, (void *)end);
+-						else
+-							rpi_dma_clean_range((void *)base, (void *)end);
++						/* L1/L2 cache clean */
++						if (op->invalidate_mode & 2) {
++#if defined(CONFIG_CPU_CACHE_V7)
++							extern void v7_dma_clean_range(void *start, void *end);
++							v7_dma_clean_range((void *)base, (void *)end);
++#elif defined(CONFIG_CPU_CACHE_V6)
++							extern void v6_dma_clean_range(void *start, void *end);
++							v6_dma_clean_range((void *)base, (void *)end);
++#endif
++						/* L1/L2 cache invalidate */
++						} else if (op->invalidate_mode & 1) {
++#if defined(CONFIG_CPU_CACHE_V7)
++							extern void v7_dma_inv_range(void *start, void *end);
++							v7_dma_inv_range((void *)base, (void *)end);
++#elif defined(CONFIG_CPU_CACHE_V6)
++							extern void v6_dma_inv_range(void *start, void *end);
++							v6_dma_inv_range((void *)base, (void *)end);
++#endif
++						}
+ 					}
+ 				}
+ 				kfree(block);

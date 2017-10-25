@@ -1,0 +1,34 @@
+commit 9e2175a6afc69e6a8e32208dc60d913cf41a0381
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Jan 25 21:17:23 2017 +0000
+
+    config: Add SND_SOC_ADAU7002 codec module
+    
+    As there is now an overlay requiring it, build the codec module.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index a02d5ebf170b..31163b59b9c6 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -884,6 +884,7 @@ CONFIG_SND_BCM2708_SOC_DIONAUDIO_LOCO=m
+ CONFIG_SND_BCM2708_SOC_ALLO_PIANO_DAC=m
+ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
++CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index b448eaa866c2..5105a592c9bc 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -878,6 +878,7 @@ CONFIG_SND_BCM2708_SOC_DIONAUDIO_LOCO=m
+ CONFIG_SND_BCM2708_SOC_ALLO_PIANO_DAC=m
+ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
++CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m

@@ -1,0 +1,50 @@
+commit 15701e1bafd7808029c2f6a8927e9462627fd65c
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Wed Jan 25 11:30:38 2017 +0000
+
+    config: Add additional network scheduling modules
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index d5d699e17502..a02d5ebf170b 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -296,6 +296,7 @@ CONFIG_NET_SCHED=y
+ CONFIG_NET_SCH_CBQ=m
+ CONFIG_NET_SCH_HTB=m
+ CONFIG_NET_SCH_HFSC=m
++CONFIG_NET_SCH_ATM=m
+ CONFIG_NET_SCH_PRIO=m
+ CONFIG_NET_SCH_MULTIQ=m
+ CONFIG_NET_SCH_RED=m
+@@ -312,6 +313,9 @@ CONFIG_NET_SCH_CHOKE=m
+ CONFIG_NET_SCH_QFQ=m
+ CONFIG_NET_SCH_CODEL=m
+ CONFIG_NET_SCH_FQ_CODEL=m
++CONFIG_NET_SCH_FQ=m
++CONFIG_NET_SCH_HHF=m
++CONFIG_NET_SCH_PIE=m
+ CONFIG_NET_SCH_INGRESS=m
+ CONFIG_NET_SCH_PLUG=m
+ CONFIG_NET_CLS_BASIC=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index c4898d63d747..b448eaa866c2 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -292,6 +292,7 @@ CONFIG_NET_SCHED=y
+ CONFIG_NET_SCH_CBQ=m
+ CONFIG_NET_SCH_HTB=m
+ CONFIG_NET_SCH_HFSC=m
++CONFIG_NET_SCH_ATM=m
+ CONFIG_NET_SCH_PRIO=m
+ CONFIG_NET_SCH_MULTIQ=m
+ CONFIG_NET_SCH_RED=m
+@@ -308,6 +309,9 @@ CONFIG_NET_SCH_CHOKE=m
+ CONFIG_NET_SCH_QFQ=m
+ CONFIG_NET_SCH_CODEL=m
+ CONFIG_NET_SCH_FQ_CODEL=m
++CONFIG_NET_SCH_FQ=m
++CONFIG_NET_SCH_HHF=m
++CONFIG_NET_SCH_PIE=m
+ CONFIG_NET_SCH_INGRESS=m
+ CONFIG_NET_SCH_PLUG=m
+ CONFIG_NET_CLS_BASIC=m

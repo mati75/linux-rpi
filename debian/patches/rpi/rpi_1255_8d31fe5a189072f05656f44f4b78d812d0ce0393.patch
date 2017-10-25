@@ -1,0 +1,32 @@
+commit 8d31fe5a189072f05656f44f4b78d812d0ce0393
+Author: Ahmet Inan <inan@distec.de>
+Date:   Mon May 15 16:55:56 2017 +0200
+
+    config: Add Goodix touch controller module
+    
+    Signed-off-by: Ahmet Inan <inan@distec.de>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index d5624bbf15a6..c4c5b42016e5 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -569,6 +569,7 @@ CONFIG_JOYSTICK_RPISENSE=m
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
+ CONFIG_TOUCHSCREEN_EGALAX=m
++CONFIG_TOUCHSCREEN_GOODIX=m
+ CONFIG_TOUCHSCREEN_EKTF2127=m
+ CONFIG_TOUCHSCREEN_RPI_FT5406=m
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index a338c313de9e..c274e53142ce 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -565,6 +565,7 @@ CONFIG_JOYSTICK_RPISENSE=m
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
+ CONFIG_TOUCHSCREEN_EGALAX=m
++CONFIG_TOUCHSCREEN_GOODIX=m
+ CONFIG_TOUCHSCREEN_RPI_FT5406=m
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=m
+ CONFIG_TOUCHSCREEN_STMPE=m

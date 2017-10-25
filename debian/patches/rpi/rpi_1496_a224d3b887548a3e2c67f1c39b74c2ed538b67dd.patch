@@ -1,0 +1,42 @@
+commit a224d3b887548a3e2c67f1c39b74c2ed538b67dd
+Author: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Date:   Mon Sep 18 16:51:51 2017 +0200
+
+    s390/mm: fix write access check in gup_huge_pmd()
+    
+    commit ba385c0594e723d41790ecfb12c610e6f90c7785 upstream.
+    
+    The check for the _SEGMENT_ENTRY_PROTECT bit in gup_huge_pmd() is the
+    wrong way around. It must not be set for write==1, and not be checked for
+    write==0. Fix this similar to how it was fixed for ptes long time ago in
+    commit 25591b070336 ("[S390] fix get_user_pages_fast").
+    
+    One impact of this bug would be unnecessarily using the gup slow path for
+    write==0 on r/w mappings. A potentially more severe impact would be that
+    gup_huge_pmd() will succeed for write==1 on r/o mappings.
+    
+    Signed-off-by: Gerald Schaefer <gerald.schaefer@de.ibm.com>
+    Signed-off-by: Martin Schwidefsky <schwidefsky@de.ibm.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/s390/mm/gup.c b/arch/s390/mm/gup.c
+index 18d4107e10ee..97fc449a7470 100644
+--- a/arch/s390/mm/gup.c
++++ b/arch/s390/mm/gup.c
+@@ -56,13 +56,12 @@ static inline int gup_pte_range(pmd_t *pmdp, pmd_t pmd, unsigned long addr,
+ static inline int gup_huge_pmd(pmd_t *pmdp, pmd_t pmd, unsigned long addr,
+ 		unsigned long end, int write, struct page **pages, int *nr)
+ {
+-	unsigned long mask, result;
+ 	struct page *head, *page;
++	unsigned long mask;
+ 	int refs;
+ 
+-	result = write ? 0 : _SEGMENT_ENTRY_PROTECT;
+-	mask = result | _SEGMENT_ENTRY_INVALID;
+-	if ((pmd_val(pmd) & mask) != result)
++	mask = (write ? _SEGMENT_ENTRY_PROTECT : 0) | _SEGMENT_ENTRY_INVALID;
++	if ((pmd_val(pmd) & mask) != 0)
+ 		return 0;
+ 	VM_BUG_ON(!pfn_valid(pmd_val(pmd) >> PAGE_SHIFT));
+ 

@@ -1,0 +1,55 @@
+commit a338bfac40395dff8d4e5ae2e0ec4b66fdc36594
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Mar 17 12:24:41 2017 +0000
+
+    config: Make spidev a loadable module
+    
+    spidev isn't required early in the boot process, and not all users
+    need it (spi_bcm2835 is a module), so make it a loadable module.
+    
+    See: https://github.com/raspberrypi/linux/issues/1897
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 5f5f19f0e277..598b4bf29f30 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -621,7 +621,7 @@ CONFIG_I2C_GPIO=m
+ CONFIG_SPI=y
+ CONFIG_SPI_BCM2835=m
+ CONFIG_SPI_BCM2835AUX=m
+-CONFIG_SPI_SPIDEV=y
++CONFIG_SPI_SPIDEV=m
+ CONFIG_PPS=m
+ CONFIG_PPS_CLIENT_LDISC=m
+ CONFIG_PPS_CLIENT_GPIO=m
+@@ -899,7 +899,6 @@ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
+ CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
+-CONFIG_SND_SOC_CS42XX8_I2C=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SOUND_PRIME=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 4bc0f8b52b7f..8d64ce4465f6 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -616,7 +616,7 @@ CONFIG_I2C_GPIO=m
+ CONFIG_SPI=y
+ CONFIG_SPI_BCM2835=m
+ CONFIG_SPI_BCM2835AUX=m
+-CONFIG_SPI_SPIDEV=y
++CONFIG_SPI_SPIDEV=m
+ CONFIG_PPS=m
+ CONFIG_PPS_CLIENT_LDISC=m
+ CONFIG_PPS_CLIENT_GPIO=m
+@@ -892,7 +892,6 @@ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
+ CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
+-CONFIG_SND_SOC_CS42XX8_I2C=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SOUND_PRIME=m

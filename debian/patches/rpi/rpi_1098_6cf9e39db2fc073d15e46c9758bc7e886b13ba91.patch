@@ -1,0 +1,35 @@
+commit 6cf9e39db2fc073d15e46c9758bc7e886b13ba91
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Oct 3 10:14:10 2016 -0700
+
+    staging/vchi: Convert to current get_user_pages() arguments.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
+index 1091b9f1dd07..8c7f31f8d395 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_2835_arm.c
+@@ -420,7 +420,7 @@ create_pagelist(char __user *buf, size_t count, unsigned short type,
+ 		*need_release = 0; /* do not try and release vmalloc pages */
+ 	} else {
+ 		down_read(&task->mm->mmap_sem);
+-		actual_pages = get_user_pages(task, task->mm,
++		actual_pages = get_user_pages(
+ 				          (unsigned long)buf & ~(PAGE_SIZE - 1),
+ 					  num_pages,
+ 					  (type == PAGELIST_READ) ? FOLL_WRITE : 0,
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index e5cdda12c7e5..085d37588c59 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -1492,8 +1492,7 @@ dump_phys_mem(void *virt_addr, uint32_t num_bytes)
+ 	}
+ 
+ 	down_read(&current->mm->mmap_sem);
+-	rc = get_user_pages(current,      /* task */
+-		current->mm,              /* mm */
++	rc = get_user_pages(
+ 		(unsigned long)virt_addr, /* start */
+ 		num_pages,                /* len */
+ 		0,                        /* gup_flags */

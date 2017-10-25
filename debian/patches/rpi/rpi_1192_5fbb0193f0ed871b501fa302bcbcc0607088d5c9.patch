@@ -1,0 +1,36 @@
+commit 5fbb0193f0ed871b501fa302bcbcc0607088d5c9
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Mar 7 19:48:23 2017 +0000
+
+    config: Add CONFIG_CRYPTO_LZ4
+    
+    Enabling this options allows LZ4 memory compression.
+    
+    Fixes: https://github.com/raspberrypi/linux/issues/1875
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 0173885ecbbf..ac50cc68f3a3 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -1308,6 +1308,7 @@ CONFIG_CRYPTO_TGR192=m
+ CONFIG_CRYPTO_WP512=m
+ CONFIG_CRYPTO_CAST5=m
+ CONFIG_CRYPTO_DES=y
++CONFIG_CRYPTO_LZ4=m
+ CONFIG_CRYPTO_USER_API_SKCIPHER=m
+ # CONFIG_CRYPTO_HW is not set
+ CONFIG_ARM_CRYPTO=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 2c124bbfa343..1748fcb84bdc 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -1318,6 +1318,7 @@ CONFIG_CRYPTO_TGR192=m
+ CONFIG_CRYPTO_WP512=m
+ CONFIG_CRYPTO_CAST5=m
+ CONFIG_CRYPTO_DES=y
++CONFIG_CRYPTO_LZ4=m
+ CONFIG_CRYPTO_USER_API_SKCIPHER=m
+ # CONFIG_CRYPTO_HW is not set
+ CONFIG_ARM_CRYPTO=y

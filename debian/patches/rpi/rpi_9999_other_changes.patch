@@ -1,6 +1,251 @@
-this patch contains changes that the system could not split out into individual patches
-diff -urN test1/999-dummy.txt test2/999-dummy.txt
---- test1/999-dummy.txt	1970-01-01 00:00:00.000000000 +0000
-+++ test2/999-dummy.txt	2013-07-20 14:46:08.000000000 +0000
-@@ -0,0 +1 @@
-+This is a dummy file to make sure rpi_999_other_changes.patch is not empty as empty patches confuse quilt.
+this patch contains changes generated from the "rpi" tree (possiblly including upstream changes) that rebase could not linearise.
+diff --git a/drivers/gpu/drm/vc4/vc4_bo.c b/drivers/gpu/drm/vc4/vc4_bo.c
+index 4d56cd3c08e1..e7428184353c 100644
+--- a/drivers/gpu/drm/vc4/vc4_bo.c
++++ b/drivers/gpu/drm/vc4/vc4_bo.c
+@@ -416,14 +416,6 @@ void vc4_free_object(struct drm_gem_object *gem_bo)
+ 		goto out;
+ 	}
+ 
+-	/* If this object was partially constructed but CMA allocation
+-	 * had failed, just free it.
+-	 */
+-	if (!bo->base.vaddr) {
+-		vc4_bo_destroy(bo);
+-		goto out;
+-	}
+-
+ 	cache_list = vc4_get_cache_list_for_size(dev, gem_bo->size);
+ 	if (!cache_list) {
+ 		vc4_bo_destroy(bo);
+diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+index 9aff4f6f5423..1606e7f08f4b 100644
+--- a/drivers/hv/channel.c
++++ b/drivers/hv/channel.c
+@@ -506,11 +506,6 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
+ 
+ 	wait_for_completion(&info->waitevent);
+ 
+-	if (channel->rescind) {
+-		ret = -ENODEV;
+-		goto post_msg_err;
+-	}
+-
+ post_msg_err:
+ 	/*
+ 	 * If the channel has been rescinded;
+diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
+index 8642f580ce41..47167f403cc8 100644
+--- a/drivers/i2c/busses/i2c-bcm2835.c
++++ b/drivers/i2c/busses/i2c-bcm2835.c
+@@ -279,7 +279,9 @@ static irqreturn_t bcm2835_i2c_isr(int this_irq, void *data)
+ 	}
+ 
+ 	if (val & BCM2835_I2C_S_DONE) {
+-		if (i2c_dev->curr_msg->flags & I2C_M_RD) {
++		if (!i2c_dev->curr_msg) {
++			dev_err(i2c_dev->dev, "Got unexpected interrupt (from firmware?)\n");
++		} else if (i2c_dev->curr_msg->flags & I2C_M_RD) {
+ 			bcm2835_drain_rxfifo(i2c_dev);
+ 			val = bcm2835_i2c_readl(i2c_dev, BCM2835_I2C_S);
+ 		}
+diff --git a/drivers/usb/gadget/function/f_hid.c b/drivers/usb/gadget/function/f_hid.c
+index b6d4b484c51a..5815120c0402 100644
+--- a/drivers/usb/gadget/function/f_hid.c
++++ b/drivers/usb/gadget/function/f_hid.c
+@@ -284,6 +284,7 @@ static ssize_t f_hidg_write(struct file *file, const char __user *buffer,
+ 			    size_t count, loff_t *offp)
+ {
+ 	struct f_hidg *hidg  = file->private_data;
++	struct usb_request *req;
+ 	unsigned long flags;
+ 	ssize_t status = -ENOMEM;
+ 
+@@ -293,7 +294,7 @@ static ssize_t f_hidg_write(struct file *file, const char __user *buffer,
+ 	spin_lock_irqsave(&hidg->write_spinlock, flags);
+ 
+ #define WRITE_COND (!hidg->write_pending)
+-
++try_again:
+ 	/* write queue */
+ 	while (!WRITE_COND) {
+ 		spin_unlock_irqrestore(&hidg->write_spinlock, flags);
+@@ -308,6 +309,7 @@ static ssize_t f_hidg_write(struct file *file, const char __user *buffer,
+ 	}
+ 
+ 	hidg->write_pending = 1;
++	req = hidg->req;
+ 	count  = min_t(unsigned, count, hidg->report_length);
+ 
+ 	spin_unlock_irqrestore(&hidg->write_spinlock, flags);
+@@ -320,24 +322,38 @@ static ssize_t f_hidg_write(struct file *file, const char __user *buffer,
+ 		goto release_write_pending;
+ 	}
+ 
+-	hidg->req->status   = 0;
+-	hidg->req->zero     = 0;
+-	hidg->req->length   = count;
+-	hidg->req->complete = f_hidg_req_complete;
+-	hidg->req->context  = hidg;
++	spin_lock_irqsave(&hidg->write_spinlock, flags);
++
++	/* we our function has been disabled by host */
++	if (!hidg->req) {
++		free_ep_req(hidg->in_ep, hidg->req);
++		/*
++		 * TODO
++		 * Should we fail with error here?
++		 */
++		goto try_again;
++	}
++
++	req->status   = 0;
++	req->zero     = 0;
++	req->length   = count;
++	req->complete = f_hidg_req_complete;
++	req->context  = hidg;
+ 
+ 	status = usb_ep_queue(hidg->in_ep, hidg->req, GFP_ATOMIC);
+ 	if (status < 0) {
+ 		ERROR(hidg->func.config->cdev,
+ 			"usb_ep_queue error on int endpoint %zd\n", status);
+-		goto release_write_pending;
++		goto release_write_pending_unlocked;
+ 	} else {
+ 		status = count;
+ 	}
++	spin_unlock_irqrestore(&hidg->write_spinlock, flags);
+ 
+ 	return status;
+ release_write_pending:
+ 	spin_lock_irqsave(&hidg->write_spinlock, flags);
++release_write_pending_unlocked:
+ 	hidg->write_pending = 0;
+ 	spin_unlock_irqrestore(&hidg->write_spinlock, flags);
+ 
+@@ -541,12 +557,23 @@ static void hidg_disable(struct usb_function *f)
+ 		kfree(list);
+ 	}
+ 	spin_unlock_irqrestore(&hidg->read_spinlock, flags);
++
++	spin_lock_irqsave(&hidg->write_spinlock, flags);
++	if (!hidg->write_pending) {
++		free_ep_req(hidg->in_ep, hidg->req);
++		hidg->write_pending = 1;
++	}
++
++	hidg->req = NULL;
++	spin_unlock_irqrestore(&hidg->write_spinlock, flags);
+ }
+ 
+ static int hidg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
+ {
+ 	struct usb_composite_dev		*cdev = f->config->cdev;
+ 	struct f_hidg				*hidg = func_to_hidg(f);
++	struct usb_request			*req_in = NULL;
++	unsigned long				flags;
+ 	int i, status = 0;
+ 
+ 	VDBG(cdev, "hidg_set_alt intf:%d alt:%d\n", intf, alt);
+@@ -567,6 +594,12 @@ static int hidg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
+ 			goto fail;
+ 		}
+ 		hidg->in_ep->driver_data = hidg;
++
++		req_in = hidg_alloc_ep_req(hidg->in_ep, hidg->report_length);
++		if (!req_in) {
++			status = -ENOMEM;
++			goto disable_ep_in;
++		}
+ 	}
+ 
+ 
+@@ -578,12 +611,12 @@ static int hidg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
+ 					    hidg->out_ep);
+ 		if (status) {
+ 			ERROR(cdev, "config_ep_by_speed FAILED!\n");
+-			goto fail;
++			goto free_req_in;
+ 		}
+ 		status = usb_ep_enable(hidg->out_ep);
+ 		if (status < 0) {
+ 			ERROR(cdev, "Enable OUT endpoint FAILED!\n");
+-			goto fail;
++			goto free_req_in;
+ 		}
+ 		hidg->out_ep->driver_data = hidg;
+ 
+@@ -599,17 +632,37 @@ static int hidg_set_alt(struct usb_function *f, unsigned intf, unsigned alt)
+ 				req->context  = hidg;
+ 				status = usb_ep_queue(hidg->out_ep, req,
+ 						      GFP_ATOMIC);
+-				if (status)
++				if (status) {
+ 					ERROR(cdev, "%s queue req --> %d\n",
+ 						hidg->out_ep->name, status);
++					free_ep_req(hidg->out_ep, req);
++				}
+ 			} else {
+-				usb_ep_disable(hidg->out_ep);
+ 				status = -ENOMEM;
+-				goto fail;
++				goto disable_out_ep;
+ 			}
+ 		}
+ 	}
+ 
++	if (hidg->in_ep != NULL) {
++		spin_lock_irqsave(&hidg->write_spinlock, flags);
++		hidg->req = req_in;
++		hidg->write_pending = 0;
++		spin_unlock_irqrestore(&hidg->write_spinlock, flags);
++
++		wake_up(&hidg->write_queue);
++	}
++	return 0;
++disable_out_ep:
++	usb_ep_disable(hidg->out_ep);
++free_req_in:
++	if (req_in)
++		free_ep_req(hidg->in_ep, req_in);
++
++disable_ep_in:
++	if (hidg->in_ep)
++		usb_ep_disable(hidg->in_ep);
++
+ fail:
+ 	return status;
+ }
+@@ -658,12 +711,6 @@ static int hidg_bind(struct usb_configuration *c, struct usb_function *f)
+ 		goto fail;
+ 	hidg->out_ep = ep;
+ 
+-	/* preallocate request and buffer */
+-	status = -ENOMEM;
+-	hidg->req = alloc_ep_req(hidg->in_ep, hidg->report_length);
+-	if (!hidg->req)
+-		goto fail;
+-
+ 	/* set descriptor dynamic values */
+ 	hidg_interface_desc.bInterfaceSubClass = hidg->bInterfaceSubClass;
+ 	hidg_interface_desc.bInterfaceProtocol = hidg->bInterfaceProtocol;
+@@ -690,6 +737,8 @@ static int hidg_bind(struct usb_configuration *c, struct usb_function *f)
+ 		goto fail;
+ 
+ 	spin_lock_init(&hidg->write_spinlock);
++	hidg->write_pending = 1;
++	hidg->req = NULL;
+ 	spin_lock_init(&hidg->read_spinlock);
+ 	init_waitqueue_head(&hidg->write_queue);
+ 	init_waitqueue_head(&hidg->read_queue);
+@@ -954,10 +1003,6 @@ static void hidg_unbind(struct usb_configuration *c, struct usb_function *f)
+ 	device_destroy(hidg_class, MKDEV(major, hidg->minor));
+ 	cdev_del(&hidg->cdev);
+ 
+-	/* disable/free request and end point */
+-	usb_ep_disable(hidg->in_ep);
+-	free_ep_req(hidg->in_ep, hidg->req);
+-
+ 	usb_free_all_descriptors(f);
+ }
+ 

@@ -1,0 +1,51 @@
+commit 6ba190e3360655eccac9a28a947c6e6713485275
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Sep 18 12:01:46 2017 +0100
+
+    cgroup: Add kernel param to enable memory group
+    
+    cgroup support is useful, but enabling the "memory" cgroup has a 32-byte
+    overhead per page. Arrange that "memory" cgroup is disabled by default
+    unless the "cgroup_memory" parameter is set to a true value.
+    
+    See: https://github.com/raspberrypi/issues/1950
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/kernel/cgroup.c b/kernel/cgroup.c
+index 2c785f957024..c3f5abf0fd7a 100644
+--- a/kernel/cgroup.c
++++ b/kernel/cgroup.c
+@@ -5638,6 +5638,8 @@ int __init cgroup_init_early(void)
+ }
+ 
+ static u16 cgroup_disable_mask __initdata;
++static bool cgroup_enable_memory;
++static int __init cgroup_disable(char *str);
+ 
+ /**
+  * cgroup_init - cgroup initialization
+@@ -5676,6 +5678,9 @@ int __init cgroup_init(void)
+ 
+ 	mutex_unlock(&cgroup_mutex);
+ 
++	if (!cgroup_enable_memory)
++		cgroup_disable("memory");
++
+ 	for_each_subsys(ss, ssid) {
+ 		if (ss->early_init) {
+ 			struct cgroup_subsys_state *css =
+@@ -6151,6 +6156,13 @@ static int __init cgroup_disable(char *str)
+ }
+ __setup("cgroup_disable=", cgroup_disable);
+ 
++static int __init cgroup_memory(char *str)
++{
++	kstrtobool(str, &cgroup_enable_memory);
++	return 1;
++}
++__setup("cgroup_memory=", cgroup_memory);
++
+ static int __init cgroup_no_v1(char *str)
+ {
+ 	struct cgroup_subsys *ss;

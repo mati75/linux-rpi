@@ -1,11 +1,23 @@
-linux (4.9.51-1rpi1) stretch-staging; urgency=medium
+linux-4.9 (4.9.51-1+rpi3) stretch-staging; urgency=medium
+
+  * Re-enable usbip and cpupower packages.
+
+ -- Peter Michael Green <plugwash@raspbian.org>  Sun, 22 Oct 2017 11:49:09 +0000
+
+linux-4.9 (4.9.51-1+rpi2) buster-staging; urgency=medium
+
+  * Try to make package binnmu safe.
+
+ -- Peter Michael Green <plugwash@raspbian.org>  Sun, 15 Oct 2017 12:38:04 +0000
+
+linux-4.9 (4.9.51-1+rpi1) stretch-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
-  * disable other armhf variants.
+  * disable other armhf variants. 
   * disable other armhf debian-installer variants.
   * attempt to enable debian-installer udebs for rpi.
-  * try harder to enable debian-installer udebs.
+  * try harder to enable debian-installer udebs. 
   [Peter Michael Green]
   * Include patches to support RaspberryPI from:
     https://github.com/raspberrypi/linux.git
@@ -46,15 +58,16 @@ linux (4.9.51-1rpi1) stretch-staging; urgency=medium
 
   [Changes introduced in 4.4.6-1+rpi1 by Peter Michael Green]
   * Disable patches that conflict or potentially conflict with rpi patches.
-    + all patches under features/arm/rpi/
+    + all patches under features/arm/rpi/ 
     + features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
-    + bugfix/all/uas-fix-high-order-alloc.patch
+    + bugfix/all/uas-fix-high-order-alloc.patch 
     + bugfix/all/firmware-remove-redundant-log-messages-from-drivers.patch
   * Disable rpi_9999_other_changes.patch, it seems to contain only garbage.
   * add device tree trailer using scripts/mkknlimg (previously we used our own copy of mkknlimg)
 
+
   [changes brought forward from 4.4.6-1+rpi2 by Peter Michael Green <plugwash@raspbian.org> at Sun, 17 Apr 2016 01:49:37 +0000]
-  * Add a load of rpf config settings to try and fix boot failure
+  * Add a load of rpf config settings to try and fix boot failure 
     (if it works a cleanup process will be started afterwards)
 
   [changes brought forward from 4.4.6-1+rpi3 by Peter Michael Green <plugwash@raspbian.org> at Tue, 19 Apr 2016 14:24:19 +0000]
@@ -114,10 +127,39 @@ linux (4.9.51-1rpi1) stretch-staging; urgency=medium
   * swap order of asciidoc and asciidoc-base alternative build-depends.
   * Deversion flex build-dependency
   * Deversion libbabeltrace-dev and libbabeltrace-ctf-dev build-dependencys
+  * Build with gcc-4.9
   * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
   * Remove ext3 modules from d-i package list.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Fri, 29 Sep 2017 14:29:01 +0200
+  [changes brought forward from 4.9.13-1+rpi2 by Peter Michael Green <plugwash@raspbian.org> at Thu, 11 May 2017 17:42:57 +0000]
+  * Make config changes based on diff between rpi-4.4.y and rpi-4.9.y branches.
+  * Further fixes to clean target.
+
+  [changes brought forward from 4.9.13-1+rpi3 by Peter Michael Green <plugwash@raspbian.org> at Thu, 18 May 2017 17:44:34 +0000]
+  * Fix "linux-compiler" packaging stuff for compiler version change.
+  * Remove usbip and cpupower binary packages as they are unversioned.
+
+  [changes introduced in 4.9.30-2+deb9u2+rpi1 by Peter Michael Green]
+  * Remove the following patches from debian/patches/series-rt
+    + features/all/rt/signals-allow-rt-tasks-to-cache-one-sigqueue-struct.patch
+    + features/all/rt/printk-kill.patch from debian/patches/series-rt
+    + features/all/rt/printk-27force_early_printk-27-boot-param-to-help-with-debugging.patch
+    + features/all/rt/sched-mmdrop-delayed.patch
+  * Remove debian/installer/armhf/modules/armhf-rpi*/ext?-modules
+
+  [changes brought forward from 4.9.30-2+deb9u2+rpi1+stretch by Peter Michael Green <plugwash@raspbian.org> at Wed, 27 Sep 2017 02:45:53 +0000]
+  * Re-enable libc-dev package.
+
+  [changes brought forward from 4.9.30-2+deb9u2+rpi1+stretch+buster by Peter Michael Green <plugwash@raspbian.org> at Thu, 05 Oct 2017 02:53:12 +0000]
+  * Fix linux-compiler package generation.
+  * Fix usbip "format-overflow" failure.
+
+  [changes introduced in 4.9.51-1+rpi1 by Peter Michael Green]
+  * Make usbip gcc 7 fix work with gcc 6 too.
+  * Remove features/all/rt/0207-block-Turn-off-warning-which-is-bogus-on-RT.patch from debian/patches/series-rt as it conflicts
+    with rpi patches.
+
+ -- Peter Michael Green <plugwash@raspbian.org>  Sun, 08 Oct 2017 00:26:45 +0000
 
 linux (4.9.51-1) stretch; urgency=medium
 
@@ -3771,6 +3813,122 @@ linux (4.9.2-1) unstable; urgency=medium
   * [arm64] Enable MV_XOR and MV_XOR_V2.
 
  -- Ben Hutchings <ben@decadent.org.uk>  Wed, 11 Jan 2017 04:41:33 +0000
+
+linux (4.9.1-1~exp1) experimental; urgency=medium
+
+  * New upstream release: https://kernelnewbies.org/Linux_4.9
+    - Revert "default exported asm symbols to zero"
+  * New upstream stable update:
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.9.1
+
+  [ Ben Hutchings ]
+  * Set ABI to trunk
+  * Enable USERFAULTFD (except on armel/marvell)
+  * [x86] PCI: Enable VMD as module
+  * mm: Enable PAGE_POISONING (Closes: #849450), PAGE_POISONING_NO_SANITY
+    (except on armel/marvell)
+  * ieee802154: Enable IEEE802154_FAKELB as module
+  * [armhf] leds,gpio: Enable LEDS_TCA6507 as module (Closes: #847770)
+  * [x86] iio,HID: Enable INTEL_ISH_HID as module
+  * hwmon,watchdog: Enable SENSORS_FTSTEUTATES as module (together with the
+    previous, Closes: #847017)
+  * net: Enable GTP as module (Closes: #846913)
+  * [armhf] gpio: Enable GPIO_MCP23S08 as module (Closes: #845064)
+  * aufs: Update support patchset to aufs4.9-20161219
+  * Use debhelper compatibility level 9
+  * [arm64] Revert "arm64/mm: Limit TASK_SIZE_64 ..." and add breaks on
+    incompatible mozjs
+  * genorig.py: Verify tag signatures (based on work by Yves-Alexis Perez)
+
+  [ Uwe Kleine-König ]
+  * enable `perf data' support; patch by Sebastian Andrzej Siewior
+    (Closes: #846597)
+  * [rt] Update to 4.9-rt1 and reenable
+  * [armhf] Add support for switch hardware on Turris Omnia
+
+  [ Aurelien Jarno ]
+  * [arm64] Enable RTC_DRV_DS1307.
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Sat, 07 Jan 2017 03:44:26 +0000
+
+linux (4.9~rc8-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Ben Hutchings ]
+  * radeon: Update package name in error message for missing firmware
+  * [amd64] Remove xen-linux-system-<version> package
+  * debian/control: Fix build-dependency on flex to work with new versions
+    that have M-A: allowed
+  * Revert "default exported asm symbols to zero"
+  * [arm64] remoteproc: Disable QCOM_WCNSS_PIL (fixes FTBFS)
+  * [sparc64] Don't re-add exports of string functions that are now only
+    defined as macros (fixes FTBFS, after other fixes)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 05 Dec 2016 05:02:30 +0000
+
+linux (4.9~rc7-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate:
+    - [armhf,armel] Revert "arm: move exports to definitions" (Closes: #844530)
+
+  [ Martin Michlmayr ]
+  * [arm64] Enable more QCOM options: BT_QCOMSMD, QCOM_EBI2, QCOM_TSENS,
+    QCOM_WCNSS_PIL and EXTCON_QCOM_SPMI_MISC.
+  * [arm64] Enable ARCH_MVEBU and related options.
+
+  [ Ben Hutchings ]
+  * linux-headers-common: Make these packages architecture-independent by
+    including headers for all architectures that we build a kernel for
+  * Fix exported symbol versions:
+    - Revert upstream changes moving exports to assembly sources
+    - [x86] kbuild: enable modversions for symbols exported from assembly
+    - [powerpc] Remove Mac-on-Linux hooks
+    - [powerpc*] Fix missing CRCs, add yet more asm-prototypes.h declarations
+    - Re-enable CONFIG_MODVERSIONS in a slightly weaker form
+    - module: Disable matching missing version CRC
+  * debian/bin/buildcheck.py: Add check for symbols with version CRC of 0
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Sat, 03 Dec 2016 01:46:12 +0000
+
+linux (4.9~rc5-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Aurelien Jarno ]
+  * Enable MAC802154, IEEE802154_ADF7242, IEEE802154_AT86RF230,
+    IEEE802154_ATUSB, IEEE802154_CC2520 and IEEE802154_MRF24J40.
+  * [arm64] Enable VIRTUALIZATION and KVM.
+
+  [ Ben Hutchings ]
+  * [hppa] Update build-dependencies for 64-bit kernel (fixes FTBFS)
+  * linux-perf: Exclude perf-read-vdso* from shared library dependency
+    check (fixes FTBFS on sparc64)
+  * [x86] kexec: add -fno-PIE
+  * wireless: Enable RTL8XXXU as module, replacement for R8723AU
+  * netfilter: Enable NFT_SET_RBTREE and NFT_SET_HASH as modules,
+    renamed from NFT_RBTREE and NFT_HASH
+  * tcp: Enable TCP_CONG_BBR as module
+  * [armel] Drop versatile flavour, which has been broken since version
+    4.5~rc4-1~exp1
+  * [x86] ethernet: Enable ENA_ETHERNET as module
+  * [x86] efi: Prevent mixed mode boot corruption with CONFIG_VMAP_STACK=y
+  * w1: Disable W1_MASTER_MATROX
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 14 Nov 2016 05:19:31 +0000
+
+linux (4.9~rc3-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Ben Hutchings ]
+  * [rt] Disable until it is updated for 4.9 or later
+  * kbuild: add -fno-PIE (Closes: #841368)
+  * Compile with gcc-6 on all architectures
+  * debian/control: Fix build-dependency on openssl to work with new
+    versions that have M-A: allowed (Closes: #839145)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Thu, 03 Nov 2016 16:51:55 -0600
 
 linux (4.8.15-2) unstable; urgency=medium
 

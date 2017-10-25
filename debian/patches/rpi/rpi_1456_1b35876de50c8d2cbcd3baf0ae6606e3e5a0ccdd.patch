@@ -1,0 +1,31 @@
+commit 1b35876de50c8d2cbcd3baf0ae6606e3e5a0ccdd
+Author: Jan Kara <jack@suse.cz>
+Date:   Wed Sep 6 14:25:51 2017 +0800
+
+    bcache: Fix leak of bdev reference
+    
+    commit 4b758df21ee7081ab41448d21d60367efaa625b3 upstream.
+    
+    If blkdev_get_by_path() in register_bcache() fails, we try to lookup the
+    block device using lookup_bdev() to detect which situation we are in to
+    properly report error. However we never drop the reference returned to
+    us from lookup_bdev(). Fix that.
+    
+    Signed-off-by: Jan Kara <jack@suse.cz>
+    Acked-by: Coly Li <colyli@suse.de>
+    Signed-off-by: Jens Axboe <axboe@kernel.dk>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/md/bcache/super.c b/drivers/md/bcache/super.c
+index e21df091eac0..9997127170ea 100644
+--- a/drivers/md/bcache/super.c
++++ b/drivers/md/bcache/super.c
+@@ -1968,6 +1968,8 @@ static ssize_t register_bcache(struct kobject *k, struct kobj_attribute *attr,
+ 			else
+ 				err = "device busy";
+ 			mutex_unlock(&bch_register_lock);
++			if (!IS_ERR(bdev))
++				bdput(bdev);
+ 			if (attr == &ksysfs_register_quiet)
+ 				goto out;
+ 		}

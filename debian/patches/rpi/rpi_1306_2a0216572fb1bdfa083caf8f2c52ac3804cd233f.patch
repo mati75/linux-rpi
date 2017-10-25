@@ -1,0 +1,56 @@
+commit 2a0216572fb1bdfa083caf8f2c52ac3804cd233f
+Author: Matthias Reichl <github@hias.horus.com>
+Date:   Mon Jul 10 11:05:17 2017 +0200
+
+    config: enable generic S/PDIF codec drivers (#2104)
+    
+    These drivers can be used as dummy ADC/DAC drivers for
+    attaching general codecs that don't need to be configured.
+    
+    This option will build 2 additional drivers, spdif_receiver
+    and spdif_transmitter.
+    
+    Since these drivers have DT bindings they are handy for quick
+    testing of I2S peripherals with simple-audio-card.
+    
+    eg:
+    
+    fragment@0 {
+        target-path = "/";
+        __overlay__ {
+            dummy_receiver: spdif-receiver {
+                #address-cells = <0>;
+                #size-cells = <0>;
+                #sound-dai-cells = <0>;
+                compatible = "linux,spdif-dir";
+                status = "okay";
+            };
+        };
+    };
+    
+    Signed-off-by: Matthias Reichl <hias@horus.com>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 0fbabb1c0d56..51f83ba0cf0f 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -909,6 +909,7 @@ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
+ CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
++CONFIG_SND_SOC_SPDIF=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SOUND_PRIME=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 83cfb1e8738b..646d69bea48b 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -903,6 +903,7 @@ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
+ CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
++CONFIG_SND_SOC_SPDIF=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SOUND_PRIME=m

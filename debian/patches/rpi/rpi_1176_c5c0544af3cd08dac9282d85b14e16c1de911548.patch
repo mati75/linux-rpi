@@ -1,0 +1,38 @@
+commit c5c0544af3cd08dac9282d85b14e16c1de911548
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Feb 17 15:26:13 2017 +0000
+
+    brcmfmac: Mute expected startup 'errors'
+    
+    The brcmfmac WiFi driver always complains about the '00' country code
+    and the firmware version is reported as an error. Modify the driver to
+    ignore '00' silently and display firmware version at INFO level.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index 3ac3056ab1d2..11e73bff0f47 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -6811,6 +6811,8 @@ static void brcmf_cfg80211_reg_notifier(struct wiphy *wiphy,
+ 	/* ignore non-ISO3166 country codes */
+ 	for (i = 0; i < sizeof(req->alpha2); i++)
+ 		if (req->alpha2[i] < 'A' || req->alpha2[i] > 'Z') {
++			if (req->alpha2[0] == '0' && req->alpha2[1] == '0')
++				return;
+ 			brcmf_err("not a ISO3166 code (0x%02x 0x%02x)\n",
+ 				  req->alpha2[0], req->alpha2[1]);
+ 			return;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+index 4051780f64f4..b081673abcb4 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+@@ -161,7 +161,7 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
+ 	strsep(&ptr, "\n");
+ 
+ 	/* Print fw version info */
+-	brcmf_err("Firmware version = %s\n", buf);
++	pr_info("Firmware version = %s\n", buf);
+ 
+ 	/* locate firmware version number for ethtool */
+ 	ptr = strrchr(buf, ' ') + 1;

@@ -1,0 +1,23 @@
+commit b4ed1faccaa95a15fb90a87ee587e18cc545f0c3
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Mon Jul 25 17:06:50 2016 +0100
+
+    iqaudio-dac: Compile fix - untested
+
+diff --git a/sound/soc/bcm/iqaudio-dac.c b/sound/soc/bcm/iqaudio-dac.c
+index 4e8e6dec14bc..aa15bc4b49ca 100644
+--- a/sound/soc/bcm/iqaudio-dac.c
++++ b/sound/soc/bcm/iqaudio-dac.c
+@@ -76,7 +76,11 @@ static void snd_rpi_iqaudio_gpio_unmute(struct snd_soc_card *card)
+ static int snd_rpi_iqaudio_set_bias_level(struct snd_soc_card *card,
+ 	struct snd_soc_dapm_context *dapm, enum snd_soc_bias_level level)
+ {
+-	struct snd_soc_dai *codec_dai = card->rtd[0].codec_dai;
++	struct snd_soc_pcm_runtime *rtd;
++	struct snd_soc_dai *codec_dai;
++
++	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[0].name);
++	codec_dai = rtd->codec_dai;
+ 
+ 	if (dapm->dev != codec_dai->dev)
+ 		return 0;

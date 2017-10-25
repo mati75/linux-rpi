@@ -18,19 +18,32 @@ git config --local user.name "Raspbian kernel package updater"
 git config --local user.email root@raspbian.org
 git config merge.conflictstyle diff3
 
+#remove some debian patches that conflict with rpi stuff
+#patch -p1 -R < debian/patches/bugfix/all/mm-larger-stack-guard-gap-between-vmas.patch
+#grep -v bugfix/all/mm-larger-stack-guard-gap-between-vmas.patch debian/patches/series | sponge debian/patches/series
+#patch -p1 -R < debian/patches/bugfix/x86/pinctrl-cherryview-add-a-quirk-to-make-acer-chromebo.patch
+#grep -v bugfix/x86/pinctrl-cherryview-add-a-quirk-to-make-acer-chromebo.patch debian/patches/series | sponge debian/patches/series
+
+#git commit -a -m 'remove some debian patches that conflict with rpi stuff'
+
 #pseudomerge in upstream history
-git merge -sours --allow-unrelated-histories buildnewlinuxpackage-upstream -m 'psudedomerge to tie in upstream history'
+#annoyingly newer versions of git require --allow-unrelated-histories while older versions do not recognise it
+git merge -sours --allow-unrelated-histories buildnewlinuxpackage-upstream -m 'psudedomerge to tie in upstream history' || git merge -sours buildnewlinuxpackage-upstream -m 'psudedomerge to tie in upstream history'
 
 git tag -f buildnewlinuxpackage-upstreampsuedomerge
+
 
 #merge in rpi stuff
 git merge buildnewlinuxpackage-rpi -m 'merge rpi changes with packaging'
 
 git tag -f buildnewlinuxpackage-rpimerge
 
-git rebase buildnewlinuxpackage-upstreampsuedomerge buildnewlinuxpackage-rpi
+git rebase buildnewlinuxpackage-upstreampsuedomerge buildnewlinuxpackage-rpi || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip || git rebase --skip 
+
+
 
 git tag -f buildnewlinuxpackage-rpirebase
+
 
 git checkout buildnewlinuxpackage-rpirebase
 git_commits=$(git cherry buildnewlinuxpackage-upstreampsuedomerge | awk '/^\+/{print $2}')
@@ -45,6 +58,16 @@ for c in $git_commits ; do
     git add debian/patches/rpi/rpi_${i}_${c}.patch
     i=$((${i}+1))
 done
+
+git diff buildnewlinuxpackage-rpirebase buildnewlinuxpackage-rpimerge > debian/patches/rpi/rpi_9999_other_changes.patch
+
+if [[ -s debian/patches/rpi/rpi_9999_other_changes.patch ]] ; then
+    echo 'this patch contains changes generated from the "rpi" tree (possiblly including upstream changes) that rebase could not linearise.' | cat - debian/patches/rpi/rpi_9999_other_changes.patch | sponge debian/patches/rpi/rpi_9999_other_changes.patch
+    git add debian/patches/rpi/rpi_9999_other_changes.patch
+else
+    rm debian/patches/rpi/rpi_9999_other_changes.patch
+fi
+
 chmod 755 debian/splitseries.php
 debian/splitseries.php
 ls debian/patches/rpi/ | sed s_^_rpi/_ > debian/patches/series.fromgit

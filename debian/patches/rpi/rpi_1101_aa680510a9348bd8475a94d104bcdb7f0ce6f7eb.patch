@@ -1,0 +1,42 @@
+commit aa680510a9348bd8475a94d104bcdb7f0ce6f7eb
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Sep 14 09:16:19 2016 +0100
+
+    raspberrypi-firmware: Export the general transaction function.
+    
+    The vc4-firmware-kms module is going to be doing the MBOX FB call.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/firmware/raspberrypi.c b/drivers/firmware/raspberrypi.c
+index 3f070bd38a91..f261b64d1657 100644
+--- a/drivers/firmware/raspberrypi.c
++++ b/drivers/firmware/raspberrypi.c
+@@ -42,7 +42,7 @@ static void response_callback(struct mbox_client *cl, void *msg)
+  * Sends a request to the firmware through the BCM2835 mailbox driver,
+  * and synchronously waits for the reply.
+  */
+-static int
++int
+ rpi_firmware_transaction(struct rpi_firmware *fw, u32 chan, u32 data)
+ {
+ 	u32 message = MBOX_MSG(chan, data);
+@@ -63,6 +63,7 @@ rpi_firmware_transaction(struct rpi_firmware *fw, u32 chan, u32 data)
+ 
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(rpi_firmware_transaction);
+ 
+ /**
+  * rpi_firmware_property_list - Submit firmware property list
+diff --git a/include/soc/bcm2835/raspberrypi-firmware.h b/include/soc/bcm2835/raspberrypi-firmware.h
+index e92278968b2b..09e3d871d110 100644
+--- a/include/soc/bcm2835/raspberrypi-firmware.h
++++ b/include/soc/bcm2835/raspberrypi-firmware.h
+@@ -131,5 +131,6 @@ int rpi_firmware_property(struct rpi_firmware *fw,
+ int rpi_firmware_property_list(struct rpi_firmware *fw,
+ 			       void *data, size_t tag_size);
+ struct rpi_firmware *rpi_firmware_get(struct device_node *firmware_node);
++int rpi_firmware_transaction(struct rpi_firmware *fw, u32 chan, u32 data);
+ 
+ #endif /* __SOC_RASPBERRY_FIRMWARE_H__ */

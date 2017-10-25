@@ -23,6 +23,38 @@ touch debian/changelog
 
 debian/rules clean || debian/rules clean
 git add -f debian/*
-git commit -m 'run clean target to update generated files in debian packaging'
+git commit -a -m 'run clean target to update generated files in debian packaging and possiblly file permissions'
+
+PACKAGE=`dpkg-parsechangelog -S source`
+UPSTREAM=`dpkg-parsechangelog -S version | cut -d '-' -f 1`
+rm -rf usextract
+mkdir usextract
+cd usextract
+tar -xf ../../${PACKAGE}_${UPSTREAM}.orig.tar.*
+mv linux-${UPSTREAM}/{,.[^.]}* .
+rmdir linux-$UPSTREAM
+export QUILT_PATCHES=../debian/patches                                             
+quilt push -a --fuzz 0 || true                                                  
+while quilt push; do                                                            
+	quilt refresh                                                           
+	quilt push -a --fuzz 0 || true                                          
+done
+unset QUILT_PATCHES
+cd ..
+rm -rf usextract
+
+if ! git diff --quiet; then
+	git commit -a -m 'defuzz patches'
+fi
+
+#apply manual downstream patches, otherwise dgit will remove them.
+MANUALDOWNSTREAMPATCHES=`git diff buildnewlinuxpackage-deb buildnewlinuxpackage-pkgmerge debian/patches/series | grep -E '^\+' | grep -Ev '^\+#'  | grep -Ev '^\+rpi/' | grep -Ev '^\+\+' | sed s/^.//`
+for FILE in $MANUALDOWNSTREAMPATCHES ; do
+	patch -p1 < debian/patches/$FILE
+done
+
+if ! git diff --quiet; then
+	git commit -a -m 'apply manual raspbian patches'
+fi
 
 dgit --quilt=auto quilt-fixup

@@ -1,0 +1,36 @@
+commit 6e61c2d82624dd80938892855fb72791984ee1b3
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Wed May 24 18:06:02 2017 +0100
+
+    Revert "hid: Reduce default mouse polling interval to 60Hz"
+    
+    This reverts commit b45c0448b60d691508251cdccf242ea43bbabb14.
+
+diff --git a/drivers/hid/usbhid/hid-core.c b/drivers/hid/usbhid/hid-core.c
+index 4a7af9d0b910..ae83af649a60 100644
+--- a/drivers/hid/usbhid/hid-core.c
++++ b/drivers/hid/usbhid/hid-core.c
+@@ -49,7 +49,7 @@
+  * Module parameters.
+  */
+ 
+-static unsigned int hid_mousepoll_interval = ~0;
++static unsigned int hid_mousepoll_interval;
+ module_param_named(mousepoll, hid_mousepoll_interval, uint, 0644);
+ MODULE_PARM_DESC(mousepoll, "Polling interval of mice");
+ 
+@@ -1083,12 +1083,8 @@ static int usbhid_start(struct hid_device *hid)
+ 		}
+ 
+ 		/* Change the polling interval of mice. */
+-		if (hid->collection->usage == HID_GD_MOUSE) {
+-				if (hid_mousepoll_interval == ~0 && interval < 16)
+-						interval = 16;
+-				else if (hid_mousepoll_interval != ~0 && hid_mousepoll_interval != 0)
+-						interval = hid_mousepoll_interval;
+-		}
++		if (hid->collection->usage == HID_GD_MOUSE && hid_mousepoll_interval > 0)
++			interval = hid_mousepoll_interval;
+ 
+ 		ret = -ENOMEM;
+ 		if (usb_endpoint_dir_in(endpoint)) {

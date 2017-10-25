@@ -1,0 +1,38 @@
+commit 856f413c4544f81f38cf21af6537cbea94d0729e
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Jan 17 14:39:39 2017 +0000
+
+    config: Add CONFIG_MD_M25P80 and CONFIG_MD_SPI_NOR
+    
+    See: https://github.com/raspberrypi/linux/issues/1781
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 22ade0fe5a15..d5d699e17502 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -406,7 +406,9 @@ CONFIG_DMA_CMA=y
+ CONFIG_CMA_SIZE_MBYTES=5
+ CONFIG_MTD=m
+ CONFIG_MTD_BLOCK=m
++CONFIG_MTD_M25P80=m
+ CONFIG_MTD_NAND=m
++CONFIG_MTD_SPI_NOR=m
+ CONFIG_MTD_UBI=m
+ CONFIG_OF_CONFIGFS=y
+ CONFIG_ZRAM=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 219f67051a25..c4898d63d747 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -402,7 +402,9 @@ CONFIG_DMA_CMA=y
+ CONFIG_CMA_SIZE_MBYTES=5
+ CONFIG_MTD=m
+ CONFIG_MTD_BLOCK=m
++CONFIG_MTD_M25P80=m
+ CONFIG_MTD_NAND=m
++CONFIG_MTD_SPI_NOR=m
+ CONFIG_MTD_UBI=m
+ CONFIG_OF_CONFIGFS=y
+ CONFIG_ZRAM=m

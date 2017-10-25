@@ -1,0 +1,20 @@
+commit 0435ce3b1b3b35450f0dd7d7b98ce1b3fd41426f
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Mon Sep 4 20:48:02 2017 +0100
+
+    vcsm: Allow both clean and invalidate to be requested
+
+diff --git a/drivers/char/broadcom/vc_sm/vmcs_sm.c b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+index 1dd5d227980a..1fe8608f462a 100644
+--- a/drivers/char/broadcom/vc_sm/vmcs_sm.c
++++ b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+@@ -2861,7 +2861,8 @@ static long vc_sm_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 							v6_dma_clean_range((void *)base, (void *)end);
+ #endif
+ 						/* L1/L2 cache invalidate */
+-						} else if (op->invalidate_mode & 1) {
++						}
++						if (op->invalidate_mode & 1) {
+ #if defined(CONFIG_CPU_CACHE_V7)
+ 							extern void v7_dma_inv_range(void *start, void *end);
+ 							v7_dma_inv_range((void *)base, (void *)end);

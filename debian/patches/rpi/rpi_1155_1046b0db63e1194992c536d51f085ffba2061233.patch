@@ -1,0 +1,47 @@
+commit 1046b0db63e1194992c536d51f085ffba2061233
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Jun 2 12:29:45 2016 -0700
+
+    BCM270X: Add the DSI panel to the defconfig.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 858143b9b68a..669edd7544d7 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -833,6 +833,8 @@ CONFIG_VIDEO_OV7640=m
+ CONFIG_VIDEO_MT9V011=m
+ CONFIG_DRM=m
+ CONFIG_DRM_LOAD_EDID_FIRMWARE=y
++CONFIG_DRM_PANEL_SIMPLE=m
++CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN=m
+ CONFIG_DRM_UDL=m
+ CONFIG_DRM_VC4=m
+ CONFIG_FB=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index f0b87d15e959..9a9cd1cdcb2f 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -827,6 +827,8 @@ CONFIG_VIDEO_OV7640=m
+ CONFIG_VIDEO_MT9V011=m
+ CONFIG_DRM=m
+ CONFIG_DRM_LOAD_EDID_FIRMWARE=y
++CONFIG_DRM_PANEL_SIMPLE=m
++CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN=m
+ CONFIG_DRM_UDL=m
+ CONFIG_DRM_VC4=m
+ CONFIG_FB=y
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 8c4392344eb4..301611d2283f 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -816,6 +816,8 @@ CONFIG_VIDEO_OV7640=m
+ CONFIG_VIDEO_MT9V011=m
+ CONFIG_DRM=m
+ CONFIG_DRM_LOAD_EDID_FIRMWARE=y
++CONFIG_DRM_PANEL_SIMPLE=m
++CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN=m
+ CONFIG_DRM_UDL=m
+ CONFIG_DRM_VC4=m
+ CONFIG_FB=y

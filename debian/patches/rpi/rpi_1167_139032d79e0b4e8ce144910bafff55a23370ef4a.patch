@@ -1,0 +1,25 @@
+commit 139032d79e0b4e8ce144910bafff55a23370ef4a
+Author: Boris Brezillon <boris.brezillon@free-electrons.com>
+Date:   Fri Dec 2 14:48:13 2016 +0100
+
+    ARM: dts: bcm283x: Enable the VEC IP on all RaspberryPi boards
+    
+    Enable the VEC IP on all RaspberryPi boards.
+    
+    Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+    (cherry picked from commit 5ab1a37c6027c114a87a1ae32cfc5ef303d643c5)
+
+diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+index 365648898f3a..d4577a51e678 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+@@ -92,3 +92,8 @@
+ &dsi1 {
+ 	power-domains = <&power RPI_POWER_DOMAIN_DSI1>;
+ };
++
++&vec {
++	power-domains = <&power RPI_POWER_DOMAIN_VEC>;
++	status = "okay";
++};

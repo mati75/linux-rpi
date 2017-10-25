@@ -1,0 +1,38 @@
+commit 91e312dc39dafb21823862986da7078a45fda6cf
+Author: Noralf Trønnes <noralf@tronnes.org>
+Date:   Sat Jul 15 21:24:18 2017 +0200
+
+    config: Enable TINYDRM and drivers
+    
+    Enable tinydrm library, mi0283qt and repaper drivers.
+    
+    Signed-off-by: Noralf Trønnes <noralf@tronnes.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 1bd7a676d256..b35e737d7996 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -847,6 +847,9 @@ CONFIG_DRM_UDL=m
+ CONFIG_DRM_PANEL_SIMPLE=m
+ CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN=m
+ CONFIG_DRM_VC4=m
++CONFIG_DRM_TINYDRM=m
++CONFIG_TINYDRM_MI0283QT=m
++CONFIG_TINYDRM_REPAPER=m
+ CONFIG_FB=y
+ CONFIG_FB_BCM2708=y
+ CONFIG_FB_UDL=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 9430ece8316c..23360b1b1319 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -841,6 +841,9 @@ CONFIG_DRM_UDL=m
+ CONFIG_DRM_PANEL_SIMPLE=m
+ CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN=m
+ CONFIG_DRM_VC4=m
++CONFIG_DRM_TINYDRM=m
++CONFIG_TINYDRM_MI0283QT=m
++CONFIG_TINYDRM_REPAPER=m
+ CONFIG_FB=y
+ CONFIG_FB_BCM2708=y
+ CONFIG_FB_UDL=m

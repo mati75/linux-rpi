@@ -1,0 +1,24 @@
+commit 40db0ec9484663808fbf4172fe7e42939cc32a60
+Author: Khem Raj <raj.khem@gmail.com>
+Date:   Fri Feb 10 17:57:08 2017 -0800
+
+    build/arm64: Add rules for .dtbo files for dts overlays
+    
+    We now create overlays as .dtbo files.
+    
+    Signed-off-by: Khem Raj <raj.khem@gmail.com>
+
+diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
+index 3635b8662724..822fefeb1cd0 100644
+--- a/arch/arm64/Makefile
++++ b/arch/arm64/Makefile
+@@ -113,6 +113,9 @@ zinstall install:
+ %.dtb: scripts
+ 	$(Q)$(MAKE) $(build)=$(boot)/dts $(boot)/dts/$@
+ 
++%.dtbo: | scripts
++	$(Q)$(MAKE) $(build)=$(boot)/dts MACHINE=$(MACHINE) $(boot)/dts/$@
++
+ PHONY += dtbs dtbs_install
+ 
+ dtbs: prepare scripts

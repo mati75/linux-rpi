@@ -1,0 +1,140 @@
+commit b33059c1fb9447a7d5f64fc6153f3858d80327d4
+Author: Hans Verkuil <hans.verkuil@cisco.com>
+Date:   Sun Jul 16 12:48:03 2017 +0200
+
+    drm/vc4: prepare for CEC support
+    
+    In order to support CEC the hsm clock needs to be enabled in
+    vc4_hdmi_bind(), not in vc4_hdmi_encoder_enable(). Otherwise you wouldn't
+    be able to support CEC when there is no hotplug detect signal, which is
+    required by some monitors that turn off the HPD when in standby, but keep
+    the CEC bus alive so they can be woken up.
+    
+    The HDMI core also has to be enabled in vc4_hdmi_bind() for the same
+    reason.
+    
+    Signed-off-by: Hans Verkuil <hans.verkuil@cisco.com>
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+    Reviewed-by: Eric Anholt <eric@anholt.net>
+    Link: https://patchwork.freedesktop.org/patch/msgid/20170716104804.48308-3-hverkuil@xs4all.nl
+    (cherry picked from commit 10ee275cb12f884ce09bed69ea387eae73d7fece)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index d299fb40b847..aa4b900a583c 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -450,11 +450,6 @@ static void vc4_hdmi_encoder_disable(struct drm_encoder *encoder)
+ 	HD_WRITE(VC4_HD_VID_CTL,
+ 		 HD_READ(VC4_HD_VID_CTL) & ~VC4_HD_VID_CTL_ENABLE);
+ 
+-	HD_WRITE(VC4_HD_M_CTL, VC4_HD_M_SW_RST);
+-	udelay(1);
+-	HD_WRITE(VC4_HD_M_CTL, 0);
+-
+-	clk_disable_unprepare(hdmi->hsm_clock);
+ 	clk_disable_unprepare(hdmi->pixel_clock);
+ 
+ 	ret = pm_runtime_put(&hdmi->pdev->dev);
+@@ -496,16 +491,6 @@ static void vc4_hdmi_encoder_enable(struct drm_encoder *encoder)
+ 		return;
+ 	}
+ 
+-	/* This is the rate that is set by the firmware.  The number
+-	 * needs to be a bit higher than the pixel clock rate
+-	 * (generally 148.5Mhz).
+-	 */
+-	ret = clk_set_rate(hdmi->hsm_clock, 163682864);
+-	if (ret) {
+-		DRM_ERROR("Failed to set HSM clock rate: %d\n", ret);
+-		return;
+-	}
+-
+ 	ret = clk_set_rate(hdmi->pixel_clock,
+ 			   mode->clock * 1000 *
+ 			   ((mode->flags & DRM_MODE_FLAG_DBLCLK) ? 2 : 1));
+@@ -520,20 +505,6 @@ static void vc4_hdmi_encoder_enable(struct drm_encoder *encoder)
+ 		return;
+ 	}
+ 
+-	ret = clk_prepare_enable(hdmi->hsm_clock);
+-	if (ret) {
+-		DRM_ERROR("Failed to turn on HDMI state machine clock: %d\n",
+-			  ret);
+-		clk_disable_unprepare(hdmi->pixel_clock);
+-		return;
+-	}
+-
+-	HD_WRITE(VC4_HD_M_CTL, VC4_HD_M_SW_RST);
+-	udelay(1);
+-	HD_WRITE(VC4_HD_M_CTL, 0);
+-
+-	HD_WRITE(VC4_HD_M_CTL, VC4_HD_M_ENABLE);
+-
+ 	HDMI_WRITE(VC4_HDMI_SW_RESET_CONTROL,
+ 		   VC4_HDMI_SW_RESET_HDMI |
+ 		   VC4_HDMI_SW_RESET_FORMAT_DETECT);
+@@ -1190,6 +1161,23 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 		return -EPROBE_DEFER;
+ 	}
+ 
++	/* This is the rate that is set by the firmware.  The number
++	 * needs to be a bit higher than the pixel clock rate
++	 * (generally 148.5Mhz).
++	 */
++	ret = clk_set_rate(hdmi->hsm_clock, 163682864);
++	if (ret) {
++		DRM_ERROR("Failed to set HSM clock rate: %d\n", ret);
++		goto err_put_i2c;
++	}
++
++	ret = clk_prepare_enable(hdmi->hsm_clock);
++	if (ret) {
++		DRM_ERROR("Failed to turn on HDMI state machine clock: %d\n",
++			  ret);
++		goto err_put_i2c;
++	}
++
+ 	/* Only use the GPIO HPD pin if present in the DT, otherwise
+ 	 * we'll use the HDMI core's register.
+ 	 */
+@@ -1201,7 +1189,7 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 							 &hpd_gpio_flags);
+ 		if (hdmi->hpd_gpio < 0) {
+ 			ret = hdmi->hpd_gpio;
+-			goto err_put_i2c;
++			goto err_unprepare_hsm;
+ 		}
+ 
+ 		hdmi->hpd_active_low = hpd_gpio_flags & OF_GPIO_ACTIVE_LOW;
+@@ -1209,6 +1197,14 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 
+ 	vc4->hdmi = hdmi;
+ 
++	/* HDMI core must be enabled. */
++	if (!(HD_READ(VC4_HD_M_CTL) & VC4_HD_M_ENABLE)) {
++		HD_WRITE(VC4_HD_M_CTL, VC4_HD_M_SW_RST);
++		udelay(1);
++		HD_WRITE(VC4_HD_M_CTL, 0);
++
++		HD_WRITE(VC4_HD_M_CTL, VC4_HD_M_ENABLE);
++	}
+ 	pm_runtime_enable(dev);
+ 
+ 	drm_encoder_init(drm, hdmi->encoder, &vc4_hdmi_encoder_funcs,
+@@ -1229,6 +1225,8 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 
+ err_destroy_encoder:
+ 	vc4_hdmi_encoder_destroy(hdmi->encoder);
++err_unprepare_hsm:
++	clk_disable_unprepare(hdmi->hsm_clock);
+ 	pm_runtime_disable(dev);
+ err_put_i2c:
+ 	put_device(&hdmi->ddc->dev);
+@@ -1248,6 +1246,7 @@ static void vc4_hdmi_unbind(struct device *dev, struct device *master,
+ 	vc4_hdmi_connector_destroy(hdmi->connector);
+ 	vc4_hdmi_encoder_destroy(hdmi->encoder);
+ 
++	clk_disable_unprepare(hdmi->hsm_clock);
+ 	pm_runtime_disable(dev);
+ 
+ 	put_device(&hdmi->ddc->dev);

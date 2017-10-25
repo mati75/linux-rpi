@@ -1,0 +1,15 @@
+commit 35dc2ac889a71bfea2fa7de37367f67cd37d4df4
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Sat Dec 31 14:15:50 2016 +0000
+
+    arm64: Add CONFIG_ARCH_BCM2835
+
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index d7406f5a4620..53da5c7a33e5 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -1332,3 +1332,4 @@ CONFIG_ARM64_CRYPTO=y
+ CONFIG_CRC_ITU_T=y
+ CONFIG_LIBCRC32C=y
+ CONFIG_BCM2708_VCHIQ=n
++CONFIG_ARCH_BCM2835=y

@@ -1,0 +1,21 @@
+commit a5963e4f0bcde4771a6c2c242a111994374f039c
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Wed Apr 26 16:51:48 2017 +0100
+
+    dwc_otg: Add the dependency on FIQ
+    
+    Signed-off-by: popcornmix <popcornmix@gmail.com>
+
+diff --git a/drivers/usb/host/Kconfig b/drivers/usb/host/Kconfig
+index f17b939c1495..5a5f6c925f43 100644
+--- a/drivers/usb/host/Kconfig
++++ b/drivers/usb/host/Kconfig
+@@ -764,7 +764,7 @@ config USB_HWA_HCD
+ 
+ config USB_DWCOTG
+ 	tristate "Synopsis DWC host support"
+-	depends on USB
++	depends on USB && FIQ
+ 	help
+ 	  The Synopsis DWC controller is a dual-role
+ 	  host/peripheral/OTG ("On The Go") USB controllers.

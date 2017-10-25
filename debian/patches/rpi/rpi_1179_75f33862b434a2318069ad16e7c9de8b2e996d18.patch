@@ -1,0 +1,52 @@
+commit 75f33862b434a2318069ad16e7c9de8b2e996d18
+Author: Scott Ellis <scott@jumpnowtek.com>
+Date:   Thu Feb 23 11:56:20 2017 -0500
+
+    Add ads1015 driver to config
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 669edd7544d7..f251cf76bb08 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -653,6 +653,7 @@ CONFIG_HWMON=m
+ CONFIG_SENSORS_LM75=m
+ CONFIG_SENSORS_SHT21=m
+ CONFIG_SENSORS_SHTC1=m
++CONFIG_SENSORS_ADS1015=m
+ CONFIG_SENSORS_INA2XX=m
+ CONFIG_THERMAL=y
+ CONFIG_THERMAL_BCM2835=y
+@@ -833,9 +834,9 @@ CONFIG_VIDEO_OV7640=m
+ CONFIG_VIDEO_MT9V011=m
+ CONFIG_DRM=m
+ CONFIG_DRM_LOAD_EDID_FIRMWARE=y
++CONFIG_DRM_UDL=m
+ CONFIG_DRM_PANEL_SIMPLE=m
+ CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN=m
+-CONFIG_DRM_UDL=m
+ CONFIG_DRM_VC4=m
+ CONFIG_FB=y
+ CONFIG_FB_BCM2708=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 9a9cd1cdcb2f..554fed3a4fbf 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -647,6 +647,7 @@ CONFIG_HWMON=m
+ CONFIG_SENSORS_LM75=m
+ CONFIG_SENSORS_SHT21=m
+ CONFIG_SENSORS_SHTC1=m
++CONFIG_SENSORS_ADS1015=m
+ CONFIG_SENSORS_INA2XX=m
+ CONFIG_THERMAL=y
+ CONFIG_THERMAL_BCM2835=y
+@@ -827,9 +828,9 @@ CONFIG_VIDEO_OV7640=m
+ CONFIG_VIDEO_MT9V011=m
+ CONFIG_DRM=m
+ CONFIG_DRM_LOAD_EDID_FIRMWARE=y
++CONFIG_DRM_UDL=m
+ CONFIG_DRM_PANEL_SIMPLE=m
+ CONFIG_DRM_PANEL_RASPBERRYPI_TOUCHSCREEN=m
+-CONFIG_DRM_UDL=m
+ CONFIG_DRM_VC4=m
+ CONFIG_FB=y
+ CONFIG_FB_BCM2708=y
