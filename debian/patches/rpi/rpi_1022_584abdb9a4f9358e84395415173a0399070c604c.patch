@@ -1,0 +1,23 @@
+commit 584abdb9a4f9358e84395415173a0399070c604c
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Wed Nov 9 13:02:52 2016 +0000
+
+    bcm: Make RASPBERRYPI_POWER depend on PM
+
+diff --git a/drivers/soc/bcm/Kconfig b/drivers/soc/bcm/Kconfig
+index 49f1e2a75d61..dccd2374ed00 100644
+--- a/drivers/soc/bcm/Kconfig
++++ b/drivers/soc/bcm/Kconfig
+@@ -4,6 +4,7 @@ config RASPBERRYPI_POWER
+ 	bool "Raspberry Pi power domain driver"
+ 	depends on ARCH_BCM2835 || (COMPILE_TEST && OF)
+ 	depends on RASPBERRYPI_FIRMWARE=y
++	depends on PM
+ 	select PM_GENERIC_DOMAINS if PM
+ 	help
+ 	  This enables support for the RPi power domains which can be enabled
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1022_584abdb9a4f9358e84395415173a0399070c604c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1022_584abdb9a4f9358e84395415173a0399070c604c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

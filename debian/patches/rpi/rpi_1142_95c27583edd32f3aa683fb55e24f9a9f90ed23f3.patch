@@ -1,0 +1,39 @@
+commit 95c27583edd32f3aa683fb55e24f9a9f90ed23f3
+Author: neilneil2000 <31366098+neilneil2000@users.noreply.github.com>
+Date:   Thu Oct 12 17:29:43 2017 +0100
+
+    GPIO and gpio-poweroff clarifications
+    
+    Notes added:
+    1) All GPIO references use the hardware numbering scheme
+    2) Enabling gpio-poweroff prevents the ability to boot the pi by driving GPIO3 low
+
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index e6d777a601c9..b34c9a9f115b 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -33,6 +33,9 @@ needed.
+ Configuring additional, optional hardware is done using Device Tree overlays
+ (see below).
+ 
++GPIO numbering uses the hardware pin numbering scheme (aka BCM scheme) and
++not the physical pin numbers.
++
+ raspi-config
+ ============
+ 
+@@ -496,7 +499,8 @@ Params: gpio_pin                Input pin number. Default is 18.
+ 
+ 
+ Name:   gpio-poweroff
+-Info:   Drives a GPIO high or low on poweroff (including halt)
++Info:   Drives a GPIO high or low on poweroff (including halt). Enabling this
++        overlay will prevent the ability to boot by driving GPIO3 low.
+ Load:   dtoverlay=gpio-poweroff,<param>=<val>
+ Params: gpiopin                 GPIO for signalling (default 26)
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1142_95c27583edd32f3aa683fb55e24f9a9f90ed23f3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1142_95c27583edd32f3aa683fb55e24f9a9f90ed23f3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

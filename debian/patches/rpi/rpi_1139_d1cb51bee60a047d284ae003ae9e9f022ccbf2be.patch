@@ -1,0 +1,69 @@
+commit d1cb51bee60a047d284ae003ae9e9f022ccbf2be
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Sep 29 10:32:19 2017 +0100
+
+    amba_pl011: Add cts-event-workaround DT property
+    
+    The BCM2835 PL011 implementation seems to have a bug that can lead to a
+    transmission lockup if CTS changes frequently. A workaround was added to
+    the driver with a vendor-specific flag to enable it, but this flag is
+    currently not set for ARM implementations.
+    
+    Add a "cts-event-workaround" property to Pi DTBs and use the presence
+    of that property to force the flag to be enabled in the driver.
+    
+    See: https://github.com/raspberrypi/linux/issues/1280
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/Documentation/devicetree/bindings/serial/pl011.txt b/Documentation/devicetree/bindings/serial/pl011.txt
+index 77863aefe9ef..8d65b0ec2828 100644
+--- a/Documentation/devicetree/bindings/serial/pl011.txt
++++ b/Documentation/devicetree/bindings/serial/pl011.txt
+@@ -35,6 +35,9 @@ Optional properties:
+ - poll-timeout-ms:
+ 	   Poll timeout when auto-poll is set, default
+ 	   3000ms.
++- cts-event-workaround:
++	   Enables the (otherwise vendor-specific) workaround for the
++	   CTS-induced TX lockup.
+ 
+ See also bindings/arm/primecell.txt
+ 
+diff --git a/arch/arm/boot/dts/bcm270x.dtsi b/arch/arm/boot/dts/bcm270x.dtsi
+index 81914a615c8b..d312c2739624 100644
+--- a/arch/arm/boot/dts/bcm270x.dtsi
++++ b/arch/arm/boot/dts/bcm270x.dtsi
+@@ -26,6 +26,11 @@
+ 			interrupts = <2 17>, <2 18>;
+ 		};
+ 
++		serial@7e201000 { /* uart0 */
++			/* Enable CTS bug workaround */
++			cts-event-workaround;
++		};
++
+ 		i2s@7e203000 { /* i2s */
+ 			#sound-dai-cells = <0>;
+ 			reg = <0x7e203000 0x24>;
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 4b815abbf991..8c6e495b74ca 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2664,6 +2664,11 @@ static int pl011_probe(struct amba_device *dev, const struct amba_id *id)
+ 	if (IS_ERR(uap->clk))
+ 		return PTR_ERR(uap->clk);
+ 
++	if (of_property_read_bool(dev->dev.of_node, "cts-event-workaround")) {
++	    vendor->cts_event_workaround = true;
++	    dev_info(&dev->dev, "cts_event_workaround enabled\n");
++	}
++
+ 	uap->reg_offset = vendor->reg_offset;
+ 	uap->vendor = vendor;
+ 	uap->fifosize = vendor->get_fifosize(dev);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1139_d1cb51bee60a047d284ae003ae9e9f022ccbf2be.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1139_d1cb51bee60a047d284ae003ae9e9f022ccbf2be.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
