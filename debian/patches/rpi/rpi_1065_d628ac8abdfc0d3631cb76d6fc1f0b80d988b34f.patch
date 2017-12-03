@@ -1,0 +1,39 @@
+commit d628ac8abdfc0d3631cb76d6fc1f0b80d988b34f
+Author: Jaegeuk Kim <jaegeuk@kernel.org>
+Date:   Fri Oct 13 10:27:45 2017 -0700
+
+    f2fs: expose some sectors to user in inline data or dentry case
+    
+    commit 5b4267d195dd887c4412e34b5a7365baa741b679 upstream.
+    
+    If there's some data written through inline data or dentry, we need to shouw
+    st_blocks. This fixes reporting zero blocks even though there is small written
+    data.
+    
+    Reviewed-by: Chao Yu <yuchao0@huawei.com>
+    [Jaegeuk Kim: avoid link file for quotacheck]
+    Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+index 517e112c8a9a..6ce467872376 100644
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -683,6 +683,12 @@ int f2fs_getattr(const struct path *path, struct kstat *stat,
+ 				  STATX_ATTR_NODUMP);
+ 
+ 	generic_fillattr(inode, stat);
++
++	/* we need to show initial sectors used for inline_data/dentries */
++	if ((S_ISREG(inode->i_mode) && f2fs_has_inline_data(inode)) ||
++					f2fs_has_inline_dentry(inode))
++		stat->blocks += (stat->size + 511) >> 9;
++
+ 	return 0;
+ }
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1065_d628ac8abdfc0d3631cb76d6fc1f0b80d988b34f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1065_d628ac8abdfc0d3631cb76d6fc1f0b80d988b34f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

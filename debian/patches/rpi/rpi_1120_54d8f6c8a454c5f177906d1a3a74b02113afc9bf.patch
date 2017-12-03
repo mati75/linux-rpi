@@ -1,0 +1,35 @@
+commit 54d8f6c8a454c5f177906d1a3a74b02113afc9bf
+Author: Boris Brezillon <boris.brezillon@free-electrons.com>
+Date:   Thu Oct 5 18:57:24 2017 +0200
+
+    mtd: nand: atmel: Actually use the PM ops
+    
+    commit 1533bfa6f6b6bcca1ea1f172ef4a1c5ce5e7b335 upstream.
+    
+    commit 6e532afaca8e ("mtd: nand: atmel: Add PM ops") was defining PM
+    ops but nothing was using/referencing those PM ops.
+    
+    Fixes: 6e532afaca8e ("mtd: nand: atmel: Add PM ops")
+    Cc: Romain Izard <romain.izard.pro@gmail.com>
+    Signed-off-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+    Acked-by: Wenyou Yang <wenyou.yang@microchip.com>
+    Tested-by: Romain Izard <romain.izard.pro@gmail.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/mtd/nand/atmel/nand-controller.c b/drivers/mtd/nand/atmel/nand-controller.c
+index f25eca79f4e5..68c9d98a3347 100644
+--- a/drivers/mtd/nand/atmel/nand-controller.c
++++ b/drivers/mtd/nand/atmel/nand-controller.c
+@@ -2547,6 +2547,7 @@ static struct platform_driver atmel_nand_controller_driver = {
+ 	.driver = {
+ 		.name = "atmel-nand-controller",
+ 		.of_match_table = of_match_ptr(atmel_nand_controller_of_ids),
++		.pm = &atmel_nand_controller_pm_ops,
+ 	},
+ 	.probe = atmel_nand_controller_probe,
+ 	.remove = atmel_nand_controller_remove,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1120_54d8f6c8a454c5f177906d1a3a74b02113afc9bf.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1120_54d8f6c8a454c5f177906d1a3a74b02113afc9bf.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

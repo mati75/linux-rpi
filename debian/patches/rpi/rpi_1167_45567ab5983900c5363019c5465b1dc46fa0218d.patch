@@ -1,0 +1,49 @@
+commit 45567ab5983900c5363019c5465b1dc46fa0218d
+Author: Michael Ellerman <mpe@ellerman.id.au>
+Date:   Mon Nov 13 23:17:28 2017 +1100
+
+    powerpc/64s/hash: Fix 512T hint detection to use >= 128T
+    
+    commit 7ece370996b694ae263025e056ad785afc1be5ab upstream.
+    
+    Currently userspace is able to request mmap() search between 128T-512T
+    by specifying a hint address that is greater than 128T. But that means
+    a hint of 128T exactly will return an address below 128T, which is
+    confusing and wrong.
+    
+    So fix the logic to check the hint is greater than *or equal* to 128T.
+    
+    Fixes: f4ea6dcb08ea ("powerpc/mm: Enable mappings above 128TB")
+    Suggested-by: Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
+    Suggested-by: Nicholas Piggin <npiggin@gmail.com>
+    [mpe: Split out of Nick's bigger patch]
+    Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/powerpc/mm/slice.c b/arch/powerpc/mm/slice.c
+index 45f6740dd407..48a5312103a1 100644
+--- a/arch/powerpc/mm/slice.c
++++ b/arch/powerpc/mm/slice.c
+@@ -419,7 +419,7 @@ unsigned long slice_get_unmapped_area(unsigned long addr, unsigned long len,
+ 	/*
+ 	 * Check if we need to expland slice area.
+ 	 */
+-	if (unlikely(addr > mm->context.addr_limit &&
++	if (unlikely(addr >= mm->context.addr_limit &&
+ 		     mm->context.addr_limit != TASK_SIZE)) {
+ 		mm->context.addr_limit = TASK_SIZE;
+ 		on_each_cpu(slice_flush_segments, mm, 1);
+@@ -427,7 +427,7 @@ unsigned long slice_get_unmapped_area(unsigned long addr, unsigned long len,
+ 	/*
+ 	 * This mmap request can allocate upt to 512TB
+ 	 */
+-	if (addr > DEFAULT_MAP_WINDOW)
++	if (addr >= DEFAULT_MAP_WINDOW)
+ 		high_limit = mm->context.addr_limit;
+ 	else
+ 		high_limit = DEFAULT_MAP_WINDOW;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1167_45567ab5983900c5363019c5465b1dc46fa0218d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1167_45567ab5983900c5363019c5465b1dc46fa0218d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

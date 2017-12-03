@@ -1,0 +1,50 @@
+commit d1c2e5668cfd6b0332330e711f3e86d7bfe29230
+Author: Mikulas Patocka <mpatocka@redhat.com>
+Date:   Tue Nov 14 09:59:54 2017 -0500
+
+    dax: fix general protection fault in dax_alloc_inode
+    
+    commit 9f586fff6574f6ecbf323f92d44ffaf0d96225fe upstream.
+    
+    Don't crash in case of allocation failure in dax_alloc_inode.
+    
+        syzkaller hit the following crash on e4880bc5dfb1
+    
+        kasan: CONFIG_KASAN_INLINE enabled
+        kasan: GPF could be caused by NULL-ptr deref or user memory access
+        [..]
+        RIP: 0010:dax_alloc_inode+0x3b/0x70 drivers/dax/super.c:348
+        Call Trace:
+        alloc_inode+0x65/0x180 fs/inode.c:208
+        new_inode_pseudo+0x69/0x190 fs/inode.c:890
+        new_inode+0x1c/0x40 fs/inode.c:919
+        mount_pseudo_xattr+0x288/0x560 fs/libfs.c:261
+        mount_pseudo include/linux/fs.h:2137 [inline]
+        dax_mount+0x2e/0x40 drivers/dax/super.c:388
+        mount_fs+0x66/0x2d0 fs/super.c:1223
+    
+    Fixes: 7b6be8444e0f ("dax: refactor dax-fs into a generic provider...")
+    Reported-by: syzbot <syzkaller@googlegroups.com>
+    Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+    Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+index 557b93703532..c4cd034a3820 100644
+--- a/drivers/dax/super.c
++++ b/drivers/dax/super.c
+@@ -344,6 +344,9 @@ static struct inode *dax_alloc_inode(struct super_block *sb)
+ 	struct inode *inode;
+ 
+ 	dax_dev = kmem_cache_alloc(dax_cache, GFP_KERNEL);
++	if (!dax_dev)
++		return NULL;
++
+ 	inode = &dax_dev->inode;
+ 	inode->i_rdev = 0;
+ 	return inode;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1136_d1c2e5668cfd6b0332330e711f3e86d7bfe29230.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1136_d1c2e5668cfd6b0332330e711f3e86d7bfe29230.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

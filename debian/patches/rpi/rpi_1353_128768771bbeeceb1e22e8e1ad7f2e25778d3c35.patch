@@ -1,0 +1,25 @@
+commit 128768771bbeeceb1e22e8e1ad7f2e25778d3c35
+Author: Daniel Matuschek <daniel@hifiberry.com>
+Date:   Tue Oct 17 10:30:28 2017 +0200
+
+    Fixed a bug when using 352.8kHz sample rate
+    
+    Signed-off-by: Daniel Matuschek <daniel@hifiberry.com>
+
+diff --git a/sound/soc/bcm/hifiberry_dacplus.c b/sound/soc/bcm/hifiberry_dacplus.c
+index b7b401cbe2b0..16697dd6c6db 100644
+--- a/sound/soc/bcm/hifiberry_dacplus.c
++++ b/sound/soc/bcm/hifiberry_dacplus.c
+@@ -117,6 +117,7 @@ static int snd_rpi_hifiberry_dacplus_clk_for_rate(int sample_rate)
+ 	case 44100:
+ 	case 88200:
+ 	case 176400:
++	case 352800:
+ 		type = HIFIBERRY_DACPRO_CLK44EN;
+ 		break;
+ 	default:
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1353_128768771bbeeceb1e22e8e1ad7f2e25778d3c35.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1353_128768771bbeeceb1e22e8e1ad7f2e25778d3c35.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

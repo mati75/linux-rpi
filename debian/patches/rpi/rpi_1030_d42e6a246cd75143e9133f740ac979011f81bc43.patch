@@ -1,0 +1,39 @@
+commit d42e6a246cd75143e9133f740ac979011f81bc43
+Author: Bjorn Helgaas <bhelgaas@google.com>
+Date:   Mon Nov 13 15:05:50 2017 -0600
+
+    PCI/ASPM: Use correct capability pointer to program LTR_L1.2_THRESHOLD
+    
+    commit c00054f540bf81e592e1fee709b0bdbf20f478b5 upstream.
+    
+    Previously we programmed the LTR_L1.2_THRESHOLD in the parent (upstream)
+    device using the capability pointer of the *child* (downstream) device,
+    which corrupted some random word of the parent's config space.
+    
+    Use the parent's L1 SS capability pointer to program its
+    LTR_L1.2_THRESHOLD.
+    
+    Fixes: aeda9adebab8 ("PCI/ASPM: Configure L1 substate settings")
+    Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+    Reviewed-by: Vidya Sagar <vidyas@nvidia.com>
+    CC: Rajat Jain <rajatja@google.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+index 1196c5202558..cae54f8320be 100644
+--- a/drivers/pci/pcie/aspm.c
++++ b/drivers/pci/pcie/aspm.c
+@@ -658,7 +658,7 @@ static void pcie_config_aspm_l1ss(struct pcie_link_state *link, u32 state)
+ 					0xFF00, link->l1ss.ctl1);
+ 
+ 		/* Program LTR L1.2 threshold in both ports */
+-		pci_clear_and_set_dword(parent,	dw_cap_ptr + PCI_L1SS_CTL1,
++		pci_clear_and_set_dword(parent,	up_cap_ptr + PCI_L1SS_CTL1,
+ 					0xE3FF0000, link->l1ss.ctl1);
+ 		pci_clear_and_set_dword(child, dw_cap_ptr + PCI_L1SS_CTL1,
+ 					0xE3FF0000, link->l1ss.ctl1);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1030_d42e6a246cd75143e9133f740ac979011f81bc43.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1030_d42e6a246cd75143e9133f740ac979011f81bc43.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

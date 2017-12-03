@@ -1,0 +1,38 @@
+commit 8d187fa8e9b56a8516291df055d956ca32d453ee
+Author: Mirko Parthey <mirko.parthey@web.de>
+Date:   Thu May 18 21:30:03 2017 +0200
+
+    MIPS: BCM47XX: Fix LED inversion for WRT54GSv1
+    
+    commit 56a46acf62af5ba44fca2f3f1c7c25a2d5385b19 upstream.
+    
+    The WLAN LED on the Linksys WRT54GSv1 is active low, but the software
+    treats it as active high. Fix the inverted logic.
+    
+    Fixes: 7bb26b169116 ("MIPS: BCM47xx: Fix LEDs on WRT54GS V1.0")
+    Signed-off-by: Mirko Parthey <mirko.parthey@web.de>
+    Looks-ok-by: Rafał Miłecki <zajec5@gmail.com>
+    Cc: Hauke Mehrtens <hauke@hauke-m.de>
+    Cc: linux-mips@linux-mips.org
+    Patchwork: https://patchwork.linux-mips.org/patch/16071/
+    Signed-off-by: James Hogan <jhogan@kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/mips/bcm47xx/leds.c b/arch/mips/bcm47xx/leds.c
+index d4f2407a42c6..8307a8a02667 100644
+--- a/arch/mips/bcm47xx/leds.c
++++ b/arch/mips/bcm47xx/leds.c
+@@ -331,7 +331,7 @@ bcm47xx_leds_linksys_wrt54g3gv2[] __initconst = {
+ /* Verified on: WRT54GS V1.0 */
+ static const struct gpio_led
+ bcm47xx_leds_linksys_wrt54g_type_0101[] __initconst = {
+-	BCM47XX_GPIO_LED(0, "green", "wlan", 0, LEDS_GPIO_DEFSTATE_OFF),
++	BCM47XX_GPIO_LED(0, "green", "wlan", 1, LEDS_GPIO_DEFSTATE_OFF),
+ 	BCM47XX_GPIO_LED(1, "green", "power", 0, LEDS_GPIO_DEFSTATE_ON),
+ 	BCM47XX_GPIO_LED(7, "green", "dmz", 1, LEDS_GPIO_DEFSTATE_OFF),
+ };
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1051_8d187fa8e9b56a8516291df055d956ca32d453ee.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1051_8d187fa8e9b56a8516291df055d956ca32d453ee.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

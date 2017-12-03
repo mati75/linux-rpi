@@ -1,0 +1,73 @@
+commit 665e6619705a19910ab3aaa81eb34343e9628da4
+Author: Vasily Averin <vvs@virtuozzo.com>
+Date:   Fri Oct 20 17:33:18 2017 +0300
+
+    lockd: double unregister of inetaddr notifiers
+    
+    commit dc3033e16c59a2c4e62b31341258a5786cbcee56 upstream.
+    
+    lockd_up() can call lockd_unregister_notifiers twice:
+    inside lockd_start_svc() when it calls lockd_svc_exit_thread()
+    and then in error path of lockd_up()
+    
+    Patch forces lockd_start_svc() to unregister notifiers in all error cases
+    and removes extra unregister in error path of lockd_up().
+    
+    Fixes: cb7d224f82e4 "lockd: unregister notifier blocks if the service ..."
+    Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
+    Reviewed-by: Jeff Layton <jlayton@kernel.org>
+    Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/lockd/svc.c b/fs/lockd/svc.c
+index b995bdc13976..f04ecfc7ece0 100644
+--- a/fs/lockd/svc.c
++++ b/fs/lockd/svc.c
+@@ -369,6 +369,7 @@ static int lockd_start_svc(struct svc_serv *serv)
+ 		printk(KERN_WARNING
+ 			"lockd_up: svc_rqst allocation failed, error=%d\n",
+ 			error);
++		lockd_unregister_notifiers();
+ 		goto out_rqst;
+ 	}
+ 
+@@ -459,13 +460,16 @@ int lockd_up(struct net *net)
+ 	}
+ 
+ 	error = lockd_up_net(serv, net);
+-	if (error < 0)
+-		goto err_net;
++	if (error < 0) {
++		lockd_unregister_notifiers();
++		goto err_put;
++	}
+ 
+ 	error = lockd_start_svc(serv);
+-	if (error < 0)
+-		goto err_start;
+-
++	if (error < 0) {
++		lockd_down_net(serv, net);
++		goto err_put;
++	}
+ 	nlmsvc_users++;
+ 	/*
+ 	 * Note: svc_serv structures have an initial use count of 1,
+@@ -476,12 +480,6 @@ int lockd_up(struct net *net)
+ err_create:
+ 	mutex_unlock(&nlmsvc_mutex);
+ 	return error;
+-
+-err_start:
+-	lockd_down_net(serv, net);
+-err_net:
+-	lockd_unregister_notifiers();
+-	goto err_put;
+ }
+ EXPORT_SYMBOL_GPL(lockd_up);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1130_665e6619705a19910ab3aaa81eb34343e9628da4.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1130_665e6619705a19910ab3aaa81eb34343e9628da4.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

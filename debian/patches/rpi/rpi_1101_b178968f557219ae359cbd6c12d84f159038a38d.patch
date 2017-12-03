@@ -1,0 +1,54 @@
+commit b178968f557219ae359cbd6c12d84f159038a38d
+Author: Tuomas Tynkkynen <tuomas@tuxera.com>
+Date:   Wed Sep 6 17:59:07 2017 +0300
+
+    fs/9p: Compare qid.path in v9fs_test_inode
+    
+    commit 8ee031631546cf2f7859cc69593bd60bbdd70b46 upstream.
+    
+    Commit fd2421f54423 ("fs/9p: When doing inode lookup compare qid details
+    and inode mode bits.") transformed v9fs_qid_iget() to use iget5_locked()
+    instead of iget_locked(). However, the test() callback is not checking
+    fid.path at all, which means that a lookup in the inode cache can now
+    accidentally locate a completely wrong inode from the same inode hash
+    bucket if the other fields (qid.type and qid.version) match.
+    
+    Fixes: fd2421f54423 ("fs/9p: When doing inode lookup compare qid details and inode mode bits.")
+    Reviewed-by: Latchesar Ionkov <lucho@ionkov.net>
+    Signed-off-by: Tuomas Tynkkynen <tuomas@tuxera.com>
+    Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
+index 2a5de610dd8f..bdabb2765d1b 100644
+--- a/fs/9p/vfs_inode.c
++++ b/fs/9p/vfs_inode.c
+@@ -483,6 +483,9 @@ static int v9fs_test_inode(struct inode *inode, void *data)
+ 
+ 	if (v9inode->qid.type != st->qid.type)
+ 		return 0;
++
++	if (v9inode->qid.path != st->qid.path)
++		return 0;
+ 	return 1;
+ }
+ 
+diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
+index 70f9887c59a9..7f6ae21a27b3 100644
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -87,6 +87,9 @@ static int v9fs_test_inode_dotl(struct inode *inode, void *data)
+ 
+ 	if (v9inode->qid.type != st->qid.type)
+ 		return 0;
++
++	if (v9inode->qid.path != st->qid.path)
++		return 0;
+ 	return 1;
+ }
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1101_b178968f557219ae359cbd6c12d84f159038a38d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1101_b178968f557219ae359cbd6c12d84f159038a38d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

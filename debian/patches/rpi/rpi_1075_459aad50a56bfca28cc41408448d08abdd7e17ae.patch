@@ -1,0 +1,41 @@
+commit 459aad50a56bfca28cc41408448d08abdd7e17ae
+Author: NeilBrown <neilb@suse.com>
+Date:   Thu Oct 5 16:23:16 2017 +1100
+
+    md: fix deadlock error in recent patch.
+    
+    commit d47c8ad261f787af22a220ffcc2d07afba809223 upstream.
+    
+    A recent patch aimed to cause md_write_start() to fail (rather than
+    block) when the mddev was suspending, so as to avoid deadlocks.
+    Unfortunately the test in wait_event() was wrong, and it didn't change
+    behaviour at all.
+    
+    We wait_event() must wait until the metadata is written OR the array is
+    suspending.
+    
+    Fixes: cc27b0c78c79 ("md: fix deadlock between mddev_suspend() and md_write_start()")
+    Reported-by: Xiao Ni <xni@redhat.com>
+    Signed-off-by: NeilBrown <neilb@suse.com>
+    Signed-off-by: Shaohua Li <shli@fb.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/md/md.c b/drivers/md/md.c
+index 0ff1bbf6c90e..8b2eb0f4122f 100644
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -8039,7 +8039,8 @@ bool md_write_start(struct mddev *mddev, struct bio *bi)
+ 	if (did_change)
+ 		sysfs_notify_dirent_safe(mddev->sysfs_state);
+ 	wait_event(mddev->sb_wait,
+-		   !test_bit(MD_SB_CHANGE_PENDING, &mddev->sb_flags) && !mddev->suspended);
++		   !test_bit(MD_SB_CHANGE_PENDING, &mddev->sb_flags) ||
++		   mddev->suspended);
+ 	if (test_bit(MD_SB_CHANGE_PENDING, &mddev->sb_flags)) {
+ 		percpu_ref_put(&mddev->writes_pending);
+ 		return false;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1075_459aad50a56bfca28cc41408448d08abdd7e17ae.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1075_459aad50a56bfca28cc41408448d08abdd7e17ae.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

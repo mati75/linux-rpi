@@ -1,0 +1,67 @@
+commit 769bfea594f5edb92b077b50ee58866a989ca2bb
+Author: Stanislaw Gruszka <sgruszka@redhat.com>
+Date:   Thu Nov 9 11:59:24 2017 +0100
+
+    rt2x00usb: mark device removed when get ENOENT usb error
+    
+    commit bfa62a52cad93686bb8d8171ea5288813248a7c6 upstream.
+    
+    ENOENT usb error mean "specified interface or endpoint does not exist or
+    is not enabled". Mark device not present when we encounter this error
+    similar like we do with ENODEV error.
+    
+    Otherwise we can have infinite loop in rt2x00usb_work_rxdone(), because
+    we remove and put again RX entries to the queue infinitely.
+    
+    We can have similar situation when submit urb will fail all the time
+    with other error, so we need consider to limit number of entries
+    processed by rxdone work. But for now, since the patch fixes
+    reproducible soft lockup issue on single processor systems
+    and taken ENOENT error meaning, let apply this fix.
+    
+    Patch adds additional ENOENT check not only in rx kick routine, but
+    also on other places where we check for ENODEV error.
+    
+    Reported-by: Richard Genoud <richard.genoud@gmail.com>
+    Debugged-by: Richard Genoud <richard.genoud@gmail.com>
+    Signed-off-by: Stanislaw Gruszka <sgruszka@redhat.com>
+    Tested-by: Richard Genoud <richard.genoud@gmail.com>
+    Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c b/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c
+index e2f4f5778267..086aad22743d 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2x00usb.c
+@@ -57,7 +57,7 @@ int rt2x00usb_vendor_request(struct rt2x00_dev *rt2x00dev,
+ 		if (status >= 0)
+ 			return 0;
+ 
+-		if (status == -ENODEV) {
++		if (status == -ENODEV || status == -ENOENT) {
+ 			/* Device has disappeared. */
+ 			clear_bit(DEVICE_STATE_PRESENT, &rt2x00dev->flags);
+ 			break;
+@@ -321,7 +321,7 @@ static bool rt2x00usb_kick_tx_entry(struct queue_entry *entry, void *data)
+ 
+ 	status = usb_submit_urb(entry_priv->urb, GFP_ATOMIC);
+ 	if (status) {
+-		if (status == -ENODEV)
++		if (status == -ENODEV || status == -ENOENT)
+ 			clear_bit(DEVICE_STATE_PRESENT, &rt2x00dev->flags);
+ 		set_bit(ENTRY_DATA_IO_FAILED, &entry->flags);
+ 		rt2x00lib_dmadone(entry);
+@@ -410,7 +410,7 @@ static bool rt2x00usb_kick_rx_entry(struct queue_entry *entry, void *data)
+ 
+ 	status = usb_submit_urb(entry_priv->urb, GFP_ATOMIC);
+ 	if (status) {
+-		if (status == -ENODEV)
++		if (status == -ENODEV || status == -ENOENT)
+ 			clear_bit(DEVICE_STATE_PRESENT, &rt2x00dev->flags);
+ 		set_bit(ENTRY_DATA_IO_FAILED, &entry->flags);
+ 		rt2x00lib_dmadone(entry);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1053_769bfea594f5edb92b077b50ee58866a989ca2bb.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1053_769bfea594f5edb92b077b50ee58866a989ca2bb.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

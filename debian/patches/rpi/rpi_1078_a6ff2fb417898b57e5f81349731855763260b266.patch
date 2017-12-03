@@ -1,0 +1,44 @@
+commit a6ff2fb417898b57e5f81349731855763260b266
+Author: Shaohua Li <shli@fb.com>
+Date:   Mon Oct 16 19:03:44 2017 -0700
+
+    md/bitmap: revert a patch
+    
+    commit 938b533d479e7428b7fa1b8179283646d2e2c53d upstream.
+    
+    This reverts commit 8031c3ddc70a. That patches doesn't work well if PAGE_SIZE >
+    4k. We will fix the original problem with a different approach.
+    
+    Fix: 8031c3ddc70a(md/bitmap: copy correct data for bitmap super)
+    Reported-by: Joshua Kinard <kumba@gentoo.org>
+    Suggested-by: Neil Brown <neilb@suse.com>
+    Signed-off-by: Shaohua Li <shli@fb.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/md/bitmap.c b/drivers/md/bitmap.c
+index d2121637b4ab..cae57b5be817 100644
+--- a/drivers/md/bitmap.c
++++ b/drivers/md/bitmap.c
+@@ -625,7 +625,7 @@ static int bitmap_read_sb(struct bitmap *bitmap)
+ 		err = read_sb_page(bitmap->mddev,
+ 				   offset,
+ 				   sb_page,
+-				   0, PAGE_SIZE);
++				   0, sizeof(bitmap_super_t));
+ 	}
+ 	if (err)
+ 		return err;
+@@ -2123,7 +2123,7 @@ int bitmap_resize(struct bitmap *bitmap, sector_t blocks,
+ 	if (store.sb_page && bitmap->storage.sb_page)
+ 		memcpy(page_address(store.sb_page),
+ 		       page_address(bitmap->storage.sb_page),
+-		       PAGE_SIZE);
++		       sizeof(bitmap_super_t));
+ 	bitmap_file_unmap(&bitmap->storage);
+ 	bitmap->storage = store;
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1078_a6ff2fb417898b57e5f81349731855763260b266.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1078_a6ff2fb417898b57e5f81349731855763260b266.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

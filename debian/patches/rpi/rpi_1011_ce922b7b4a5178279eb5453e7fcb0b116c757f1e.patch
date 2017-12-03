@@ -1,0 +1,51 @@
+commit ce922b7b4a5178279eb5453e7fcb0b116c757f1e
+Author: Eric Biggers <ebiggers@google.com>
+Date:   Tue Nov 7 14:15:27 2017 -0800
+
+    lib/mpi: call cond_resched() from mpi_powm() loop
+    
+    commit 1d9ddde12e3c9bab7f3d3484eb9446315e3571ca upstream.
+    
+    On a non-preemptible kernel, if KEYCTL_DH_COMPUTE is called with the
+    largest permitted inputs (16384 bits), the kernel spends 10+ seconds
+    doing modular exponentiation in mpi_powm() without rescheduling.  If all
+    threads do it, it locks up the system.  Moreover, it can cause
+    rcu_sched-stall warnings.
+    
+    Notwithstanding the insanity of doing this calculation in kernel mode
+    rather than in userspace, fix it by calling cond_resched() as each bit
+    from the exponent is processed.  It's still noninterruptible, but at
+    least it's preemptible now.
+    
+    Do the cond_resched() once per bit rather than once per MPI limb because
+    each limb might still easily take 100+ milliseconds on slow CPUs.
+    
+    Signed-off-by: Eric Biggers <ebiggers@google.com>
+    Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/lib/mpi/mpi-pow.c b/lib/mpi/mpi-pow.c
+index e24388a863a7..468fb7cd1221 100644
+--- a/lib/mpi/mpi-pow.c
++++ b/lib/mpi/mpi-pow.c
+@@ -26,6 +26,7 @@
+  *	 however I decided to publish this code under the plain GPL.
+  */
+ 
++#include <linux/sched.h>
+ #include <linux/string.h>
+ #include "mpi-internal.h"
+ #include "longlong.h"
+@@ -256,6 +257,7 @@ int mpi_powm(MPI res, MPI base, MPI exp, MPI mod)
+ 				}
+ 				e <<= 1;
+ 				c--;
++				cond_resched();
+ 			}
+ 
+ 			i--;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1011_ce922b7b4a5178279eb5453e7fcb0b116c757f1e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1011_ce922b7b4a5178279eb5453e7fcb0b116c757f1e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

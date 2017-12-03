@@ -1,0 +1,306 @@
+commit 15eb0ac73cfad8f3e63c1f50c5bb9d358ceced4d
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Aug 16 16:52:50 2017 +0100
+
+    BCM270X_DT: Set spidev spi-max-frequency to 125MHz
+    
+    The BCM2835 SPI controllers have a maximum bus clock of half the system
+    clock speed, so with the 250MHz system clock found on Raspberry Pis
+    you get a theoretical maximum bus speed of 125MHz. Note that this
+    speed is unlikely to be reliable, and the maximum usable bus spee will
+    depend on both the attached device and the wiring.
+    
+    See: https://github.com/raspberrypi/linux/issues/2165
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm2708-rpi-0-w.dts b/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
+index a6ef9ee67ef8..8299f8a4e2a4 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
++++ b/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
+@@ -101,7 +101,7 @@
+ 		reg = <0>;	/* CE0 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ 
+ 	spidev1: spidev@1{
+@@ -109,7 +109,7 @@
+ 		reg = <1>;	/* CE1 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2708-rpi-b-plus.dts b/arch/arm/boot/dts/bcm2708-rpi-b-plus.dts
+index 373bfd02786c..31db4fd917a4 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2708-rpi-b-plus.dts
+@@ -53,7 +53,7 @@
+ 		reg = <0>;	/* CE0 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ 
+ 	spidev1: spidev@1{
+@@ -61,7 +61,7 @@
+ 		reg = <1>;	/* CE1 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2708-rpi-b.dts b/arch/arm/boot/dts/bcm2708-rpi-b.dts
+index 7e5151ad52a6..ffe5d14feb9f 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi-b.dts
++++ b/arch/arm/boot/dts/bcm2708-rpi-b.dts
+@@ -53,7 +53,7 @@
+ 		reg = <0>;	/* CE0 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ 
+ 	spidev1: spidev@1{
+@@ -61,7 +61,7 @@
+ 		reg = <1>;	/* CE1 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2708-rpi-cm.dts b/arch/arm/boot/dts/bcm2708-rpi-cm.dts
+index 935867a7bb46..0b0d23256edd 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi-cm.dts
++++ b/arch/arm/boot/dts/bcm2708-rpi-cm.dts
+@@ -52,7 +52,7 @@
+ 		reg = <0>;	/* CE0 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ 
+ 	spidev1: spidev@1{
+@@ -60,7 +60,7 @@
+ 		reg = <1>;	/* CE1 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2709-rpi-2-b.dts b/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
+index 434c451928b4..b7d483470665 100644
+--- a/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
++++ b/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
+@@ -53,7 +53,7 @@
+ 		reg = <0>;	/* CE0 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ 
+ 	spidev1: spidev@1{
+@@ -61,7 +61,7 @@
+ 		reg = <1>;	/* CE1 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+index e032516ffd35..a72c2fed5c52 100644
+--- a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+@@ -125,7 +125,7 @@
+ 		reg = <0>;	/* CE0 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ 
+ 	spidev1: spidev@1{
+@@ -133,7 +133,7 @@
+ 		reg = <1>;	/* CE1 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2710-rpi-cm3.dts b/arch/arm/boot/dts/bcm2710-rpi-cm3.dts
+index a84552eca6a5..2500641c14dc 100644
+--- a/arch/arm/boot/dts/bcm2710-rpi-cm3.dts
++++ b/arch/arm/boot/dts/bcm2710-rpi-cm3.dts
+@@ -70,7 +70,7 @@
+ 		reg = <0>;	/* CE0 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ 
+ 	spidev1: spidev@1{
+@@ -78,7 +78,7 @@
+ 		reg = <1>;	/* CE1 */
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+-		spi-max-frequency = <500000>;
++		spi-max-frequency = <125000000>;
+ 	};
+ };
+ 
+diff --git a/arch/arm/boot/dts/overlays/spi1-1cs-overlay.dts b/arch/arm/boot/dts/overlays/spi1-1cs-overlay.dts
+index 71c243947004..c3d4f96b7aa9 100644
+--- a/arch/arm/boot/dts/overlays/spi1-1cs-overlay.dts
++++ b/arch/arm/boot/dts/overlays/spi1-1cs-overlay.dts
+@@ -36,7 +36,7 @@
+ 				reg = <0>;      /* CE0 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 		};
+diff --git a/arch/arm/boot/dts/overlays/spi1-2cs-overlay.dts b/arch/arm/boot/dts/overlays/spi1-2cs-overlay.dts
+index 2ae0885cf1e7..2ad62497dc89 100644
+--- a/arch/arm/boot/dts/overlays/spi1-2cs-overlay.dts
++++ b/arch/arm/boot/dts/overlays/spi1-2cs-overlay.dts
+@@ -36,7 +36,7 @@
+ 				reg = <0>;      /* CE0 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 
+@@ -45,7 +45,7 @@
+ 				reg = <1>;      /* CE1 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 		};
+diff --git a/arch/arm/boot/dts/overlays/spi1-3cs-overlay.dts b/arch/arm/boot/dts/overlays/spi1-3cs-overlay.dts
+index 8f79044cd8f4..ef82890453bf 100644
+--- a/arch/arm/boot/dts/overlays/spi1-3cs-overlay.dts
++++ b/arch/arm/boot/dts/overlays/spi1-3cs-overlay.dts
+@@ -36,7 +36,7 @@
+ 				reg = <0>;      /* CE0 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 
+@@ -45,7 +45,7 @@
+ 				reg = <1>;      /* CE1 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 
+@@ -54,7 +54,7 @@
+ 				reg = <2>;      /* CE2 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 		};
+diff --git a/arch/arm/boot/dts/overlays/spi2-1cs-overlay.dts b/arch/arm/boot/dts/overlays/spi2-1cs-overlay.dts
+index 6f57bc710fe1..761b6be4ff9b 100644
+--- a/arch/arm/boot/dts/overlays/spi2-1cs-overlay.dts
++++ b/arch/arm/boot/dts/overlays/spi2-1cs-overlay.dts
+@@ -36,7 +36,7 @@
+ 				reg = <0>;      /* CE0 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 		};
+diff --git a/arch/arm/boot/dts/overlays/spi2-2cs-overlay.dts b/arch/arm/boot/dts/overlays/spi2-2cs-overlay.dts
+index d090631d3682..e533aba113de 100644
+--- a/arch/arm/boot/dts/overlays/spi2-2cs-overlay.dts
++++ b/arch/arm/boot/dts/overlays/spi2-2cs-overlay.dts
+@@ -36,7 +36,7 @@
+ 				reg = <0>;      /* CE0 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 
+@@ -45,7 +45,7 @@
+ 				reg = <1>;      /* CE1 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 		};
+diff --git a/arch/arm/boot/dts/overlays/spi2-3cs-overlay.dts b/arch/arm/boot/dts/overlays/spi2-3cs-overlay.dts
+index e2586728c311..a62e107dc98f 100644
+--- a/arch/arm/boot/dts/overlays/spi2-3cs-overlay.dts
++++ b/arch/arm/boot/dts/overlays/spi2-3cs-overlay.dts
+@@ -36,7 +36,7 @@
+ 				reg = <0>;      /* CE0 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 
+@@ -45,7 +45,7 @@
+ 				reg = <1>;      /* CE1 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 
+@@ -54,7 +54,7 @@
+ 				reg = <2>;      /* CE2 */
+ 				#address-cells = <1>;
+ 				#size-cells = <0>;
+-				spi-max-frequency = <500000>;
++				spi-max-frequency = <125000000>;
+ 				status = "okay";
+ 			};
+ 		};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1357_15eb0ac73cfad8f3e63c1f50c5bb9d358ceced4d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1357_15eb0ac73cfad8f3e63c1f50c5bb9d358ceced4d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

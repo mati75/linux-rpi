@@ -1,0 +1,44 @@
+commit 0bc4abfb872532fd567397ed414b3336f6df7971
+Author: Maxime Ripard <maxime.ripard@free-electrons.com>
+Date:   Wed Nov 8 16:47:08 2017 +0100
+
+    ASoC: sun8i-codec: Invert Master / Slave condition
+    
+    commit 560bfe774f058e97596f30ff71cffdac52b72914 upstream.
+    
+    The current code had the condition backward when checking if the codec
+    should be running in slave or master mode.
+    
+    Fix it, and make the comment a bit more readable.
+    
+    Fixes: 36c684936fae ("ASoC: Add sun8i digital audio codec")
+    Signed-off-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+    Reviewed-by: Chen-Yu Tsai <wens@csie.org>
+    Signed-off-by: Mark Brown <broonie@kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/sound/soc/sunxi/sun8i-codec.c b/sound/soc/sunxi/sun8i-codec.c
+index abfb710df7cb..038107baf414 100644
+--- a/sound/soc/sunxi/sun8i-codec.c
++++ b/sound/soc/sunxi/sun8i-codec.c
+@@ -170,11 +170,11 @@ static int sun8i_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+ 
+ 	/* clock masters */
+ 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
+-	case SND_SOC_DAIFMT_CBS_CFS: /* DAI Slave */
+-		value = 0x0; /* Codec Master */
++	case SND_SOC_DAIFMT_CBS_CFS: /* Codec slave, DAI master */
++		value = 0x1;
+ 		break;
+-	case SND_SOC_DAIFMT_CBM_CFM: /* DAI Master */
+-		value = 0x1; /* Codec Slave */
++	case SND_SOC_DAIFMT_CBM_CFM: /* Codec Master, DAI slave */
++		value = 0x0;
+ 		break;
+ 	default:
+ 		return -EINVAL;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1095_0bc4abfb872532fd567397ed414b3336f6df7971.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1095_0bc4abfb872532fd567397ed414b3336f6df7971.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,60 @@
+commit 00d5e292a8ea9675c6ac4583743b811fda6ba157
+Author: Masami Hiramatsu <mhiramat@kernel.org>
+Date:   Fri Nov 24 13:56:30 2017 +0900
+
+    x86/decoder: Add new TEST instruction pattern
+    
+    commit 12a78d43de767eaf8fb272facb7a7b6f2dc6a9df upstream.
+    
+    The kbuild test robot reported this build warning:
+    
+      Warning: arch/x86/tools/test_get_len found difference at <jump_table>:ffffffff8103dd2c
+    
+      Warning: ffffffff8103dd82: f6 09 d8 testb $0xd8,(%rcx)
+      Warning: objdump says 3 bytes, but insn_get_length() says 2
+      Warning: decoded and checked 1569014 instructions with 1 warnings
+    
+    This sequence seems to be a new instruction not in the opcode map in the Intel SDM.
+    
+    The instruction sequence is "F6 09 d8", means Group3(F6), MOD(00)REG(001)RM(001), and 0xd8.
+    Intel SDM vol2 A.4 Table A-6 said the table index in the group is "Encoding of Bits 5,4,3 of
+    the ModR/M Byte (bits 2,1,0 in parenthesis)"
+    
+    In that table, opcodes listed by the index REG bits as:
+    
+      000         001       010 011  100        101        110         111
+     TEST Ib/Iz,(undefined),NOT,NEG,MUL AL/rAX,IMUL AL/rAX,DIV AL/rAX,IDIV AL/rAX
+    
+    So, it seems TEST Ib is assigned to 001.
+    
+    Add the new pattern.
+    
+    Reported-by: kbuild test robot <fengguang.wu@intel.com>
+    Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+    Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Cc: H. Peter Anvin <hpa@zytor.com>
+    Cc: Linus Torvalds <torvalds@linux-foundation.org>
+    Cc: Peter Zijlstra <peterz@infradead.org>
+    Cc: Thomas Gleixner <tglx@linutronix.de>
+    Cc: linux-kernel@vger.kernel.org
+    Signed-off-by: Ingo Molnar <mingo@kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/x86/lib/x86-opcode-map.txt b/arch/x86/lib/x86-opcode-map.txt
+index 12e377184ee4..c4d55919fac1 100644
+--- a/arch/x86/lib/x86-opcode-map.txt
++++ b/arch/x86/lib/x86-opcode-map.txt
+@@ -896,7 +896,7 @@ EndTable
+ 
+ GrpTable: Grp3_1
+ 0: TEST Eb,Ib
+-1:
++1: TEST Eb,Ib
+ 2: NOT Eb
+ 3: NEG Eb
+ 4: MUL AL,Eb
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1013_00d5e292a8ea9675c6ac4583743b811fda6ba157.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1013_00d5e292a8ea9675c6ac4583743b811fda6ba157.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

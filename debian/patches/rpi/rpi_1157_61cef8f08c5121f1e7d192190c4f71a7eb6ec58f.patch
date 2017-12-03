@@ -1,0 +1,39 @@
+commit 61cef8f08c5121f1e7d192190c4f71a7eb6ec58f
+Author: Brian King <brking@linux.vnet.ibm.com>
+Date:   Fri Nov 17 11:05:49 2017 -0600
+
+    i40evf: Use smp_rmb rather than read_barrier_depends
+    
+    commit f72271e2a0ae4277d53c4053f5eed8bb346ba38a upstream.
+    
+    The original issue being fixed in this patch was seen with the ixgbe
+    driver, but the same issue exists with i40evf as well, as the code is
+    very similar. read_barrier_depends is not sufficient to ensure
+    loads following it are not speculatively loaded out of order
+    by the CPU, which can result in stale data being loaded, causing
+    potential system crashes.
+    
+    Signed-off-by: Brian King <brking@linux.vnet.ibm.com>
+    Acked-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+    Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+    Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/intel/i40evf/i40e_txrx.c b/drivers/net/ethernet/intel/i40evf/i40e_txrx.c
+index c32c62462c84..07a4e6e13925 100644
+--- a/drivers/net/ethernet/intel/i40evf/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40evf/i40e_txrx.c
+@@ -179,7 +179,7 @@ static bool i40e_clean_tx_irq(struct i40e_vsi *vsi,
+ 			break;
+ 
+ 		/* prevent any other reads prior to eop_desc */
+-		read_barrier_depends();
++		smp_rmb();
+ 
+ 		i40e_trace(clean_tx_irq, tx_ring, tx_desc, tx_buf);
+ 		/* if the descriptor isn't done, no work yet to do */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1157_61cef8f08c5121f1e7d192190c4f71a7eb6ec58f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1157_61cef8f08c5121f1e7d192190c4f71a7eb6ec58f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

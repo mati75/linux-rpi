@@ -1,0 +1,62 @@
+commit 5c21c3dde403cdf4b9c777e9dbd9399e6eb8e9b6
+Author: Greg Edwards <gedwards@ddn.com>
+Date:   Tue Oct 24 11:21:48 2017 -0600
+
+    fs: guard_bio_eod() needs to consider partitions
+    
+    commit 67f2519fe2903c4041c0e94394d14d372fe51399 upstream.
+    
+    guard_bio_eod() needs to look at the partition capacity, not just the
+    capacity of the whole device, when determining if truncation is
+    necessary.
+    
+    [   60.268688] attempt to access beyond end of device
+    [   60.268690] unknown-block(9,1): rw=0, want=67103509, limit=67103506
+    [   60.268693] buffer_io_error: 2 callbacks suppressed
+    [   60.268696] Buffer I/O error on dev md1p7, logical block 4524305, async page read
+    
+    Fixes: 74d46992e0d9 ("block: replace bi_bdev with a gendisk pointer and partitions index")
+    Reviewed-by: Christoph Hellwig <hch@lst.de>
+    Signed-off-by: Greg Edwards <gedwards@ddn.com>
+    Signed-off-by: Jens Axboe <axboe@kernel.dk>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/buffer.c b/fs/buffer.c
+index 170df856bdb9..b96f3b98a6ef 100644
+--- a/fs/buffer.c
++++ b/fs/buffer.c
+@@ -3055,8 +3055,16 @@ void guard_bio_eod(int op, struct bio *bio)
+ 	sector_t maxsector;
+ 	struct bio_vec *bvec = &bio->bi_io_vec[bio->bi_vcnt - 1];
+ 	unsigned truncated_bytes;
++	struct hd_struct *part;
++
++	rcu_read_lock();
++	part = __disk_get_part(bio->bi_disk, bio->bi_partno);
++	if (part)
++		maxsector = part_nr_sects_read(part);
++	else
++		maxsector = get_capacity(bio->bi_disk);
++	rcu_read_unlock();
+ 
+-	maxsector = get_capacity(bio->bi_disk);
+ 	if (!maxsector)
+ 		return;
+ 
+diff --git a/include/linux/genhd.h b/include/linux/genhd.h
+index 44790523057f..5ade8f2a6987 100644
+--- a/include/linux/genhd.h
++++ b/include/linux/genhd.h
+@@ -243,6 +243,7 @@ static inline dev_t part_devt(struct hd_struct *part)
+ 	return part_to_dev(part)->devt;
+ }
+ 
++extern struct hd_struct *__disk_get_part(struct gendisk *disk, int partno);
+ extern struct hd_struct *disk_get_part(struct gendisk *disk, int partno);
+ 
+ static inline void disk_put_part(struct hd_struct *part)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1061_5c21c3dde403cdf4b9c777e9dbd9399e6eb8e9b6.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1061_5c21c3dde403cdf4b9c777e9dbd9399e6eb8e9b6.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

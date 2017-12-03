@@ -1,0 +1,40 @@
+commit f6b7c54c2d0ee8fe4d3b1cdfdb1961a80be60d3f
+Author: Josef Bacik <jbacik@fb.com>
+Date:   Mon Nov 6 16:11:57 2017 -0500
+
+    nbd: wait uninterruptible for the dead timeout
+    
+    commit ff57dc94faec023abc267cdc45766fccff497557 upstream.
+    
+    If we have a pending signal or the user kills their application then
+    it'll bring down the whole device, which is less than awesome.  Instead
+    wait uninterruptible for the dead timeout so we're sure we gave it our
+    best shot.
+    
+    Fixes: 560bc4b39952 ("nbd: handle dead connections")
+    Signed-off-by: Josef Bacik <jbacik@fb.com>
+    Signed-off-by: Jens Axboe <axboe@kernel.dk>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+index 9adfb5445f8d..fdef8efcdabc 100644
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -723,9 +723,9 @@ static int wait_for_reconnect(struct nbd_device *nbd)
+ 		return 0;
+ 	if (test_bit(NBD_DISCONNECTED, &config->runtime_flags))
+ 		return 0;
+-	wait_event_interruptible_timeout(config->conn_wait,
+-					 atomic_read(&config->live_connections),
+-					 config->dead_conn_timeout);
++	wait_event_timeout(config->conn_wait,
++			   atomic_read(&config->live_connections),
++			   config->dead_conn_timeout);
+ 	return atomic_read(&config->live_connections);
+ }
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1026_f6b7c54c2d0ee8fe4d3b1cdfdb1961a80be60d3f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1026_f6b7c54c2d0ee8fe4d3b1cdfdb1961a80be60d3f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

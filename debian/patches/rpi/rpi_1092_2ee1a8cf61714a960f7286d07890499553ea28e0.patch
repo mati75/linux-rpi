@@ -1,0 +1,49 @@
+commit 2ee1a8cf61714a960f7286d07890499553ea28e0
+Author: Takashi Iwai <tiwai@suse.de>
+Date:   Fri Nov 17 12:08:40 2017 +0100
+
+    ALSA: hda: Fix too short HDMI/DP chmap reporting
+    
+    commit c2432466f583cb719b35a41e757da587d9ab1d00 upstream.
+    
+    We got a regression report about the HD-audio HDMI chmap, where some
+    surround channels are reported as UNKNOWN.  The git bisection pointed
+    the culprit at the commit 9b3dc8aa3fb1 ("ALSA: hda - Register chmap
+    obj as priv data instead of codec").  The story behind scene is like
+    this:
+    
+    - While moving the code out of the legacy HDA to the HDA common place,
+      the patch modifies the code to obtain the chmap array indirectly in
+      a byte array, and it expands it to kctl value array.
+    - At the latter operation, the size of the array is wrongly passed by
+      sizeof() to the pointer.
+    - It can be 4 on 32bit arch, thus too short for 6+ channels.
+      (And that's the reason why it didn't hit other persons; it's 8 on
+      64bit arch, thus it's usually enough.)
+    
+    The code was further changed meanwhile, but the problem persisted.
+    Let's fix it by correctly evaluating the array size.
+    
+    Fixes: 9b3dc8aa3fb1 ("ALSA: hda - Register chmap obj as priv data instead of codec")
+    Reported-by: VDR User <user.vdr@gmail.com>
+    Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/sound/hda/hdmi_chmap.c b/sound/hda/hdmi_chmap.c
+index 81acc20c2535..f21633cd9b38 100644
+--- a/sound/hda/hdmi_chmap.c
++++ b/sound/hda/hdmi_chmap.c
+@@ -746,7 +746,7 @@ static int hdmi_chmap_ctl_get(struct snd_kcontrol *kcontrol,
+ 	memset(pcm_chmap, 0, sizeof(pcm_chmap));
+ 	chmap->ops.get_chmap(chmap->hdac, pcm_idx, pcm_chmap);
+ 
+-	for (i = 0; i < sizeof(chmap); i++)
++	for (i = 0; i < ARRAY_SIZE(pcm_chmap); i++)
+ 		ucontrol->value.integer.value[i] = pcm_chmap[i];
+ 
+ 	return 0;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1092_2ee1a8cf61714a960f7286d07890499553ea28e0.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1092_2ee1a8cf61714a960f7286d07890499553ea28e0.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

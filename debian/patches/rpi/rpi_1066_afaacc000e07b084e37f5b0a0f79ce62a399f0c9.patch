@@ -1,0 +1,32 @@
+commit afaacc000e07b084e37f5b0a0f79ce62a399f0c9
+Author: Joshua Watt <jpewhacker@gmail.com>
+Date:   Tue Nov 7 16:25:47 2017 -0600
+
+    NFS: Fix typo in nomigration mount option
+    
+    commit f02fee227e5f21981152850744a6084ff3fa94ee upstream.
+    
+    The option was incorrectly masking off all other options.
+    
+    Signed-off-by: Joshua Watt <JPEWhacker@gmail.com>
+    Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/nfs/super.c b/fs/nfs/super.c
+index c9d24bae3025..216f67d628b3 100644
+--- a/fs/nfs/super.c
++++ b/fs/nfs/super.c
+@@ -1332,7 +1332,7 @@ static int nfs_parse_mount_options(char *raw,
+ 			mnt->options |= NFS_OPTION_MIGRATION;
+ 			break;
+ 		case Opt_nomigration:
+-			mnt->options &= NFS_OPTION_MIGRATION;
++			mnt->options &= ~NFS_OPTION_MIGRATION;
+ 			break;
+ 
+ 		/*
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1066_afaacc000e07b084e37f5b0a0f79ce62a399f0c9.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1066_afaacc000e07b084e37f5b0a0f79ce62a399f0c9.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

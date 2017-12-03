@@ -1,0 +1,54 @@
+commit 9e9569f05ea699e2453f25fed562b3cb969b8aef
+Author: Miklos Szeredi <mszeredi@redhat.com>
+Date:   Mon Oct 30 21:14:55 2017 +0100
+
+    fsnotify: pin both inode and vfsmount mark
+    
+    commit 0d6ec079d6aaa098b978d6395973bb027c752a03 upstream.
+    
+    We may fail to pin one of the marks in fsnotify_prepare_user_wait() when
+    dropping the srcu read lock, resulting in use after free at the next
+    iteration.
+    
+    Solution is to store both marks in iter_info instead of just the one we'll
+    be sending the event for.
+    
+    Reviewed-by: Amir Goldstein <amir73il@gmail.com>
+    Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+    Fixes: 9385a84d7e1f ("fsnotify: Pass fsnotify_iter_info into handle_event handler")
+    Signed-off-by: Jan Kara <jack@suse.cz>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/notify/fsnotify.c b/fs/notify/fsnotify.c
+index 0c4583b61717..074716293829 100644
+--- a/fs/notify/fsnotify.c
++++ b/fs/notify/fsnotify.c
+@@ -335,6 +335,13 @@ int fsnotify(struct inode *to_tell, __u32 mask, const void *data, int data_is,
+ 						    struct fsnotify_mark, obj_list);
+ 			vfsmount_group = vfsmount_mark->group;
+ 		}
++		/*
++		 * Need to protect both marks against freeing so that we can
++		 * continue iteration from this place, regardless of which mark
++		 * we actually happen to send an event for.
++		 */
++		iter_info.inode_mark = inode_mark;
++		iter_info.vfsmount_mark = vfsmount_mark;
+ 
+ 		if (inode_group && vfsmount_group) {
+ 			int cmp = fsnotify_compare_groups(inode_group,
+@@ -348,9 +355,6 @@ int fsnotify(struct inode *to_tell, __u32 mask, const void *data, int data_is,
+ 			}
+ 		}
+ 
+-		iter_info.inode_mark = inode_mark;
+-		iter_info.vfsmount_mark = vfsmount_mark;
+-
+ 		ret = send_to_group(to_tell, inode_mark, vfsmount_mark, mask,
+ 				    data, data_is, cookie, file_name,
+ 				    &iter_info);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1080_9e9569f05ea699e2453f25fed562b3cb969b8aef.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1080_9e9569f05ea699e2453f25fed562b3cb969b8aef.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

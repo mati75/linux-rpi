@@ -1,0 +1,161 @@
+commit b3defb65a493b2557b0e3e8cc5a2bfb396d8ee62
+Author: Matthias Reichl <hias@horus.com>
+Date:   Wed Sep 20 11:52:42 2017 +0200
+
+    overlays: add gpio-ir-tx and pwm-ir-tx
+    
+    Signed-off-by: Matthias Reichl <hias@horus.com>
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index c50b1dfa9d73..df9ec4c40d24 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -29,6 +29,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	goodix.dtbo \
+ 	googlevoicehat-soundcard.dtbo \
+ 	gpio-ir.dtbo \
++	gpio-ir-tx.dtbo \
+ 	gpio-poweroff.dtbo \
+ 	gpio-shutdown.dtbo \
+ 	hifiberry-amp.dtbo \
+@@ -78,6 +79,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	pps-gpio.dtbo \
+ 	pwm.dtbo \
+ 	pwm-2chan.dtbo \
++	pwm-ir-tx.dtbo \
+ 	qca7000.dtbo \
+ 	raspidac3.dtbo \
+ 	rotary-encoder.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index e6d777a601c9..eafbf530acda 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -495,6 +495,17 @@ Params: gpio_pin                Input pin number. Default is 18.
+                                 ir-keytable), defaults to "rc-rc6-mce"
+ 
+ 
++Name:   gpio-ir-tx
++Info:   Use GPIO pin as bit-banged infrared transmitter output.
++        This is an alternative to "pwm-ir-tx". gpio-ir-tx doesn't require
++        a PWM so it can be used together with onboard analog audio.
++Load:   dtoverlay=gpio-ir-tx,<param>=<val>
++Params: gpio_pin                Output GPIO (default 18)
++
++        invert                  "1" = invert the output (make it active-low).
++                                Default is "0" (active-high).
++
++
+ Name:   gpio-poweroff
+ Info:   Drives a GPIO high or low on poweroff (including halt)
+ Load:   dtoverlay=gpio-poweroff,<param>=<val>
+@@ -1195,6 +1206,19 @@ Params: pin                     Output pin (default 18) - see table
+         clock                   PWM clock frequency (informational)
+ 
+ 
++Name:   pwm-ir-tx
++Info:   Use GPIO pin as pwm-assisted infrared transmitter output.
++        This is an alternative to "gpio-ir-tx". pwm-ir-tx makes use
++        of PWM0 to reduce the CPU load during transmission compared to
++        gpio-ir-tx which uses bit-banging.
++        Legal pin,function combinations are:
++          12,4(Alt0) 18,2(Alt5) 40,4(Alt0) 52,5(Alt1)
++Load:   dtoverlay=pwm-ir-tx,<param>=<val>
++Params: gpio_pin                Output GPIO (default 18)
++
++        func                    Pin function (default 2 = Alt5)
++
++
+ Name:   qca7000
+ Info:   I2SE's Evaluation Board for PLC Stamp micro
+ Load:   dtoverlay=qca7000,<param>=<val>
+diff --git a/arch/arm/boot/dts/overlays/gpio-ir-tx-overlay.dts b/arch/arm/boot/dts/overlays/gpio-ir-tx-overlay.dts
+new file mode 100644
+index 000000000000..a2e271f0f202
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/gpio-ir-tx-overlay.dts
+@@ -0,0 +1,34 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target = <&gpio>;
++		__overlay__ {
++			gpio_ir_tx_pins: gpio_ir_tx_pins {
++				brcm,pins = <18>;
++				brcm,function = <1>;	// out
++			};
++		};
++	};
++
++	fragment@1 {
++		target-path = "/";
++		__overlay__ {
++			gpio_ir_tx: gpio-ir-transmitter {
++				compatible = "gpio-ir-tx";
++				pinctrl-names = "default";
++				pinctrl-0 = <&gpio_ir_tx_pins>;
++				gpios = <&gpio 18 0>;
++			};
++		};
++	};
++
++	__overrides__ {
++		gpio_pin = <&gpio_ir_tx>, "gpios:4",
++			   <&gpio_ir_tx_pins>, "brcm,pins:0";	// pin number
++		invert = <&gpio_ir_tx>, "gpios:8";		// 1 = active low
++	};
++};
+diff --git a/arch/arm/boot/dts/overlays/pwm-ir-tx-overlay.dts b/arch/arm/boot/dts/overlays/pwm-ir-tx-overlay.dts
+new file mode 100644
+index 000000000000..141c126fe33b
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/pwm-ir-tx-overlay.dts
+@@ -0,0 +1,40 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target = <&gpio>;
++		__overlay__ {
++			pwm0_pins: pwm0_pins {
++				brcm,pins = <18>;
++				brcm,function = <2>; /* Alt5 */
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&pwm>;
++		__overlay__ {
++			pinctrl-names = "default";
++			pinctrl-0 = <&pwm0_pins>;
++			status = "okay";
++		};
++	};
++
++	fragment@2 {
++		target-path = "/";
++		__overlay__ {
++			pwm-ir-transmitter {
++				compatible = "pwm-ir-tx";
++				pwms = <&pwm 0 100>;
++			};
++		};
++	};
++
++	__overrides__ {
++		gpio_pin = <&pwm0_pins>, "brcm,pins:0";
++		func = <&pwm0_pins>,"brcm,function:0";
++	};
++};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1323_b3defb65a493b2557b0e3e8cc5a2bfb396d8ee62.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1323_b3defb65a493b2557b0e3e8cc5a2bfb396d8ee62.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

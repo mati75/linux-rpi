@@ -1,0 +1,42 @@
+commit 357621bca2cb346513d7f4d8f57edb53bd7bbe44
+Author: Al Viro <viro@zeniv.linux.org.uk>
+Date:   Sun Sep 24 18:36:44 2017 -0400
+
+    fix a page leak in vhost_scsi_iov_to_sgl() error recovery
+    
+    commit 11d49e9d089ccec81be87c2386dfdd010d7f7f6e upstream.
+    
+    we are advancing sg as we go, so the pages we need to drop in
+    case of error are *before* the current sg.
+    
+    Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
+index 046f6d280af5..e47c5bc3ddca 100644
+--- a/drivers/vhost/scsi.c
++++ b/drivers/vhost/scsi.c
+@@ -688,6 +688,7 @@ vhost_scsi_iov_to_sgl(struct vhost_scsi_cmd *cmd, bool write,
+ 		      struct scatterlist *sg, int sg_count)
+ {
+ 	size_t off = iter->iov_offset;
++	struct scatterlist *p = sg;
+ 	int i, ret;
+ 
+ 	for (i = 0; i < iter->nr_segs; i++) {
+@@ -696,8 +697,8 @@ vhost_scsi_iov_to_sgl(struct vhost_scsi_cmd *cmd, bool write,
+ 
+ 		ret = vhost_scsi_map_to_sgl(cmd, base, len, sg, write);
+ 		if (ret < 0) {
+-			for (i = 0; i < sg_count; i++) {
+-				struct page *page = sg_page(&sg[i]);
++			while (p < sg) {
++				struct page *page = sg_page(p++);
+ 				if (page)
+ 					put_page(page);
+ 			}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1099_357621bca2cb346513d7f4d8f57edb53bd7bbe44.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1099_357621bca2cb346513d7f4d8f57edb53bd7bbe44.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

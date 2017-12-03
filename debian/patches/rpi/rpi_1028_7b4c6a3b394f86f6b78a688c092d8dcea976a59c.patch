@@ -1,0 +1,36 @@
+commit 7b4c6a3b394f86f6b78a688c092d8dcea976a59c
+Author: Tobias Jordan <Tobias.Jordan@elektrobit.com>
+Date:   Wed Oct 4 11:35:03 2017 +0530
+
+    PM / OPP: Add missing of_node_put(np)
+    
+    commit 7978db344719dab1e56d05e6fc04aaaddcde0a5e upstream.
+    
+    The for_each_available_child_of_node() loop in _of_add_opp_table_v2()
+    doesn't drop the reference to "np" on errors. Fix that.
+    
+    Fixes: 274659029c9d (PM / OPP: Add support to parse "operating-points-v2" bindings)
+    Signed-off-by: Tobias Jordan <Tobias.Jordan@elektrobit.com>
+    [ VK: Improved commit log. ]
+    Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+    Reviewed-by: Stephen Boyd <sboyd@codeaurora.org>
+    Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/base/power/opp/of.c b/drivers/base/power/opp/of.c
+index 0b718886479b..87509cb69f79 100644
+--- a/drivers/base/power/opp/of.c
++++ b/drivers/base/power/opp/of.c
+@@ -397,6 +397,7 @@ static int _of_add_opp_table_v2(struct device *dev, struct device_node *opp_np)
+ 			dev_err(dev, "%s: Failed to add OPP, %d\n", __func__,
+ 				ret);
+ 			_dev_pm_opp_remove_table(opp_table, dev, false);
++			of_node_put(np);
+ 			goto put_opp_table;
+ 		}
+ 	}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1028_7b4c6a3b394f86f6b78a688c092d8dcea976a59c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1028_7b4c6a3b394f86f6b78a688c092d8dcea976a59c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

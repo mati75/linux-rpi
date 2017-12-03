@@ -1,0 +1,43 @@
+commit 88a703f31bdf4b609e838495c733aa6c3f270c33
+Author: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Date:   Tue Oct 10 09:52:36 2017 +0200
+
+    media: venus: venc: fix bytesused v4l2_plane field
+    
+    commit 5232c37ce244db04fd50d160b92e40d2df46a2e9 upstream.
+    
+    This fixes wrongly filled bytesused field of v4l2_plane structure
+    by include data_offset in the plane, Also fill data_offset and
+    bytesused for capture type of buffers only.
+    
+    Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+    Signed-off-by: Hans Verkuil <hans.verkuil@cisco.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/media/platform/qcom/venus/venc.c b/drivers/media/platform/qcom/venus/venc.c
+index 6f123a387cf9..3fcf0e9b7b29 100644
+--- a/drivers/media/platform/qcom/venus/venc.c
++++ b/drivers/media/platform/qcom/venus/venc.c
+@@ -963,13 +963,12 @@ static void venc_buf_done(struct venus_inst *inst, unsigned int buf_type,
+ 	if (!vbuf)
+ 		return;
+ 
+-	vb = &vbuf->vb2_buf;
+-	vb->planes[0].bytesused = bytesused;
+-	vb->planes[0].data_offset = data_offset;
+-
+ 	vbuf->flags = flags;
+ 
+ 	if (type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
++		vb = &vbuf->vb2_buf;
++		vb2_set_plane_payload(vb, 0, bytesused + data_offset);
++		vb->planes[0].data_offset = data_offset;
+ 		vb->timestamp = timestamp_us * NSEC_PER_USEC;
+ 		vbuf->sequence = inst->sequence_cap++;
+ 	} else {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1177_88a703f31bdf4b609e838495c733aa6c3f270c33.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1177_88a703f31bdf4b609e838495c733aa6c3f270c33.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

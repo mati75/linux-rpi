@@ -1,0 +1,35 @@
+commit eb2835ad4959dfbd30bc20d1d489c6513efd431d
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Nov 3 09:45:12 2017 +0000
+
+    bcm2710: Fix compatible string in bcm2710.dtsi
+    
+    The minimal "bcm2835" board support, used for some clock setup
+    and serial/revision numbers, needs a compatible string of
+    "brcm,bcm2835" or "brcm,bcm2836" - "brcm,bcm2837" isn't
+    recognised.
+    
+    Fixes: bcm2710: Refactor bcm2710.dtsi using bcm2837.dtsi (#2236)
+    
+    See: https://github.com/raspberrypi/linux/issues/2255
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm2710.dtsi b/arch/arm/boot/dts/bcm2710.dtsi
+index df4a91e26642..d5ce5b60fb3b 100644
+--- a/arch/arm/boot/dts/bcm2710.dtsi
++++ b/arch/arm/boot/dts/bcm2710.dtsi
+@@ -3,6 +3,8 @@
+ #include "bcm2708-rpi.dtsi"
+ 
+ / {
++	compatible = "brcm,bcm2837", "brcm,bcm2836";
++
+ 	soc {
+ 
+ 		arm-pmu {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1334_eb2835ad4959dfbd30bc20d1d489c6513efd431d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1334_eb2835ad4959dfbd30bc20d1d489c6513efd431d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

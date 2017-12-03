@@ -1,0 +1,41 @@
+commit 9f4482f1a31784fce0a09a68d1d5a19883c0eadf
+Author: Ihab Zhaika <ihab.zhaika@intel.com>
+Date:   Tue Oct 24 17:36:43 2017 +0300
+
+    iwlwifi: add new cards for 8260 series
+    
+    commit d669fc2d42a43ee0abcf2396df6e9c5a124aa984 upstream.
+    
+    add three new PCI ID'S for 8260 series
+    
+    Signed-off-by: Ihab Zhaika <ihab.zhaika@intel.com>
+    Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+    Cc: Thomas Backlund <tmb@mageia.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index a88b041685df..647cca05ba4b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -465,6 +465,8 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x24F3, 0x9110, iwl8260_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24F4, 0x8030, iwl8260_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24F4, 0x9030, iwl8260_2ac_cfg)},
++	{IWL_PCI_DEVICE(0x24F4, 0xC030, iwl8260_2ac_cfg)},
++	{IWL_PCI_DEVICE(0x24F4, 0xD030, iwl8260_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24F3, 0x8130, iwl8260_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24F3, 0x9130, iwl8260_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24F3, 0x8132, iwl8260_2ac_cfg)},
+@@ -483,6 +485,7 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x24F3, 0x0950, iwl8260_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24F3, 0x0930, iwl8260_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24F3, 0x0000, iwl8265_2ac_cfg)},
++	{IWL_PCI_DEVICE(0x24F3, 0x4010, iwl8260_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24FD, 0x0010, iwl8265_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24FD, 0x0110, iwl8265_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24FD, 0x1110, iwl8265_2ac_cfg)},
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1185_9f4482f1a31784fce0a09a68d1d5a19883c0eadf.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1185_9f4482f1a31784fce0a09a68d1d5a19883c0eadf.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,49 @@
+commit 9f724960c581097e6a84a2f4b9c77a9f17a372cc
+Author: Larry Finger <Larry.Finger@lwfinger.net>
+Date:   Thu Sep 14 13:17:44 2017 -0500
+
+    rtlwifi: rtl8192ee: Fix memory leak when loading firmware
+    
+    commit 519ce2f933fa14acf69d5c8cabcc18711943d629 upstream.
+    
+    In routine rtl92ee_set_fw_rsvdpagepkt(), the driver allocates an skb, but
+    never calls rtl_cmd_send_packet(), which will free the buffer. All other
+    rtlwifi drivers perform this operation correctly.
+    
+    This problem has been in the driver since it was included in the kernel.
+    Fortunately, each firmware load only leaks 4 buffers, which likely
+    explains why it has not previously been detected.
+    
+    Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+    Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c
+index 7eae27f8e173..f9563ae301ad 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192ee/fw.c
+@@ -682,7 +682,7 @@ void rtl92ee_set_fw_rsvdpagepkt(struct ieee80211_hw *hw, bool b_dl_finished)
+ 	struct rtl_priv *rtlpriv = rtl_priv(hw);
+ 	struct rtl_mac *mac = rtl_mac(rtl_priv(hw));
+ 	struct sk_buff *skb = NULL;
+-
++	bool rtstatus;
+ 	u32 totalpacketlen;
+ 	u8 u1rsvdpageloc[5] = { 0 };
+ 	bool b_dlok = false;
+@@ -768,7 +768,9 @@ void rtl92ee_set_fw_rsvdpagepkt(struct ieee80211_hw *hw, bool b_dl_finished)
+ 	skb = dev_alloc_skb(totalpacketlen);
+ 	skb_put_data(skb, &reserved_page_packet, totalpacketlen);
+ 
+-	b_dlok = true;
++	rtstatus = rtl_cmd_send_packet(hw, skb);
++	if (rtstatus)
++		b_dlok = true;
+ 
+ 	if (b_dlok) {
+ 		RT_TRACE(rtlpriv, COMP_POWER, DBG_LOUD ,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1072_9f724960c581097e6a84a2f4b9c77a9f17a372cc.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1072_9f724960c581097e6a84a2f4b9c77a9f17a372cc.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,55 @@
+commit 8f71f493f46168bf48a02aaba5ae95335d8c7bb3
+Author: Mikulas Patocka <mpatocka@redhat.com>
+Date:   Tue Nov 7 10:35:57 2017 -0500
+
+    dm crypt: allow unaligned bv_offset
+    
+    commit 0440d5c0ca9744b92a07aeb6df0a9a75db6f4280 upstream.
+    
+    When slub_debug is enabled kmalloc returns unaligned memory. XFS uses
+    this unaligned memory for its buffers (if an unaligned buffer crosses a
+    page, XFS frees it and allocates a full page instead - see the function
+    xfs_buf_allocate_memory).
+    
+    dm-crypt checks if bv_offset is aligned on page size and these checks
+    fail with slub_debug and XFS.
+    
+    Fix this bug by removing the bv_offset checks. Switch to checking if
+    bv_len is aligned instead of bv_offset (this check should be sufficient
+    to prevent overruns if a bio with too small bv_len is received).
+    
+    Fixes: 8f0009a22517 ("dm crypt: optionally support larger encryption sector size")
+    Reported-by: Bruno Prémont <bonbons@sysophe.eu>
+    Tested-by: Bruno Prémont <bonbons@sysophe.eu>
+    Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
+    Reviewed-by: Milan Broz <gmazyland@gmail.com>
+    Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/md/dm-crypt.c b/drivers/md/dm-crypt.c
+index 96ab46512e1f..9fc12f556534 100644
+--- a/drivers/md/dm-crypt.c
++++ b/drivers/md/dm-crypt.c
+@@ -1075,7 +1075,7 @@ static int crypt_convert_block_aead(struct crypt_config *cc,
+ 	BUG_ON(cc->integrity_iv_size && cc->integrity_iv_size != cc->iv_size);
+ 
+ 	/* Reject unexpected unaligned bio. */
+-	if (unlikely(bv_in.bv_offset & (cc->sector_size - 1)))
++	if (unlikely(bv_in.bv_len & (cc->sector_size - 1)))
+ 		return -EIO;
+ 
+ 	dmreq = dmreq_of_req(cc, req);
+@@ -1168,7 +1168,7 @@ static int crypt_convert_block_skcipher(struct crypt_config *cc,
+ 	int r = 0;
+ 
+ 	/* Reject unexpected unaligned bio. */
+-	if (unlikely(bv_in.bv_offset & (cc->sector_size - 1)))
++	if (unlikely(bv_in.bv_len & (cc->sector_size - 1)))
+ 		return -EIO;
+ 
+ 	dmreq = dmreq_of_req(cc, req);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1037_8f71f493f46168bf48a02aaba5ae95335d8c7bb3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1037_8f71f493f46168bf48a02aaba5ae95335d8c7bb3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

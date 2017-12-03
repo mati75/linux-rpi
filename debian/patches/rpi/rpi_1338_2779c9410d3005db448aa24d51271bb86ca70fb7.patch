@@ -1,0 +1,97 @@
+commit 2779c9410d3005db448aa24d51271bb86ca70fb7
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Sat Nov 18 20:40:28 2017 +0000
+
+    BCM2708_DT: Undo downstream changes to upstream dtsis
+    
+    Move the bcm283x.dtsi modifications into bcm270x.dtsi, except for the
+    SPI gpio declarations which are added in board-specific dts files.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm270x.dtsi b/arch/arm/boot/dts/bcm270x.dtsi
+index 6bb6fd2b16b6..a3544c1f5b9d 100644
+--- a/arch/arm/boot/dts/bcm270x.dtsi
++++ b/arch/arm/boot/dts/bcm270x.dtsi
+@@ -156,3 +156,26 @@
+ 		regulator-always-on;
+ 	};
+ };
++
++/* Configure and use the auxilliary interrupt controller */
++
++&aux {
++	interrupts = <1 29>;
++	interrupt-controller;
++	#interrupt-cells = <1>;
++};
++
++&uart1 {
++	interrupt-parent = <&aux>;
++	interrupts = <0>;
++};
++
++&spi1 {
++	interrupt-parent = <&aux>;
++	interrupts = <1>;
++};
++
++&spi2 {
++	interrupt-parent = <&aux>;
++	interrupts = <2>;
++};
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 8617ffdb2463..013431e3d7c3 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -413,7 +413,6 @@
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
+-			cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
+ 		};
+ 
+ 		i2c0: i2c@7e205000 {
+@@ -470,16 +469,12 @@
+ 			#clock-cells = <1>;
+ 			reg = <0x7e215000 0x8>;
+ 			clocks = <&clocks BCM2835_CLOCK_VPU>;
+-			interrupts = <1 29>;
+-			interrupt-controller;
+-			#interrupt-cells = <1>;
+ 		};
+ 
+ 		uart1: serial@7e215040 {
+ 			compatible = "brcm,bcm2835-aux-uart";
+ 			reg = <0x7e215040 0x40>;
+-			interrupt-parent = <&aux>;
+-			interrupts = <0>;
++			interrupts = <1 29>;
+ 			clocks = <&aux BCM2835_AUX_CLOCK_UART>;
+ 			status = "disabled";
+ 		};
+@@ -487,8 +482,7 @@
+ 		spi1: spi@7e215080 {
+ 			compatible = "brcm,bcm2835-aux-spi";
+ 			reg = <0x7e215080 0x40>;
+-			interrupt-parent = <&aux>;
+-			interrupts = <1>;
++			interrupts = <1 29>;
+ 			clocks = <&aux BCM2835_AUX_CLOCK_SPI1>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+@@ -498,8 +492,7 @@
+ 		spi2: spi@7e2150c0 {
+ 			compatible = "brcm,bcm2835-aux-spi";
+ 			reg = <0x7e2150c0 0x40>;
+-			interrupt-parent = <&aux>;
+-			interrupts = <2>;
++			interrupts = <1 29>;
+ 			clocks = <&aux BCM2835_AUX_CLOCK_SPI2>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1338_2779c9410d3005db448aa24d51271bb86ca70fb7.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1338_2779c9410d3005db448aa24d51271bb86ca70fb7.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

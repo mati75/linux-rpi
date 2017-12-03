@@ -1,0 +1,36 @@
+commit 3e85efe021070671b8d773560b49b03a16a4c9ec
+Author: Ihab Zhaika <ihab.zhaika@intel.com>
+Date:   Tue Oct 24 17:04:24 2017 +0300
+
+    iwlwifi: add new cards for a000 series
+    
+    commit 57b36f7fcb39c5eae8c1f463699f747af69643ba upstream.
+    
+    add four new PCI ID'S for a000 series
+    
+    Signed-off-by: Ihab Zhaika <ihab.zhaika@intel.com>
+    Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+    Cc: Thomas Backlund <tmb@mageia.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index 8867d8914ef4..b7d86b6439ff 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -579,6 +579,11 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x2720, 0x0070, iwla000_2ac_cfg_hr_cdb)},
+ 	{IWL_PCI_DEVICE(0x2720, 0x0030, iwla000_2ac_cfg_hr_cdb)},
+ 	{IWL_PCI_DEVICE(0x2720, 0x1080, iwla000_2ax_cfg_hr)},
++	{IWL_PCI_DEVICE(0x2720, 0x0090, iwla000_2ac_cfg_hr_cdb)},
++	{IWL_PCI_DEVICE(0x2720, 0x0310, iwla000_2ac_cfg_hr_cdb)},
++	{IWL_PCI_DEVICE(0x40C0, 0x0000, iwla000_2ax_cfg_hr)},
++	{IWL_PCI_DEVICE(0x40C0, 0x0A10, iwla000_2ax_cfg_hr)},
++
+ #endif /* CONFIG_IWLMVM */
+ 
+ 	{0}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1183_3e85efe021070671b8d773560b49b03a16a4c9ec.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1183_3e85efe021070671b8d773560b49b03a16a4c9ec.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

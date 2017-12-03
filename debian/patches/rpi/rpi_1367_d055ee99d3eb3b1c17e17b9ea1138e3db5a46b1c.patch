@@ -1,0 +1,74 @@
+commit d055ee99d3eb3b1c17e17b9ea1138e3db5a46b1c
+Author: Gerald Pape <ubergesundheit@users.noreply.github.com>
+Date:   Tue Nov 21 15:32:11 2017 +0100
+
+    enable sht3x module in kernel, add sht3x definition to i2c-sensor dts definition (#2282)
+    
+    Enable sht3x module in kernel configuration, and add to i2c-sensor overlay.
+
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index 608b68fb7dad..8f2da2ab4e18 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -757,7 +757,7 @@ Info:   Adds support for a number of I2C barometric pressure and temperature
+         sensors on i2c_arm
+ Load:   dtoverlay=i2c-sensor,<param>=<val>
+ Params: addr                    Set the address for the BME280, BMP280, TMP102,
+-                                HDC100X or LM75
++                                HDC100X, LM75 or SHT3x
+ 
+         bme280                  Select the Bosch Sensortronic BME280
+                                 Valid addresses 0x76-0x77, default 0x76
+@@ -791,6 +791,10 @@ Params: addr                    Set the address for the BME280, BMP280, TMP102,
+         veml6070                Select the Vishay VEML6070 ultraviolet light
+                                 sensor
+ 
++        sht3x                   Select the Sensiron SHT3x temperature and
++                                humidity sensor. Valid addresses 0x44-0x45,
++                                default 0x44
++
+ 
+ Name:   i2c0-bcm2708
+ Info:   Enable the i2c_bcm2708 driver for the i2c0 bus. Not all pin combinations
+diff --git a/arch/arm/boot/dts/overlays/i2c-sensor-overlay.dts b/arch/arm/boot/dts/overlays/i2c-sensor-overlay.dts
+index 28e6fa3b659d..0b9bc8ff9dd2 100644
+--- a/arch/arm/boot/dts/overlays/i2c-sensor-overlay.dts
++++ b/arch/arm/boot/dts/overlays/i2c-sensor-overlay.dts
+@@ -171,9 +171,24 @@
+ 		};
+ 	};
+ 
++	fragment@11 {
++		target = <&i2c_arm>;
++		__dormant__ {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "okay";
++
++			sht3x: sht3x@44 {
++				compatible = "sht3x";
++				reg = <0x44>;
++				status = "okay";
++			};
++		};
++	};
++
+ 	__overrides__ {
+ 		addr =  <&bme280>,"reg:0", <&bmp280>,"reg:0", <&tmp102>,"reg:0",
+-			<&lm75>,"reg:0",<&hdc100x>,"reg:0";
++			<&lm75>,"reg:0", <&hdc100x>,"reg:0", <&sht3x>,"reg:0";
+ 		bme280 = <0>,"+0";
+ 		bmp085 = <0>,"+1";
+ 		bmp180 = <0>,"+2";
+@@ -186,5 +201,6 @@
+ 		hdc100x = <0>,"+8";
+ 		tsl4531 = <0>,"+9";
+ 		veml6070 = <0>,"+10";
++		sht3x = <0>,"+11";
+ 	};
+ };
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1367_d055ee99d3eb3b1c17e17b9ea1138e3db5a46b1c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1367_d055ee99d3eb3b1c17e17b9ea1138e3db5a46b1c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

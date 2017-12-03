@@ -1,0 +1,33 @@
+commit e3bafbddb85965e9c6298e6cb0d3cd97df022fdb
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Oct 17 15:04:29 2017 +0100
+
+    lan78xx: Enable LEDs if no valid EEPROM or OTP
+    
+    For applications of the LAN78xx that don't have valid programmed
+    EEPROMs or OTPs, enabling both LEDs by default seems reasonable.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 126fe75e75b1..2f294d4a9300 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2414,6 +2414,12 @@ static int lan78xx_reset(struct lan78xx_net *dev)
+ 
+ 	ret = lan78xx_read_reg(dev, HW_CFG, &buf);
+ 	buf |= HW_CFG_MEF_;
++
++	/* If no valid EEPROM and no valid OTP, enable the LEDs by default */
++	if (lan78xx_read_eeprom(dev, 0, 0, NULL) &&
++	    lan78xx_read_otp(dev, 0, 0, NULL))
++	    buf |= HW_CFG_LED0_EN_ | HW_CFG_LED1_EN_;
++
+ 	ret = lan78xx_write_reg(dev, HW_CFG, buf);
+ 
+ 	ret = lan78xx_read_reg(dev, USB_CFG0, &buf);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1365_e3bafbddb85965e9c6298e6cb0d3cd97df022fdb.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1365_e3bafbddb85965e9c6298e6cb0d3cd97df022fdb.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

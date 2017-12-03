@@ -1,0 +1,44 @@
+commit bcae2363e26309c8063384706dc1e546caed8a36
+Author: Eric Biggers <ebiggers@google.com>
+Date:   Mon Nov 6 21:57:26 2017 -0800
+
+    libceph: don't WARN() if user tries to add invalid key
+    
+    commit b11270853fa3654f08d4a6a03b23ddb220512d8d upstream.
+    
+    The WARN_ON(!key->len) in set_secret() in net/ceph/crypto.c is hit if a
+    user tries to add a key of type "ceph" with an invalid payload as
+    follows (assuming CONFIG_CEPH_LIB=y):
+    
+        echo -e -n '\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+            | keyctl padd ceph desc @s
+    
+    This can be hit by fuzzers.  As this is merely bad input and not a
+    kernel bug, replace the WARN_ON() with return -EINVAL.
+    
+    Fixes: 7af3ea189a9a ("libceph: stop allocating a new cipher on every crypto request")
+    Signed-off-by: Eric Biggers <ebiggers@google.com>
+    Reviewed-by: Ilya Dryomov <idryomov@gmail.com>
+    Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/net/ceph/crypto.c b/net/ceph/crypto.c
+index 489610ac1cdd..bf9d079cbafd 100644
+--- a/net/ceph/crypto.c
++++ b/net/ceph/crypto.c
+@@ -37,7 +37,9 @@ static int set_secret(struct ceph_crypto_key *key, void *buf)
+ 		return -ENOTSUPP;
+ 	}
+ 
+-	WARN_ON(!key->len);
++	if (!key->len)
++		return -EINVAL;
++
+ 	key->key = kmemdup(buf, key->len, GFP_NOIO);
+ 	if (!key->key) {
+ 		ret = -ENOMEM;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1059_bcae2363e26309c8063384706dc1e546caed8a36.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1059_bcae2363e26309c8063384706dc1e546caed8a36.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

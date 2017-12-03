@@ -1,0 +1,48 @@
+commit e9c80881b383df54cd519e10314dce4c47df8b8a
+Author: Coly Li <colyli@suse.de>
+Date:   Fri Oct 13 16:35:29 2017 -0700
+
+    bcache: check ca->alloc_thread initialized before wake up it
+    
+    commit 91af8300d9c1d7c6b6a2fd754109e08d4798b8d8 upstream.
+    
+    In bcache code, sysfs entries are created before all resources get
+    allocated, e.g. allocation thread of a cache set.
+    
+    There is posibility for NULL pointer deference if a resource is accessed
+    but which is not initialized yet. Indeed Jorg Bornschein catches one on
+    cache set allocation thread and gets a kernel oops.
+    
+    The reason for this bug is, when bch_bucket_alloc() is called during
+    cache set registration and attaching, ca->alloc_thread is not properly
+    allocated and initialized yet, call wake_up_process() on ca->alloc_thread
+    triggers NULL pointer deference failure. A simple and fast fix is, before
+    waking up ca->alloc_thread, checking whether it is allocated, and only
+    wake up ca->alloc_thread when it is not NULL.
+    
+    Signed-off-by: Coly Li <colyli@suse.de>
+    Reported-by: Jorg Bornschein <jb@capsec.org>
+    Cc: Kent Overstreet <kent.overstreet@gmail.com>
+    Reviewed-by: Michael Lyle <mlyle@lyle.org>
+    Signed-off-by: Jens Axboe <axboe@kernel.dk>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/md/bcache/alloc.c b/drivers/md/bcache/alloc.c
+index 08035634795c..c9934139d609 100644
+--- a/drivers/md/bcache/alloc.c
++++ b/drivers/md/bcache/alloc.c
+@@ -407,7 +407,8 @@ long bch_bucket_alloc(struct cache *ca, unsigned reserve, bool wait)
+ 
+ 	finish_wait(&ca->set->bucket_wait, &w);
+ out:
+-	wake_up_process(ca->alloc_thread);
++	if (ca->alloc_thread)
++		wake_up_process(ca->alloc_thread);
+ 
+ 	trace_bcache_alloc(ca, reserve);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1060_e9c80881b383df54cd519e10314dce4c47df8b8a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1060_e9c80881b383df54cd519e10314dce4c47df8b8a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

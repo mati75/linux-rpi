@@ -1,0 +1,39 @@
+commit 404dcc55b001e2d56d75fa0ea65635963f16fe68
+Author: Arnd Bergmann <arnd@arndb.de>
+Date:   Mon Nov 6 14:55:35 2017 +0100
+
+    rtlwifi: fix uninitialized rtlhal->last_suspend_sec time
+    
+    commit 3f2a162fab15aee243178b5308bb5d1206fc4043 upstream.
+    
+    We set rtlhal->last_suspend_sec to an uninitialized stack variable,
+    but unfortunately gcc never warned about this, I only found it
+    while working on another patch. I opened a gcc bug for this.
+    
+    Presumably the value of rtlhal->last_suspend_sec is not all that
+    important, but it does get used, so we probably want the
+    patch backported to stable kernels.
+    
+    Link: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=82839
+    Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+    Acked-by: Larry Finger <Larry.Finger@lwfinger.net>
+    Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c
+index 1d431d4bf6d2..9ac1511de7ba 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c
+@@ -1372,6 +1372,7 @@ static void _rtl8821ae_get_wakeup_reason(struct ieee80211_hw *hw)
+ 
+ 	ppsc->wakeup_reason = 0;
+ 
++	do_gettimeofday(&ts);
+ 	rtlhal->last_suspend_sec = ts.tv_sec;
+ 
+ 	switch (fw_reason) {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1073_404dcc55b001e2d56d75fa0ea65635963f16fe68.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1073_404dcc55b001e2d56d75fa0ea65635963f16fe68.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

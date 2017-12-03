@@ -1,0 +1,33 @@
+commit 04dd27af8ea24db24d0777a9ef3259621f32d6f5
+Author: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+Date:   Wed Oct 11 12:40:55 2017 +0200
+
+    mfd: lpc_ich: Avoton/Rangeley uses SPI_BYT method
+    
+    commit 07d70913dce59f3c8e5d0ca76250861158a9ca6c upstream.
+    
+    Avoton/Rangeley are based on Silvermount micro-architecture, like
+    Bay Trail, and uses the INTEL_SPI_BYT method to drive SPI.
+    
+    Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+    Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+    Signed-off-by: Lee Jones <lee.jones@linaro.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/mfd/lpc_ich.c b/drivers/mfd/lpc_ich.c
+index 450ae36645aa..cf1120abbf52 100644
+--- a/drivers/mfd/lpc_ich.c
++++ b/drivers/mfd/lpc_ich.c
+@@ -522,6 +522,7 @@ static struct lpc_ich_info lpc_chipset_info[] = {
+ 		.name = "Avoton SoC",
+ 		.iTCO_version = 3,
+ 		.gpio_version = AVOTON_GPIO,
++		.spi_type = INTEL_SPI_BYT,
+ 	},
+ 	[LPC_BAYTRAIL] = {
+ 		.name = "Bay Trail SoC",
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1098_04dd27af8ea24db24d0777a9ef3259621f32d6f5.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1098_04dd27af8ea24db24d0777a9ef3259621f32d6f5.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

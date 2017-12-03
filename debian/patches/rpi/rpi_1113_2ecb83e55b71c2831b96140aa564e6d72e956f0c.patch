@@ -1,0 +1,42 @@
+commit 2ecb83e55b71c2831b96140aa564e6d72e956f0c
+Author: tangwenji <tang.wenji@zte.com.cn>
+Date:   Thu Aug 17 19:51:54 2017 +0800
+
+    target: fix buffer offset in core_scsi3_pri_read_full_status
+    
+    commit c58a252beb04cf0e02d6a746b2ed7ea89b6deb71 upstream.
+    
+    When at least two initiators register pr on the same LUN,
+    the target returns the exception data due to buffer offset
+    error, therefore the initiator executes command 'sg_persist -s'
+    may cause the initiator to appear segfault error.
+    
+    This fixes a regression originally introduced by:
+    
+      commit a85d667e58bddf73be84d1981b41eaac985ed216
+      Author: Bart Van Assche <bart.vanassche@sandisk.com>
+      Date:   Tue May 23 16:48:27 2017 -0700
+    
+          target: Use {get,put}_unaligned_be*() instead of open coding these functions
+    
+    Signed-off-by: tangwenji <tang.wenji@zte.com.cn>
+    Signed-off-by: Nicholas Bellinger <nab@linux-iscsi.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/target/target_core_pr.c b/drivers/target/target_core_pr.c
+index dd2cd8048582..9f25c9c6f67d 100644
+--- a/drivers/target/target_core_pr.c
++++ b/drivers/target/target_core_pr.c
+@@ -4011,6 +4011,7 @@ core_scsi3_pri_read_full_status(struct se_cmd *cmd)
+ 		 * Set the ADDITIONAL DESCRIPTOR LENGTH
+ 		 */
+ 		put_unaligned_be32(desc_len, &buf[off]);
++		off += 4;
+ 		/*
+ 		 * Size of full desctipor header minus TransportID
+ 		 * containing $FABRIC_MOD specific) initiator device/port
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1113_2ecb83e55b71c2831b96140aa564e6d72e956f0c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1113_2ecb83e55b71c2831b96140aa564e6d72e956f0c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

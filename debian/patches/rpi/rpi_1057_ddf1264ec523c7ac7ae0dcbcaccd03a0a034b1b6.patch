@@ -1,0 +1,57 @@
+commit ddf1264ec523c7ac7ae0dcbcaccd03a0a034b1b6
+Author: Eric Biggers <ebiggers@google.com>
+Date:   Sun Oct 29 06:30:19 2017 -0400
+
+    fscrypt: lock mutex before checking for bounce page pool
+    
+    commit a0b3bc855374c50b5ea85273553485af48caf2f7 upstream.
+    
+    fscrypt_initialize(), which allocates the global bounce page pool when
+    an encrypted file is first accessed, uses "double-checked locking" to
+    try to avoid locking fscrypt_init_mutex.  However, it doesn't use any
+    memory barriers, so it's theoretically possible for a thread to observe
+    a bounce page pool which has not been fully initialized.  This is a
+    classic bug with "double-checked locking".
+    
+    While "only a theoretical issue" in the latest kernel, in pre-4.8
+    kernels the pointer that was checked was not even the last to be
+    initialized, so it was easily possible for a crash (NULL pointer
+    dereference) to happen.  This was changed only incidentally by the large
+    refactor to use fs/crypto/.
+    
+    Solve both problems in a trivial way that can easily be backported: just
+    always take the mutex.  It's theoretically less efficient, but it
+    shouldn't be noticeable in practice as the mutex is only acquired very
+    briefly once per encrypted file.
+    
+    Later I'd like to make this use a helper macro like DO_ONCE().  However,
+    DO_ONCE() runs in atomic context, so we'd need to add a new macro that
+    allows blocking.
+    
+    Signed-off-by: Eric Biggers <ebiggers@google.com>
+    Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/crypto/crypto.c b/fs/crypto/crypto.c
+index c7835df7e7b8..d262a93d9b31 100644
+--- a/fs/crypto/crypto.c
++++ b/fs/crypto/crypto.c
+@@ -410,11 +410,8 @@ int fscrypt_initialize(unsigned int cop_flags)
+ {
+ 	int i, res = -ENOMEM;
+ 
+-	/*
+-	 * No need to allocate a bounce page pool if there already is one or
+-	 * this FS won't use it.
+-	 */
+-	if (cop_flags & FS_CFLG_OWN_PAGES || fscrypt_bounce_page_pool)
++	/* No need to allocate a bounce page pool if this FS won't use it. */
++	if (cop_flags & FS_CFLG_OWN_PAGES)
+ 		return 0;
+ 
+ 	mutex_lock(&fscrypt_init_mutex);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1057_ddf1264ec523c7ac7ae0dcbcaccd03a0a034b1b6.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1057_ddf1264ec523c7ac7ae0dcbcaccd03a0a034b1b6.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

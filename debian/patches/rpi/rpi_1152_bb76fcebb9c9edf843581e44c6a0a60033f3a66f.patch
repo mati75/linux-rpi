@@ -1,0 +1,46 @@
+commit bb76fcebb9c9edf843581e44c6a0a60033f3a66f
+Author: Bin Meng <bmeng.cn@gmail.com>
+Date:   Mon Sep 11 02:41:53 2017 -0700
+
+    spi-nor: intel-spi: Fix broken software sequencing codes
+    
+    commit 9d63f17661e25fd28714dac94bdebc4ff5b75f09 upstream.
+    
+    There are two bugs in current intel_spi_sw_cycle():
+    
+    - The 'data byte count' field should be the number of bytes
+      transferred minus 1
+    - SSFSTS_CTL is the offset from ispi->sregs, not ispi->base
+    
+    Signed-off-by: Bin Meng <bmeng.cn@gmail.com>
+    Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+    Signed-off-by: Cyrille Pitchen <cyrille.pitchen@wedev4u.fr>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/mtd/spi-nor/intel-spi.c b/drivers/mtd/spi-nor/intel-spi.c
+index 8a596bfeddff..7802ac3ba934 100644
+--- a/drivers/mtd/spi-nor/intel-spi.c
++++ b/drivers/mtd/spi-nor/intel-spi.c
+@@ -422,7 +422,7 @@ static int intel_spi_sw_cycle(struct intel_spi *ispi, u8 opcode, u8 *buf,
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	val = (len << SSFSTS_CTL_DBC_SHIFT) | SSFSTS_CTL_DS;
++	val = ((len - 1) << SSFSTS_CTL_DBC_SHIFT) | SSFSTS_CTL_DS;
+ 	val |= ret << SSFSTS_CTL_COP_SHIFT;
+ 	val |= SSFSTS_CTL_FCERR | SSFSTS_CTL_FDONE;
+ 	val |= SSFSTS_CTL_SCGO;
+@@ -432,7 +432,7 @@ static int intel_spi_sw_cycle(struct intel_spi *ispi, u8 opcode, u8 *buf,
+ 	if (ret)
+ 		return ret;
+ 
+-	status = readl(ispi->base + SSFSTS_CTL);
++	status = readl(ispi->sregs + SSFSTS_CTL);
+ 	if (status & SSFSTS_CTL_FCERR)
+ 		return -EIO;
+ 	else if (status & SSFSTS_CTL_AEL)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1152_bb76fcebb9c9edf843581e44c6a0a60033f3a66f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1152_bb76fcebb9c9edf843581e44c6a0a60033f3a66f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

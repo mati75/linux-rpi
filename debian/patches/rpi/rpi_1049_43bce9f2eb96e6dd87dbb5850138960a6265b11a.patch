@@ -1,0 +1,34 @@
+commit 43bce9f2eb96e6dd87dbb5850138960a6265b11a
+Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Sun Nov 5 14:30:52 2017 +0900
+
+    MIPS: dts: remove bogus bcm96358nb4ser.dtb from dtb-y entry
+    
+    commit 3cad14d56adbf7d621fc5a35db42f3acc0a2d6e8 upstream.
+    
+    arch/mips/boot/dts/brcm/bcm96358nb4ser.dts does not exist, so
+    we cannot build bcm96358nb4ser.dtb .
+    
+    Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+    Fixes: 695835511f96 ("MIPS: BMIPS: rename bcm96358nb4ser to bcm6358-neufbox4-sercom")
+    Acked-by: James Hogan <jhogan@kernel.org>
+    Signed-off-by: Rob Herring <robh@kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/mips/boot/dts/brcm/Makefile b/arch/mips/boot/dts/brcm/Makefile
+index 9e09cc4556b3..398994312361 100644
+--- a/arch/mips/boot/dts/brcm/Makefile
++++ b/arch/mips/boot/dts/brcm/Makefile
+@@ -23,7 +23,6 @@ dtb-$(CONFIG_DT_NONE) += \
+ 	bcm63268-comtrend-vr-3032u.dtb \
+ 	bcm93384wvg.dtb \
+ 	bcm93384wvg_viper.dtb \
+-	bcm96358nb4ser.dtb \
+ 	bcm96368mvwg.dtb \
+ 	bcm9ejtagprb.dtb \
+ 	bcm97125cbmb.dtb \
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1049_43bce9f2eb96e6dd87dbb5850138960a6265b11a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1049_43bce9f2eb96e6dd87dbb5850138960a6265b11a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

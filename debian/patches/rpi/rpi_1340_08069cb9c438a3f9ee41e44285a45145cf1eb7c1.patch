@@ -1,0 +1,31 @@
+commit 08069cb9c438a3f9ee41e44285a45145cf1eb7c1
+Author: Alistair Buxton <a.j.buxton@gmail.com>
+Date:   Sat Oct 28 04:58:26 2017 +0100
+
+    BCM_VC_SM: select DMA_SHARED_BUFFER
+    
+    This driver was refactored to use the kernel DMA buffer sharing api
+    in commit a97390852b14e8f06cf579adaaf8b664184e92d2.
+    
+    Per Documentation/dma-buf-sharing.txt, it must select DMA_SHARED_BUFFER
+    in its Kconfig.
+    
+    Signed-off-by: Alistair Buxton <a.j.buxton@gmail.com>
+
+diff --git a/drivers/char/broadcom/Kconfig b/drivers/char/broadcom/Kconfig
+index 014c7a15e85c..cffd17df6a1b 100644
+--- a/drivers/char/broadcom/Kconfig
++++ b/drivers/char/broadcom/Kconfig
+@@ -27,6 +27,7 @@ config BCM_VC_SM
+ 	bool "VMCS Shared Memory"
+ 	depends on BCM2835_VCHIQ
+ 	select BCM2708_VCMEM
++	select DMA_SHARED_BUFFER
+ 	default n
+ 	help
+ 	Support for the VC shared memory on the Broadcom reference
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1340_08069cb9c438a3f9ee41e44285a45145cf1eb7c1.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1340_08069cb9c438a3f9ee41e44285a45145cf1eb7c1.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

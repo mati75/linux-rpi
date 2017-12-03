@@ -1,0 +1,66 @@
+commit 2f5be981622190fa85ba3eed31e974d73a2cae71
+Author: Miklos Szeredi <mszeredi@redhat.com>
+Date:   Mon Oct 30 21:14:56 2017 +0100
+
+    fsnotify: fix pinning group in fsnotify_prepare_user_wait()
+    
+    commit 9a31d7ad997f55768c687974ce36b759065b49e5 upstream.
+    
+    Blind increment of group's user_waits is not enough, we could be far enough
+    in the group's destruction that it isn't taken into account (i.e. grabbing
+    the mark ref afterwards doesn't guarantee that it was the ref coming from
+    the _group_ that was grabbed).
+    
+    Instead we need to check (under lock) that the mark is still attached to
+    the group after having obtained a ref to the mark.  If not, skip it.
+    
+    Reviewed-by: Amir Goldstein <amir73il@gmail.com>
+    Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+    Fixes: 9385a84d7e1f ("fsnotify: Pass fsnotify_iter_info into handle_event handler")
+    Signed-off-by: Jan Kara <jack@suse.cz>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/notify/mark.c b/fs/notify/mark.c
+index 0ba789e1cc21..258d99087183 100644
+--- a/fs/notify/mark.c
++++ b/fs/notify/mark.c
+@@ -255,23 +255,20 @@ void fsnotify_put_mark(struct fsnotify_mark *mark)
+  */
+ static bool fsnotify_get_mark_safe(struct fsnotify_mark *mark)
+ {
+-	struct fsnotify_group *group;
+-
+ 	if (!mark)
+ 		return true;
+ 
+-	group = mark->group;
+-	/*
+-	 * Since acquisition of mark reference is an atomic op as well, we can
+-	 * be sure this inc is seen before any effect of refcount increment.
+-	 */
+-	atomic_inc(&group->user_waits);
+-	if (atomic_inc_not_zero(&mark->refcnt))
+-		return true;
+-
+-	if (atomic_dec_and_test(&group->user_waits) && group->shutdown)
+-		wake_up(&group->notification_waitq);
+-
++	if (atomic_inc_not_zero(&mark->refcnt)) {
++		spin_lock(&mark->lock);
++		if (mark->flags & FSNOTIFY_MARK_FLAG_ATTACHED) {
++			/* mark is attached, group is still alive then */
++			atomic_inc(&mark->group->user_waits);
++			spin_unlock(&mark->lock);
++			return true;
++		}
++		spin_unlock(&mark->lock);
++		fsnotify_put_mark(mark);
++	}
+ 	return false;
+ }
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1081_2f5be981622190fa85ba3eed31e974d73a2cae71.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1081_2f5be981622190fa85ba3eed31e974d73a2cae71.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

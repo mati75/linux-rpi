@@ -1,0 +1,40 @@
+commit 890d9fcd787e31d746070f6e4d5cdb674f8f1efc
+Author: Dick Kennedy <dick.kennedy@broadcom.com>
+Date:   Fri Sep 29 17:34:27 2017 -0700
+
+    scsi: lpfc: fix pci hot plug crash in timer management routines
+    
+    commit 1901762f2ca2747ed269239ca5332a8023ce4e3d upstream.
+    
+    During pci hot plug, the kernel crashes in timer management code.
+    
+    The sli4 remove_one handler is not stoping the timers as it starts to
+    remove the port so that it can be swapped.
+    
+    Fix: Stop the timers early in the handler routine.
+    
+    Note: Fix in SLI-4 only. SLI-3 already stopped the timers properly.
+    
+    Signed-off-by: Dick Kennedy <dick.kennedy@broadcom.com>
+    Signed-off-by: James Smart <james.smart@broadcom.com>
+    Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
+    Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index 100bc4c8798d..101ff3ddf111 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -11420,6 +11420,7 @@ lpfc_pci_remove_one_s4(struct pci_dev *pdev)
+ 	lpfc_debugfs_terminate(vport);
+ 	lpfc_sli4_hba_unset(phba);
+ 
++	lpfc_stop_hba_timers(phba);
+ 	spin_lock_irq(&phba->hbalock);
+ 	list_del_init(&vport->listentry);
+ 	spin_unlock_irq(&phba->hbalock);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1105_890d9fcd787e31d746070f6e4d5cdb674f8f1efc.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1105_890d9fcd787e31d746070f6e4d5cdb674f8f1efc.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,34 @@
+commit 2b91745f8a4accb0f04c07433ee4297054bc88b1
+Author: Benjamin Poirier <bpoirier@suse.com>
+Date:   Fri Jul 21 11:36:25 2017 -0700
+
+    e1000e: Fix return value test
+    
+    commit d3509f8bc7b0560044c15f0e3ecfde1d9af757a6 upstream.
+    
+    All the helpers return -E1000_ERR_PHY.
+    
+    Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+    Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+    Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+    Signed-off-by: Amit Pundir <amit.pundir@linaro.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index 327dfe5bedc0..764a6bd958ac 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -5099,7 +5099,7 @@ static bool e1000e_has_link(struct e1000_adapter *adapter)
+ 		break;
+ 	}
+ 
+-	if ((ret_val == E1000_ERR_PHY) && (hw->phy.type == e1000_phy_igp_3) &&
++	if ((ret_val == -E1000_ERR_PHY) && (hw->phy.type == e1000_phy_igp_3) &&
+ 	    (er32(CTRL) & E1000_PHY_CTRL_GBE_DISABLE)) {
+ 		/* See e1000_kmrn_lock_loss_workaround_ich8lan() */
+ 		e_info("Gigabit has been disabled, downgrading speed\n");
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1189_2b91745f8a4accb0f04c07433ee4297054bc88b1.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1189_2b91745f8a4accb0f04c07433ee4297054bc88b1.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

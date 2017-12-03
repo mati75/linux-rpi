@@ -1,0 +1,33 @@
+commit 2b2c1ae5b3cb13673db2394cd90ad5eec5afefed
+Author: Ihab Zhaika <ihab.zhaika@intel.com>
+Date:   Tue Oct 24 17:38:12 2017 +0300
+
+    iwlwifi: add new cards for 8265 series
+    
+    commit 7cddbef445631109bd530ce7cdacaa04ff0a62d1 upstream.
+    
+    add two new PCI ID'S for 8265 series
+    
+    Signed-off-by: Ihab Zhaika <ihab.zhaika@intel.com>
+    Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+    Cc: Thomas Backlund <tmb@mageia.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+index b7d86b6439ff..a88b041685df 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/drv.c
+@@ -508,6 +508,8 @@ static const struct pci_device_id iwl_hw_card_ids[] = {
+ 	{IWL_PCI_DEVICE(0x24FD, 0x3E01, iwl8275_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24FD, 0x1012, iwl8275_2ac_cfg)},
+ 	{IWL_PCI_DEVICE(0x24FD, 0x0012, iwl8275_2ac_cfg)},
++	{IWL_PCI_DEVICE(0x24FD, 0x0014, iwl8265_2ac_cfg)},
++	{IWL_PCI_DEVICE(0x24FD, 0x9074, iwl8265_2ac_cfg)},
+ 
+ /* 9000 Series */
+ 	{IWL_PCI_DEVICE(0x2526, 0x0000, iwl9260_2ac_cfg)},
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1184_2b2c1ae5b3cb13673db2394cd90ad5eec5afefed.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1184_2b2c1ae5b3cb13673db2394cd90ad5eec5afefed.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

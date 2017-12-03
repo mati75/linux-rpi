@@ -1,0 +1,59 @@
+commit 8177aa54c509056c599e7cf1c7e91630814686e6
+Author: Dmitry V. Levin <ldv@altlinux.org>
+Date:   Mon Nov 13 03:37:06 2017 +0300
+
+    uapi: fix linux/rxrpc.h userspace compilation errors
+    
+    commit 0eef304bc9f7d079a1165e8cd2f24b078e9e1f2a upstream.
+    
+    Consistently use types provided by <linux/types.h> to fix the following
+    linux/rxrpc.h userspace compilation errors:
+    
+    /usr/include/linux/rxrpc.h:24:2: error: unknown type name 'u16'
+      u16  srx_service; /* service desired */
+    /usr/include/linux/rxrpc.h:25:2: error: unknown type name 'u16'
+      u16  transport_type; /* type of transport socket (SOCK_DGRAM) */
+    /usr/include/linux/rxrpc.h:26:2: error: unknown type name 'u16'
+      u16  transport_len; /* length of transport address */
+    
+    Use __kernel_sa_family_t instead of sa_family_t the same way
+    as uapi/linux/in.h does, to fix the following
+    linux/rxrpc.h userspace compilation errors:
+    
+    /usr/include/linux/rxrpc.h:23:2: error: unknown type name 'sa_family_t'
+      sa_family_t srx_family; /* address family */
+    /usr/include/linux/rxrpc.h:28:3: error: unknown type name 'sa_family_t'
+      sa_family_t family;  /* transport address family */
+    
+    Fixes: 727f8914477e ("rxrpc: Expose UAPI definitions to userspace")
+    Signed-off-by: Dmitry V. Levin <ldv@altlinux.org>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/include/uapi/linux/rxrpc.h b/include/uapi/linux/rxrpc.h
+index 9656aad8f8f7..9d4afea308a4 100644
+--- a/include/uapi/linux/rxrpc.h
++++ b/include/uapi/linux/rxrpc.h
+@@ -20,12 +20,12 @@
+  * RxRPC socket address
+  */
+ struct sockaddr_rxrpc {
+-	sa_family_t	srx_family;	/* address family */
+-	u16		srx_service;	/* service desired */
+-	u16		transport_type;	/* type of transport socket (SOCK_DGRAM) */
+-	u16		transport_len;	/* length of transport address */
++	__kernel_sa_family_t	srx_family;	/* address family */
++	__u16			srx_service;	/* service desired */
++	__u16			transport_type;	/* type of transport socket (SOCK_DGRAM) */
++	__u16			transport_len;	/* length of transport address */
+ 	union {
+-		sa_family_t family;		/* transport address family */
++		__kernel_sa_family_t family;	/* transport address family */
+ 		struct sockaddr_in sin;		/* IPv4 transport address */
+ 		struct sockaddr_in6 sin6;	/* IPv6 transport address */
+ 	} transport;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1021_8177aa54c509056c599e7cf1c7e91630814686e6.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1021_8177aa54c509056c599e7cf1c7e91630814686e6.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,44 @@
+commit d6667298d1d0d47de619b23078ceb83ec2c09d46
+Author: Dan Williams <dan.j.williams@intel.com>
+Date:   Tue Sep 26 11:17:52 2017 -0700
+
+    libnvdimm, region : make 'resource' attribute only readable by root
+    
+    commit b8ff981f88df03c72a4de2f6eaa9ce447a10ac03 upstream.
+    
+    For the same reason that /proc/iomem returns 0's for non-root readers
+    and acpi tables are root-only, make the 'resource' attribute for region
+    devices only readable by root. Otherwise we disclose physical address
+    information.
+    
+    Fixes: 802f4be6feee ("libnvdimm: Add 'resource' sysfs attribute to regions")
+    Cc: Dave Jiang <dave.jiang@intel.com>
+    Cc: Johannes Thumshirn <jthumshirn@suse.de>
+    Reported-by: Dave Hansen <dave.hansen@linux.intel.com>
+    Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/nvdimm/region_devs.c b/drivers/nvdimm/region_devs.c
+index 829d760f651c..abaf38c61220 100644
+--- a/drivers/nvdimm/region_devs.c
++++ b/drivers/nvdimm/region_devs.c
+@@ -562,8 +562,12 @@ static umode_t region_visible(struct kobject *kobj, struct attribute *a, int n)
+ 	if (!is_nd_pmem(dev) && a == &dev_attr_badblocks.attr)
+ 		return 0;
+ 
+-	if (!is_nd_pmem(dev) && a == &dev_attr_resource.attr)
+-		return 0;
++	if (a == &dev_attr_resource.attr) {
++		if (is_nd_pmem(dev))
++			return 0400;
++		else
++			return 0;
++	}
+ 
+ 	if (a == &dev_attr_deep_flush.attr) {
+ 		int has_flush = nvdimm_has_flush(nd_region);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1142_d6667298d1d0d47de619b23078ceb83ec2c09d46.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1142_d6667298d1d0d47de619b23078ceb83ec2c09d46.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,54 @@
+commit 943bd28adf1b56703c7b6850861cfe414658d237
+Author: Phil Elwell <pelwell@users.noreply.github.com>
+Date:   Mon Nov 13 13:00:14 2017 +0000
+
+    USB_DWCOTG: Disable building dwc_otg as a module (#2265)
+    
+    When dwc_otg is built as a module, build will fail with the following
+    error:
+    
+    ERROR: "DWC_TASK_HI_SCHEDULE" [drivers/usb/host/dwc_otg/dwc_otg.ko] undefined!
+    scripts/Makefile.modpost:91: recipe for target '__modpost' failed
+    make[1]: *** [__modpost] Error 1
+    Makefile:1199: recipe for target 'modules' failed
+    make: *** [modules] Error 2
+    
+    Even if the error is solved by including the missing
+    DWC_TASK_HI_SCHEDULE function, the kernel will panic when loading
+    dwc_otg.
+    
+    As a workaround, simply prevent user from building dwc_otg as a module
+    as the current kernel does not support it.
+    
+    See: https://github.com/raspberrypi/linux/issues/2258
+    
+    Signed-off-by: Malik Olivier Boussejra <malik@boussejra.com>
+
+diff --git a/drivers/usb/host/Kconfig b/drivers/usb/host/Kconfig
+index 64ed87af62b3..9eeb88a5b6e6 100644
+--- a/drivers/usb/host/Kconfig
++++ b/drivers/usb/host/Kconfig
+@@ -772,7 +772,7 @@ config USB_HWA_HCD
+ 	  will be called "hwa-hc".
+ 
+ config USB_DWCOTG
+-	tristate "Synopsis DWC host support"
++	bool "Synopsis DWC host support"
+ 	depends on USB && (FIQ || ARM64)
+ 	help
+ 	  The Synopsis DWC controller is a dual-role
+@@ -781,9 +781,6 @@ config USB_DWCOTG
+ 	  Enable this option to support this IP in host controller mode.
+ 	  If unsure, say N.
+ 
+-	  To compile this driver as a module, choose M here: the
+-	  modules built will be called dwc_otg and dwc_common_port.
+-
+ config USB_IMX21_HCD
+        tristate "i.MX21 HCD support"
+        depends on ARM && ARCH_MXC
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1350_943bd28adf1b56703c7b6850861cfe414658d237.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1350_943bd28adf1b56703c7b6850861cfe414658d237.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

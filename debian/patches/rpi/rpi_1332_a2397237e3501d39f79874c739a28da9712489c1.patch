@@ -1,0 +1,90 @@
+commit a2397237e3501d39f79874c739a28da9712489c1
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Oct 30 15:06:42 2017 +0000
+
+    ARM: dts: Swap serial aliases for BT-enabled Pis
+    
+    The upstream base dts files now define serial0 and serial1 [1]. This
+    appears to the firmware like a user-specified preference via an overlay,
+    so it is necessary for Pi models with Bluetooth to swap the aliases in
+    the DTBs in order to get the correct UART role assignments.
+    
+    This commit includes a minor cosmetic change that moves the chosen
+    node into the same block as the model property, to match upstream
+    files.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+    
+    [1] Upstream commit f08f58a2bf68900a84e782b8c7ad701c0654173c
+
+diff --git a/arch/arm/boot/dts/bcm2708-rpi-0-w.dts b/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
+index fba0041d5546..a6ef9ee67ef8 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
++++ b/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
+@@ -4,6 +4,15 @@
+ 
+ / {
+ 	model = "Raspberry Pi Zero W";
++
++	chosen {
++		bootargs = "8250.nr_uarts=1";
++	};
++
++	aliases {
++		serial0 = &uart1;
++		serial1 = &uart0;
++	};
+ };
+ 
+ &gpio {
+@@ -147,12 +156,6 @@
+ 	pinctrl-0 = <&audio_pins>;
+ };
+ 
+-/ {
+-	chosen {
+-		bootargs = "8250.nr_uarts=1";
+-	};
+-};
+-
+ / {
+ 	__overrides__ {
+ 		act_led_gpio = <&act_led>,"gpios:4";
+diff --git a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+index 634add7ab8bc..e032516ffd35 100644
+--- a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+@@ -9,6 +9,15 @@
+ 
+ / {
+ 	model = "Raspberry Pi 3 Model B";
++
++	chosen {
++		bootargs = "8250.nr_uarts=1";
++	};
++
++	aliases {
++		serial0 = &uart1;
++		serial1 = &uart0;
++	};
+ };
+ 
+ &gpio {
+@@ -172,12 +181,6 @@
+ 	pinctrl-0 = <&audio_pins>;
+ };
+ 
+-/ {
+-	chosen {
+-		bootargs = "8250.nr_uarts=1";
+-	};
+-};
+-
+ / {
+ 	__overrides__ {
+ 		act_led_gpio = <&act_led>,"gpios:4";
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1332_a2397237e3501d39f79874c739a28da9712489c1.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1332_a2397237e3501d39f79874c739a28da9712489c1.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
