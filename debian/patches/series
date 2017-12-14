@@ -251,6 +251,9 @@ bugfix/all/vfs-avoid-creation-of-inode-number-0-in-get_next_ino.patch
 bugfix/all/mm-mmap.c-expand_downwards-don-t-require-the-gap-if-.patch
 bugfix/x86/mmap-remember-the-map_fixed-flag-as-vm_fixed.patch
 bugfix/x86/mmap-add-an-exception-to-the-stack-gap-for-hotspot-jvm.patch
+bugfix/all/sched-topology-remove-force_sd_overlap.patch
+bugfix/all/sched-topology-simplify-build_overlap_sched_groups.patch
+bugfix/all/sched-topology-optimize-build_group_mask.patch
 
 # memfd_create() & kdbus backport
 features/all/kdbus/mm-allow-drivers-to-prevent-new-writable-mappings.patch
@@ -854,4 +857,3 @@ rpi/rpi_1092_ad7559876771c85a5da8b89687291b5294d2b559.patch
 rpi/rpi_1093_952a6ac6911ee697117eaf0f8c42ff6582d351a6.patch
 rpi/rpi_1094_377c82aa1d31b37f1096096b0e4c65beb0bc5c49.patch
 rpi/rpi_9999_other_changes.patch
-
