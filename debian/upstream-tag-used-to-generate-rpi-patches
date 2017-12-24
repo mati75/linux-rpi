@@ -1,41 +1,41 @@
-tag v4.14.2
+tag v4.14.7
 Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Fri Nov 24 08:37:06 2017 +0100
+Date:   Sun Dec 17 15:08:15 2017 +0100
 
-This is the 4.14.2 stable release
+This is the 4.14.7 stable release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAloXzCIACgkQONu9yGCS
-aT4PjRAAv+4V+QToo6x0P/xo0B6Bwkary9XdiZd+ae9kaJ9SD+AExtvAXaBN2zEC
-Imm+D9a9Z73LmbsYI4e6ASJ6h1bbo0jEGeUOCRWImigxawfLvPjJtPPXC4j+LaTJ
-YxNCES40SeogeiA+gHKg0RXHdg08xGuBMncBZHG+yXom2bJ9b7Y5AQzy0H08L6Yq
-dixKoBci6kM65NaYEbaquVOUkYUvUazBdpe+pVnRzMh5WrY9V+iV1MuEt7PcQApQ
-ar9Y+4Tlgvpf4v5a4TEmk1v98RhAbQd2meY0mVzrDUX/TFldndxpZaTahK25oGDv
-BbS04ToyIrxp3Oyi8EzlLOiK477iZNUXkHquLx7xUC8meJkxPHFE3gk/QYtuCEKC
-YAA1Y6VXJ4VGJPzabcuoX9Do7PcxTtqr0eD6unAj6v1pmDx60svHOpm6AF2gpMdN
-HlEitjLoSK6mcun0rwvjCSkAnn5rTevxEsTeJEoaRC+4qySQpwfgPImzN/KJ/FGB
-eff/Mlx28t0/Y4GA+08UGkwhEMnwomIcSOxAvkDmDb0OU+lUKMgIepiSSpc/XkI5
-4oFgeVSSKelYeEAKWhEi6q2z8ytqY2tDStFFiM/Azi32RwXdXqs2WwnQkAIVBVoU
-2EUMWg8BFRirix/XUoegmKOoWHQdEzPDcCwka0nKTvBOkJHBrco=
-=/dos
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlo2ek8ACgkQONu9yGCS
+aT77ZBAA00LgEemgczsewIMs/la6ztVfyMnL0FjZOFh4/X6vUd3jfonv6TplSVvt
+MkvsnGfw+YTH5PE5db38HAhruNRVLHo6xZOl3R5NeQghQoe8PNjxWm7FXsQ4H5Zp
+apyllIPBnck2XzlXR2iiiS41dem++/ktYum24Xu4Bre+rplt/6HXQ42osHyfrCbD
+jcwMdw4IesjdPaooZBBgJENZTBlft+NR8bkO+ZjcvameBqpIaEyeAAAYpd0+2SYE
+e/nbEP7FI3aSMcki7zaMkFLXJql/+mMuZK4I6ZsbfDSX1uqgBvxpOHJ9rpuzjkgm
+Bmv78c5YimppXsIF81+Raixvf7XW+xjydTL6T4I+phgLu8HaClbk3DNleWi60hdj
+nrd5q4SO3EMtT3T1Te54xTBW8gbNpKymp2QQWuOKxVaRuy1sppZxOqJVu0n6kpVp
+rsZnfxGHfxM0xCVy2mPH37xFsppn54TVbA7qnv/BbLtw80dmY+HGsCZ+EN9EzYh0
+f6ZHo487UZnzrHggwPQKdsiHBpITfEGxa1c/qG6nTRnUgpTv5ilmZFSD94w8PES6
+tqRRi7aZJbrGjTRWOwOX3Ot/4jpFhmnAIY8F+CKm/qWtD064FCfR4puutVk2ZbBe
+hLncVOO9JAuvn6Gcy8zKTBIkE7TE4hYlDM82NxEWLHfLkRnwOwk=
+=069a
 -----END PGP SIGNATURE-----
 
-commit f9f0b03dedc19a6363a305d119efcb48667a3027
+commit 3afae8437c3cbc22966762e80e81818f5a90eb06
 Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Fri Nov 24 08:37:05 2017 +0100
+Date:   Sun Dec 17 15:08:14 2017 +0100
 
-    Linux 4.14.2
+    Linux 4.14.7
 
 diff --git a/Makefile b/Makefile
-index 01f9df1af256..75d89dc2b94a 100644
+index 793183f9e3e5..39d7af0165a8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
  PATCHLEVEL = 14
--SUBLEVEL = 1
-+SUBLEVEL = 2
+-SUBLEVEL = 6
++SUBLEVEL = 7
  EXTRAVERSION =
  NAME = Petit Gorille
  

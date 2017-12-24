@@ -117,7 +117,7 @@ linux (4.14.7-1rpi1) buster-staging; urgency=medium
   * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
   * Remove ext3 modules from d-i package list.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Sat, 02 Dec 2017 00:23:40 +0100
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Fri, 22 Dec 2017 21:12:27 +0100
 
 linux (4.14.7-1) unstable; urgency=medium
 
