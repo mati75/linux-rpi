@@ -9,8 +9,8 @@ exit 1
 set -x
 set -e
 debdir=`pwd`
-upstream_tag=v4.4.6
-rpi_branch=rpi-4.4.y
+upstream_tag=v4.9.65
+rpi_branch=rpi-4.9.y
 #rpi_tree=rpi/${rpi_branch}
 rpi_tree=af9619cc3b0e8f8dc1cb2aebe4c95c86d41d90e9
 patch_dir=${debdir}/debian/patches
