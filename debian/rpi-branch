@@ -1,46 +1,83 @@
-commit dc74d9fc628af8c731d70569ef16bd288762fd04
-Author: Stefan Schake <stschake@gmail.com>
-Date:   Sat Dec 2 18:40:39 2017 +0100
+commit bc910e1a0388f25a5ad1e726be6ac08b5cd84ff6
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Jan 12 09:15:01 2018 +0000
 
-    drm/vc4: Release fence after signalling
+    overlays: Add uart0 overlay to change pin usage
     
-    [ Upstream commit babc8110057cb9ca542c3c1666cbda4e8ccf9250 ]
-    
-    We were never releasing the initial fence reference that is obtained
-    through dma_fence_init.
-    
-    Link: https://github.com/anholt/linux/issues/122
-    Fixes: cdec4d361323 ("drm/vc4: Expose dma-buf fences for V3D rendering.")
-    Signed-off-by: Stefan Schake <stschake@gmail.com>
-    Signed-off-by: Eric Anholt <eric@anholt.net>
-    Reviewed-by: Eric Anholt <eric@anholt.net>
-    Link: https://patchwork.freedesktop.org/patch/msgid/1512236444-301-1-git-send-email-stschake@gmail.com
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
 
-diff --git a/drivers/gpu/drm/vc4/vc4_gem.c b/drivers/gpu/drm/vc4/vc4_gem.c
-index d0c6bfb68c4e..e554cbf18a55 100644
---- a/drivers/gpu/drm/vc4/vc4_gem.c
-+++ b/drivers/gpu/drm/vc4/vc4_gem.c
-@@ -829,8 +829,10 @@ vc4_complete_exec(struct drm_device *dev, struct vc4_exec_info *exec)
- 	/* If we got force-completed because of GPU reset rather than
- 	 * through our IRQ handler, signal the fence now.
- 	 */
--	if (exec->fence)
-+	if (exec->fence) {
- 		dma_fence_signal(exec->fence);
-+		dma_fence_put(exec->fence);
-+	}
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index 05661168a7bf..36db27e205cc 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -117,6 +117,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	spi2-2cs.dtbo \
+ 	spi2-3cs.dtbo \
+ 	tinylcd35.dtbo \
++	uart0.dtbo \
+ 	uart1.dtbo \
+ 	vc4-fkms-v3d.dtbo \
+ 	vc4-kms-v3d.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index e90c32066b0e..f0a49892c575 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1671,8 +1671,19 @@ Params: speed                   Display SPI bus speed
+                 dtoverlay=tinylcd35,touch,touchgpio=3
  
- 	if (exec->bo) {
- 		for (i = 0; i < exec->bo_count; i++)
-diff --git a/drivers/gpu/drm/vc4/vc4_irq.c b/drivers/gpu/drm/vc4/vc4_irq.c
-index 7d7af3a93d94..fc1fc43a924d 100644
---- a/drivers/gpu/drm/vc4/vc4_irq.c
-+++ b/drivers/gpu/drm/vc4/vc4_irq.c
-@@ -139,6 +139,7 @@ vc4_irq_finish_render_job(struct drm_device *dev)
- 	list_move_tail(&exec->head, &vc4->job_done_list);
- 	if (exec->fence) {
- 		dma_fence_signal_locked(exec->fence);
-+		dma_fence_put(exec->fence);
- 		exec->fence = NULL;
- 	}
- 	vc4_submit_next_render_job(dev);
+ 
++Name:   uart0
++Info:   Change the pin usage of uart0
++Load:   dtoverlay=uart0,<param>=<val>
++Params: txd0_pin                GPIO pin for TXD0 (14, 32 or 36 - default 14)
++
++        rxd0_pin                GPIO pin for RXD0 (15, 33 or 37 - default 15)
++
++        pin_func                Alternative pin function - 4(Alt0) for 14&15,
++                                7(Alt3) for 32&33, 6(Alt2) for 36&37
++
++
+ Name:   uart1
+-Info:   Enable uart1 in place of uart0
++Info:   Change the pin usage of uart1
+ Load:   dtoverlay=uart1,<param>=<val>
+ Params: txd1_pin                GPIO pin for TXD1 (14, 32 or 40 - default 14)
+ 
+diff --git a/arch/arm/boot/dts/overlays/uart0-overlay.dts b/arch/arm/boot/dts/overlays/uart0-overlay.dts
+new file mode 100755
+index 000000000000..20b2a609c511
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/uart0-overlay.dts
+@@ -0,0 +1,32 @@
++/dts-v1/;
++/plugin/;
++
++/{
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target = <&uart0>;
++		__overlay__ {
++			pinctrl-names = "default";
++			pinctrl-0 = <&uart0_pins>;
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&gpio>;
++		__overlay__ {
++			uart0_pins: uart0_pins {
++				brcm,pins = <14 15>;
++				brcm,function = <4>; /* alt0 */
++				brcm,pull = <0 2>;
++			};
++		};
++	};
++
++	__overrides__ {
++		txd0_pin = <&uart0_pins>,"brcm,pins:0";
++		rxd0_pin = <&uart0_pins>,"brcm,pins:4";
++		pin_func = <&uart0_pins>,"brcm,function:0";
++	};
++};

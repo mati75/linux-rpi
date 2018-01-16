@@ -1,0 +1,36 @@
+commit 74bece129383c8b326da3661bc8a1867c85d75ef
+Author: Allen Wild <allenwild93@gmail.com>
+Date:   Tue Sep 26 19:37:44 2017 +0200
+
+    thermal: enable broadcom menu for arm64 bcm2835
+    
+    Moving the bcm2835 thermal driver to the broadcom directory prevented it
+    from getting enabled for arm64 builds, since the broadcom directory is only
+    available when 32-bit specific ARCH_BCM is set.
+    
+    Fix this by enabling the Broadcom menu for ARCH_BCM or ARCH_BCM2835.
+    
+    Fixes: 6892cf07e733 ("thermal: bcm2835: move to the broadcom subdirectory")
+    Reviewed-by: Eric Anholt <eric@anholt.net>
+    Signed-off-by: Allen Wild <allenwild93@gmail.com>
+    Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
+
+diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
+index 07002df4f83a..e3f0d1fd1720 100644
+--- a/drivers/thermal/Kconfig
++++ b/drivers/thermal/Kconfig
+@@ -408,7 +408,7 @@ config MTK_THERMAL
+ 	  controller present in Mediatek SoCs
+ 
+ menu "Broadcom thermal drivers"
+-depends on ARCH_BCM || COMPILE_TEST
++depends on ARCH_BCM || ARCH_BCM2835 || COMPILE_TEST
+ source "drivers/thermal/broadcom/Kconfig"
+ endmenu
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1152_74bece129383c8b326da3661bc8a1867c85d75ef.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1152_74bece129383c8b326da3661bc8a1867c85d75ef.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
