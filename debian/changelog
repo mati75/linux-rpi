@@ -1,3 +1,9 @@
+linux (4.14.13-1+rpi1) buster; urgency=medium
+
+  * Bump version.
+
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 08 Feb 2018 13:20:33 +0100
+
 linux (4.14.13-1rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
