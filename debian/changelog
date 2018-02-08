@@ -1,4 +1,4 @@
-linux (4.14.13-1+rpi1) buster; urgency=medium
+linux (4.14.13-1+rpi2) buster; urgency=medium
 
   * Bump version.
 
