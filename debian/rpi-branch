@@ -1,83 +1,100 @@
-commit bc910e1a0388f25a5ad1e726be6ac08b5cd84ff6
-Author: Phil Elwell <phil@raspberrypi.org>
-Date:   Fri Jan 12 09:15:01 2018 +0000
+commit 131a5f19b383cbe9c8d133699d26af34b4da3431
+Author: Ismael Asensio <isma.af@gmail.com>
+Date:   Sun Feb 18 18:53:58 2018 +0100
 
-    overlays: Add uart0 overlay to change pin usage
+    Generic Rotary Encoder overlay for multiple instances (#2388)
     
-    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+    Modify the rotary-encoder overlay to support multiple instances.
 
-diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
-index 05661168a7bf..36db27e205cc 100644
---- a/arch/arm/boot/dts/overlays/Makefile
-+++ b/arch/arm/boot/dts/overlays/Makefile
-@@ -117,6 +117,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
- 	spi2-2cs.dtbo \
- 	spi2-3cs.dtbo \
- 	tinylcd35.dtbo \
-+	uart0.dtbo \
- 	uart1.dtbo \
- 	vc4-fkms-v3d.dtbo \
- 	vc4-kms-v3d.dtbo \
 diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
-index e90c32066b0e..f0a49892c575 100644
+index 88f67db61e9e..dadbccc18f45 100644
 --- a/arch/arm/boot/dts/overlays/README
 +++ b/arch/arm/boot/dts/overlays/README
-@@ -1671,8 +1671,19 @@ Params: speed                   Display SPI bus speed
-                 dtoverlay=tinylcd35,touch,touchgpio=3
+@@ -1345,9 +1345,9 @@ Params: <None>
+ Name:   rotary-encoder
+ Info:   Overlay for GPIO connected rotary encoder.
+ Load:   dtoverlay=rotary-encoder,<param>=<val>
+-Params: rotary0_pin_a           GPIO connected to rotary encoder channel A
++Params: pin_a                   GPIO connected to rotary encoder channel A
+                                 (default 4).
+-        rotary0_pin_b           GPIO connected to rotary encoder channel B
++        pin_b                   GPIO connected to rotary encoder channel B
+                                 (default 17).
+         relative_axis           register a relative axis rather than an
+                                 absolute one. Relative axis will only
+diff --git a/arch/arm/boot/dts/overlays/rotary-encoder-overlay.dts b/arch/arm/boot/dts/overlays/rotary-encoder-overlay.dts
+index f88f8a39d9a2..819f400a9054 100644
+--- a/arch/arm/boot/dts/overlays/rotary-encoder-overlay.dts
++++ b/arch/arm/boot/dts/overlays/rotary-encoder-overlay.dts
+@@ -8,7 +8,7 @@
+ 	fragment@0 {
+ 		target = <&gpio>;
+ 		__overlay__ {
+-			rotary0_pins: rotary0_pins {
++			rotary_pins: rotary_pins@4 {
+ 				brcm,pins = <4 17>; /* gpio 4 17 */
+ 				brcm,function = <0 0>; /* input */
+ 				brcm,pull = <2 2>; /* pull-up */
+@@ -20,32 +20,40 @@
+ 	fragment@1 {
+ 		target-path = "/";
+ 		__overlay__ {
+-			rotary0: rotary@0 {
+-					compatible = "rotary-encoder";
+-					status = "okay";
+-					pinctrl-names = "default";
+-					pinctrl-0 = <&rotary0_pins>;
+-					gpios = <&gpio 4 0>, <&gpio 17 0>;
+-					linux,axis = <0>; /* REL_X */
+-					rotary-encoder,encoding = "gray";
+-					rotary-encoder,steps = <24>; /* 24 default */
+-					rotary-encoder,steps-per-period = <1>; /* corresponds to full period mode. See README */
++			rotary: rotary@4 {
++				compatible = "rotary-encoder";
++				status = "okay";
++				pinctrl-names = "default";
++				pinctrl-0 = <&rotary_pins>;
++				gpios = <&gpio 4 0>, <&gpio 17 0>;
++				linux,axis = <0>; /* REL_X */
++				rotary-encoder,encoding = "gray";
++				rotary-encoder,steps = <24>; /* 24 default */
++				rotary-encoder,steps-per-period = <1>; /* corresponds to full period mode. See README */
+ 			};
+ 		};
  
+ 	};  
  
-+Name:   uart0
-+Info:   Change the pin usage of uart0
-+Load:   dtoverlay=uart0,<param>=<val>
-+Params: txd0_pin                GPIO pin for TXD0 (14, 32 or 36 - default 14)
-+
-+        rxd0_pin                GPIO pin for RXD0 (15, 33 or 37 - default 15)
-+
-+        pin_func                Alternative pin function - 4(Alt0) for 14&15,
-+                                7(Alt3) for 32&33, 6(Alt2) for 36&37
-+
-+
- Name:   uart1
--Info:   Enable uart1 in place of uart0
-+Info:   Change the pin usage of uart1
- Load:   dtoverlay=uart1,<param>=<val>
- Params: txd1_pin                GPIO pin for TXD1 (14, 32 or 40 - default 14)
- 
-diff --git a/arch/arm/boot/dts/overlays/uart0-overlay.dts b/arch/arm/boot/dts/overlays/uart0-overlay.dts
-new file mode 100755
-index 000000000000..20b2a609c511
---- /dev/null
-+++ b/arch/arm/boot/dts/overlays/uart0-overlay.dts
-@@ -0,0 +1,32 @@
-+/dts-v1/;
-+/plugin/;
-+
-+/{
-+	compatible = "brcm,bcm2708";
-+
-+	fragment@0 {
-+		target = <&uart0>;
-+		__overlay__ {
-+			pinctrl-names = "default";
-+			pinctrl-0 = <&uart0_pins>;
-+			status = "okay";
-+		};
+ 	__overrides__ {
+-		rotary0_pin_a =     <&rotary0>,"gpios:4",
+-		                    <&rotary0_pins>,"brcm,pins:0";
+-		rotary0_pin_b =     <&rotary0>,"gpios:16",
+-		                    <&rotary0_pins>,"brcm,pins:4";
+-		relative_axis =     <&rotary0>,"rotary-encoder,relative-axis?";
+-		linux_axis =        <&rotary0>,"linux,axis:0";
+-		rollover =          <&rotary0>,"rotary-encoder,rollover?";
+-		steps-per-period =  <&rotary0>,"rotary-encoder,steps-per-period:0";
+-		steps =             <&rotary0>,"rotary-encoder,steps:0";
+-		wakeup =            <&rotary0>,"wakeup-source?";
+-		encoding =          <&rotary0>,"rotary-encoder,encoding";
+-	};  
++		pin_a =		    <&rotary>,"gpios:4",
++				    <&rotary_pins>,"brcm,pins:0",
++				    /* modify reg values to allow multiple instantiation */
++				    <&rotary>,"reg:0",
++				    <&rotary_pins>,"reg:0";
++		pin_b =		    <&rotary>,"gpios:16",
++				    <&rotary_pins>,"brcm,pins:4";
++		relative_axis =     <&rotary>,"rotary-encoder,relative-axis?";
++		linux_axis =        <&rotary>,"linux,axis:0";
++		rollover =          <&rotary>,"rotary-encoder,rollover?";
++		steps-per-period =  <&rotary>,"rotary-encoder,steps-per-period:0";
++		steps =             <&rotary>,"rotary-encoder,steps:0";
++		wakeup =            <&rotary>,"wakeup-source?";
++		encoding =          <&rotary>,"rotary-encoder,encoding";
++                /* legacy parameters*/
++		rotary0_pin_a =     <&rotary>,"gpios:4",
++		                    <&rotary_pins>,"brcm,pins:0";
++		rotary0_pin_b =     <&rotary>,"gpios:16",
++		                    <&rotary_pins>,"brcm,pins:4";
 +	};
-+
-+	fragment@1 {
-+		target = <&gpio>;
-+		__overlay__ {
-+			uart0_pins: uart0_pins {
-+				brcm,pins = <14 15>;
-+				brcm,function = <4>; /* alt0 */
-+				brcm,pull = <0 2>;
-+			};
-+		};
-+	};
-+
-+	__overrides__ {
-+		txd0_pin = <&uart0_pins>,"brcm,pins:0";
-+		rxd0_pin = <&uart0_pins>,"brcm,pins:4";
-+		pin_func = <&uart0_pins>,"brcm,function:0";
-+	};
-+};
+ };
