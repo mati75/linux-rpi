@@ -1,0 +1,296 @@
+commit 720c5321be83f4ece997ededb1b2d54a6ea19396
+Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Thu May 18 13:29:38 2017 +0900
+
+    drm/vc4: fix include notation and remove -Iinclude/drm flag
+    
+    Include <drm/*.h> instead of relative path from include/drm, then
+    remove the -Iinclude/drm compiler flag.
+    
+    While we are here, use <...> instead of "..." for include/linux/*.h
+    and include/sound/*.h headers too.
+    
+    Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+    Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+    Link: http://patchwork.freedesktop.org/patch/msgid/1495081793-9707-2-git-send-email-yamada.masahiro@socionext.com
+    (cherry picked from commit b7e8e25b37618070c444083bfb1aedf3317b2a96,
+    conflicts resolved by anholt)
+
+diff --git a/drivers/gpu/drm/vc4/Makefile b/drivers/gpu/drm/vc4/Makefile
+index 91c0d360e001..5b8f83b4dbc2 100644
+--- a/drivers/gpu/drm/vc4/Makefile
++++ b/drivers/gpu/drm/vc4/Makefile
+@@ -1,5 +1,3 @@
+-ccflags-y := -Iinclude/drm
+-
+ # Please keep these build lists sorted!
+ 
+ # core driver code
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index a4937e261202..59a870f160ab 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -31,13 +31,13 @@
+  * ones that set the clock.
+  */
+ 
+-#include "drm_atomic.h"
+-#include "drm_atomic_helper.h"
+-#include "drm_crtc_helper.h"
+-#include "linux/clk.h"
+-#include "drm_fb_cma_helper.h"
+-#include "linux/component.h"
+-#include "linux/of_device.h"
++#include <drm/drm_atomic.h>
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_crtc_helper.h>
++#include <linux/clk.h>
++#include <drm/drm_fb_cma_helper.h>
++#include <linux/component.h>
++#include <linux/of_device.h>
+ #include "vc4_drv.h"
+ #include "vc4_regs.h"
+ 
+diff --git a/drivers/gpu/drm/vc4/vc4_dpi.c b/drivers/gpu/drm/vc4/vc4_dpi.c
+index 1e1f6b8184d0..eed9584e4122 100644
+--- a/drivers/gpu/drm/vc4/vc4_dpi.c
++++ b/drivers/gpu/drm/vc4/vc4_dpi.c
+@@ -21,14 +21,14 @@
+  * signals, which are routed out to GPIO0-27 with the ALT2 function.
+  */
+ 
+-#include "drm_atomic_helper.h"
+-#include "drm_crtc_helper.h"
+-#include "drm_edid.h"
+-#include "drm_panel.h"
+-#include "linux/clk.h"
+-#include "linux/component.h"
+-#include "linux/of_graph.h"
+-#include "linux/of_platform.h"
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_crtc_helper.h>
++#include <drm/drm_edid.h>
++#include <drm/drm_panel.h>
++#include <linux/clk.h>
++#include <linux/component.h>
++#include <linux/of_graph.h>
++#include <linux/of_platform.h>
+ #include "vc4_drv.h"
+ #include "vc4_regs.h"
+ 
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.c b/drivers/gpu/drm/vc4/vc4_drv.c
+index e28fb8323a23..86af9a3b15fc 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.c
++++ b/drivers/gpu/drm/vc4/vc4_drv.c
+@@ -15,7 +15,7 @@
+ #include <linux/of_platform.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+-#include "drm_fb_cma_helper.h"
++#include <drm/drm_fb_cma_helper.h>
+ #include <drm/drm_fb_helper.h>
+ 
+ #include "uapi/drm/vc4_drm.h"
+diff --git a/drivers/gpu/drm/vc4/vc4_drv.h b/drivers/gpu/drm/vc4/vc4_drv.h
+index 585da9b8cdfe..a7be02b98637 100644
+--- a/drivers/gpu/drm/vc4/vc4_drv.h
++++ b/drivers/gpu/drm/vc4/vc4_drv.h
+@@ -6,8 +6,10 @@
+  * published by the Free Software Foundation.
+  */
+ 
+-#include "drmP.h"
+-#include "drm_gem_cma_helper.h"
++#include <linux/reservation.h>
++#include <drm/drmP.h>
++#include <drm/drm_encoder.h>
++#include <drm/drm_gem_cma_helper.h>
+ 
+ /* Don't forget to update vc4_bo.c: bo_type_names[] when adding to
+  * this.
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index 28731b23186a..a365a45b9de5 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -29,20 +29,20 @@
+  * hopefully present.
+  */
+ 
+-#include "drm_atomic_helper.h"
+-#include "drm_crtc_helper.h"
+-#include "drm_edid.h"
+-#include "drm_mipi_dsi.h"
+-#include "drm_panel.h"
+-#include "linux/clk.h"
+-#include "linux/clk-provider.h"
+-#include "linux/completion.h"
+-#include "linux/component.h"
+-#include "linux/dmaengine.h"
+-#include "linux/i2c.h"
+-#include "linux/of_address.h"
+-#include "linux/of_platform.h"
+-#include "linux/pm_runtime.h"
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_crtc_helper.h>
++#include <drm/drm_edid.h>
++#include <drm/drm_mipi_dsi.h>
++#include <drm/drm_panel.h>
++#include <linux/clk.h>
++#include <linux/clk-provider.h>
++#include <linux/completion.h>
++#include <linux/component.h>
++#include <linux/dmaengine.h>
++#include <linux/i2c.h>
++#include <linux/of_address.h>
++#include <linux/of_platform.h>
++#include <linux/pm_runtime.h>
+ #include "vc4_drv.h"
+ #include "vc4_regs.h"
+ 
+diff --git a/drivers/gpu/drm/vc4/vc4_firmware_kms.c b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+index c85cae7d2f5f..379f5fec207d 100644
+--- a/drivers/gpu/drm/vc4/vc4_firmware_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+@@ -14,16 +14,16 @@
+  * Pi's firmware display stack.
+  */
+ 
+-#include "drm_atomic.h"
+-#include "drm_atomic_helper.h"
+-#include "drm_plane_helper.h"
+-#include "drm_crtc_helper.h"
+-#include "drm_fourcc.h"
+-#include "linux/clk.h"
+-#include "linux/debugfs.h"
+-#include "drm_fb_cma_helper.h"
+-#include "linux/component.h"
+-#include "linux/of_device.h"
++#include <drm/drm_atomic.h>
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_plane_helper.h>
++#include <drm/drm_crtc_helper.h>
++#include <drm/drm_fourcc.h>
++#include <linux/clk.h>
++#include <linux/debugfs.h>
++#include <drm/drm_fb_cma_helper.h>
++#include <linux/component.h>
++#include <linux/of_device.h>
+ #include "vc4_drv.h"
+ #include "vc4_regs.h"
+ #include <soc/bcm2835/raspberrypi-firmware.h>
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index aa4b900a583c..50ba36ffde9c 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -25,21 +25,21 @@
+  * the PLLH_PIX clock for the PHY.
+  */
+ 
+-#include "drm_atomic_helper.h"
+-#include "drm_crtc_helper.h"
+-#include "drm_edid.h"
+-#include "linux/clk.h"
+-#include "linux/component.h"
+-#include "linux/i2c.h"
+-#include "linux/of_address.h"
+-#include "linux/of_gpio.h"
+-#include "linux/of_platform.h"
+-#include "linux/pm_runtime.h"
+-#include "linux/rational.h"
+-#include "sound/dmaengine_pcm.h"
+-#include "sound/pcm_drm_eld.h"
+-#include "sound/pcm_params.h"
+-#include "sound/soc.h"
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_crtc_helper.h>
++#include <drm/drm_edid.h>
++#include <linux/clk.h>
++#include <linux/component.h>
++#include <linux/i2c.h>
++#include <linux/of_address.h>
++#include <linux/of_gpio.h>
++#include <linux/of_platform.h>
++#include <linux/pm_runtime.h>
++#include <linux/rational.h>
++#include <sound/dmaengine_pcm.h>
++#include <sound/pcm_drm_eld.h>
++#include <sound/pcm_params.h>
++#include <sound/soc.h>
+ #include "vc4_drv.h"
+ #include "vc4_regs.h"
+ 
+diff --git a/drivers/gpu/drm/vc4/vc4_hvs.c b/drivers/gpu/drm/vc4/vc4_hvs.c
+index fc68b1b4da52..a57a3874daba 100644
+--- a/drivers/gpu/drm/vc4/vc4_hvs.c
++++ b/drivers/gpu/drm/vc4/vc4_hvs.c
+@@ -22,7 +22,7 @@
+  * each CRTC.
+  */
+ 
+-#include "linux/component.h"
++#include <linux/component.h>
+ #include "vc4_drv.h"
+ #include "vc4_regs.h"
+ 
+diff --git a/drivers/gpu/drm/vc4/vc4_kms.c b/drivers/gpu/drm/vc4/vc4_kms.c
+index 3ccdd54f3262..821cd4e4e838 100644
+--- a/drivers/gpu/drm/vc4/vc4_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_kms.c
+@@ -14,12 +14,12 @@
+  * crtc, HDMI encoder).
+  */
+ 
+-#include "drm_crtc.h"
+-#include "drm_atomic.h"
+-#include "drm_atomic_helper.h"
+-#include "drm_crtc_helper.h"
+-#include "drm_plane_helper.h"
+-#include "drm_fb_cma_helper.h"
++#include <drm/drm_crtc.h>
++#include <drm/drm_atomic.h>
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_crtc_helper.h>
++#include <drm/drm_plane_helper.h>
++#include <drm/drm_fb_cma_helper.h>
+ #include "vc4_drv.h"
+ 
+ static void vc4_output_poll_changed(struct drm_device *dev)
+diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
+index 8931d3f649f8..d3111e672893 100644
+--- a/drivers/gpu/drm/vc4/vc4_plane.c
++++ b/drivers/gpu/drm/vc4/vc4_plane.c
+@@ -18,13 +18,13 @@
+  * into the region of the HVS that it has allocated for us.
+  */
+ 
++#include <drm/drm_atomic.h>
++#include <drm/drm_atomic_helper.h>
++#include <drm/drm_fb_cma_helper.h>
++#include <drm/drm_plane_helper.h>
++
+ #include "vc4_drv.h"
+ #include "vc4_regs.h"
+-#include "drm_atomic.h"
+-#include "drm_atomic_helper.h"
+-#include "drm_fourcc.h"
+-#include "drm_fb_cma_helper.h"
+-#include "drm_plane_helper.h"
+ 
+ enum vc4_scaling_mode {
+ 	VC4_SCALING_NONE,
+diff --git a/drivers/gpu/drm/vc4/vc4_v3d.c b/drivers/gpu/drm/vc4/vc4_v3d.c
+index 72f13b36fe33..5b1d4f8e0432 100644
+--- a/drivers/gpu/drm/vc4/vc4_v3d.c
++++ b/drivers/gpu/drm/vc4/vc4_v3d.c
+@@ -16,8 +16,9 @@
+  * this program.  If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+-#include "linux/component.h"
+-#include "linux/pm_runtime.h"
++#include <linux/clk.h>
++#include <linux/component.h>
++#include <linux/pm_runtime.h>
+ #include "vc4_drv.h"
+ #include "vc4_regs.h"
+ 

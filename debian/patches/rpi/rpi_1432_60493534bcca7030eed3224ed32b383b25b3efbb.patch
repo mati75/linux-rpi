@@ -1,0 +1,23 @@
+commit 60493534bcca7030eed3224ed32b383b25b3efbb
+Author: Alex Riesen <alexander.riesen@cetitec.com>
+Date:   Thu Dec 21 09:29:39 2017 +0100
+
+    Add Raspberry Pi firmware driver to the dependencies of backlight driver
+    
+    Otherwise the backlight driver fails to build if the firmware
+    loading driver is not in the kernel
+    
+    Signed-off-by: Alex Riesen <alexander.riesen@cetitec.com>
+
+diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
+index c3023ab052b4..738d67d816d6 100644
+--- a/drivers/video/backlight/Kconfig
++++ b/drivers/video/backlight/Kconfig
+@@ -267,6 +267,7 @@ config BACKLIGHT_PWM
+ 
+ config BACKLIGHT_RPI
+ 	tristate "Raspberry Pi display firmware driven backlight"
++	depends on RASPBERRYPI_FIRMWARE
+ 	help
+ 	  If you have the Raspberry Pi DSI touchscreen display, say Y to
+ 	  enable the mailbox-controlled backlight driver.

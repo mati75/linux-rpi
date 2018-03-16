@@ -1,0 +1,31 @@
+commit 562fcdb66ae6c810088d982a378e63fe3653123b
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Jan 22 12:22:01 2018 +0000
+
+    mmc: bcm2835-mmc: Support underclocking
+    
+    Support underclocking of the SD bus using the max-frequency DT property
+    (which currently has no DT parameter). The sd_overclock parameter
+    already provides another way to achieve the same thing which should be
+    equivalent in end result, but it is a bug not to support max-frequency
+    as well.
+    
+    See: https://github.com/raspberrypi/linux/issues/2350
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/mmc/host/bcm2835-mmc.c b/drivers/mmc/host/bcm2835-mmc.c
+index c4a5e992c6fb..b7f5fd96ecb6 100644
+--- a/drivers/mmc/host/bcm2835-mmc.c
++++ b/drivers/mmc/host/bcm2835-mmc.c
+@@ -1310,8 +1310,8 @@ static int bcm2835_mmc_add_host(struct bcm2835_host *host)
+ 
+ 	host->clk_mul = 0;
+ 
+-	mmc->f_max = host->max_clk;
+-	mmc->f_max = host->max_clk;
++	if (!mmc->f_max || mmc->f_max > host->max_clk)
++		mmc->f_max = host->max_clk;
+ 	mmc->f_min = host->max_clk / SDHCI_MAX_DIV_SPEC_300;
+ 
+ 	/* SDHCI_QUIRK_DATA_TIMEOUT_USES_SDCLK */

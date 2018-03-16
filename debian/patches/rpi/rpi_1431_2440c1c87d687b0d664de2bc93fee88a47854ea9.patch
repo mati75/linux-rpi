@@ -1,0 +1,29 @@
+commit 2440c1c87d687b0d664de2bc93fee88a47854ea9
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Dec 12 12:12:46 2017 +0000
+
+    staging: vchiq_arm: Make debugfs failure non-fatal
+    
+    It can be useful to be able to open multiple vchiq instances in a
+    single process. This currently fails due to a debugfs collision,
+    so make such a failure non-fatal.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index 5a2b8fb459eb..bc391fb6fa12 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -1157,11 +1157,7 @@ vchiq_open(struct inode *inode, struct file *file)
+ 		instance->state = state;
+ 		instance->pid = current->tgid;
+ 
+-		ret = vchiq_debugfs_add_instance(instance);
+-		if (ret != 0) {
+-			kfree(instance);
+-			return ret;
+-		}
++		(void)vchiq_debugfs_add_instance(instance);
+ 
+ 		sema_init(&instance->insert_event, 0);
+ 		sema_init(&instance->remove_event, 0);

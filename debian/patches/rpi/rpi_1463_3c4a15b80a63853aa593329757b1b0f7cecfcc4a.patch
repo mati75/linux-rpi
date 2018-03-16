@@ -1,0 +1,27 @@
+commit 3c4a15b80a63853aa593329757b1b0f7cecfcc4a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Oct 31 11:33:10 2017 -0700
+
+    drm/vc4: Skip ULPS latching when we're in that ULPS state already.
+    
+    It seems that trying to go from unlatched to unlatched will time out
+    waiting for STOP, and we can just skip that.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index 16af8d2d629c..f5cf11dff45b 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -838,6 +838,11 @@ static void vc4_dsi_ulps(struct vc4_dsi *dsi, bool ulps)
+ 			 (dsi->lanes > 2 ? DSI1_STAT_PHY_D2_STOP : 0) |
+ 			 (dsi->lanes > 3 ? DSI1_STAT_PHY_D3_STOP : 0));
+ 	int ret;
++	bool ulps_currently_enabled = (DSI_PORT_READ(PHY_AFEC0) &
++				       DSI_PORT_BIT(PHY_AFEC0_LATCH_ULPS));
++
++	if (ulps == ulps_currently_enabled)
++		return;
+ 
+ 	DSI_PORT_WRITE(STAT, stat_ulps);
+ 	DSI_PORT_WRITE(PHYC, DSI_PORT_READ(PHYC) | phyc_ulps);

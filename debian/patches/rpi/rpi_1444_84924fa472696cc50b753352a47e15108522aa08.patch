@@ -1,0 +1,107 @@
+commit 84924fa472696cc50b753352a47e15108522aa08
+Author: Yevhen Kyriukha <kirgene@gmail.com>
+Date:   Sun Jan 14 13:36:24 2018 +0200
+
+    Added support for mbed AudioCODEC (TLV320AIC23B)
+    
+    Signed-off-by: Yevhen Kyriukha <kirgene@gmail.com>
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index bc997af70665..eae6a665c108 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -57,6 +57,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	justboom-dac.dtbo \
+ 	justboom-digi.dtbo \
+ 	lirc-rpi.dtbo \
++	mbed-dac.dtbo \
+ 	mcp23017.dtbo \
+ 	mcp23s17.dtbo \
+ 	mcp2515-can0.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index afc7eea8ced4..eacdb15115cd 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -954,6 +954,12 @@ Params: gpio_out_pin            GPIO for output (default "17")
+                                 (default "off")
+ 
+ 
++Name:   mbed-dac
++Info:   Configures the mbed AudioCODEC (TLV320AIC23B)
++Load:   dtoverlay=mbed-dac
++Params: <None>
++
++
+ Name:   mcp23017
+ Info:   Configures the MCP23017 I2C GPIO expander
+ Load:   dtoverlay=mcp23017,<param>=<val>
+diff --git a/arch/arm/boot/dts/overlays/mbed-dac-overlay.dts b/arch/arm/boot/dts/overlays/mbed-dac-overlay.dts
+new file mode 100644
+index 000000000000..313563d6ed47
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/mbed-dac-overlay.dts
+@@ -0,0 +1,64 @@
++// Definitions for mbed DAC
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target = <&i2s>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&i2c1>;
++		__overlay__ {
++			#address-cells = <1>;
++                        #size-cells = <0>;
++			status = "okay";
++
++			tlv320aic23: codec@1a {
++				#sound-dai-cells = <0>;
++				reg = <0x1a>;
++				compatible = "ti,tlv320aic23";
++				status = "okay";
++			};
++		};
++	};
++
++	fragment@2 {
++		target = <&sound>;
++		__overlay__ {
++			compatible = "simple-audio-card";
++			i2s-controller = <&i2s>;
++			status = "okay";
++
++			simple-audio-card,name = "mbed-DAC";
++
++			simple-audio-card,widgets =
++				"Microphone", "Mic Jack",
++				"Line", "Line In",
++				"Headphone", "Headphone Jack";
++
++			simple-audio-card,routing =
++				"Headphone Jack", "LHPOUT",
++				"Headphone Jack", "RHPOUT",
++				"LLINEIN", "Line In",
++				"RLINEIN", "Line In",
++				"MICIN", "Mic Jack";
++
++			simple-audio-card,format = "i2s";
++
++			simple-audio-card,cpu {
++				sound-dai = <&i2s>;
++			};
++
++			sound_master: simple-audio-card,codec {
++				sound-dai = <&tlv320aic23>;
++				system-clock-frequency = <12288000>;
++			};
++		};
++	};
++};

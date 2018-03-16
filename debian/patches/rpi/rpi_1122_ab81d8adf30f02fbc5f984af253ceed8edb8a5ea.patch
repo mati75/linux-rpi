@@ -1,0 +1,26 @@
+commit ab81d8adf30f02fbc5f984af253ceed8edb8a5ea
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Jul 1 22:09:24 2016 +0100
+
+    spi-bcm2835: Disable forced software CS
+    
+    Select software CS in bcm2708_common.dtsi, and disable the automatic
+    conversion in the driver to allow hardware CS to be re-enabled with an
+    overlay.
+    
+    See: https://github.com/raspberrypi/linux/issues/1547
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 74dd21b7373c..51cdefbf5eb2 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -163,6 +163,7 @@
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
+ 			status = "disabled";
++			cs-gpios = <&gpio 8 1>, <&gpio 7 1>;
+ 		};
+ 
+ 		i2c0: i2c@7e205000 {

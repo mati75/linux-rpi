@@ -1,0 +1,45 @@
+commit cad54526371a35bc6d59af392dc87b621de3f1cc
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Aug 15 16:47:18 2017 -0700
+
+    drm/vc4: Move the DSI clock divider workaround closer to the clock call.
+    
+    We want the adjusted_mode->clock to be the actual clock we're
+    expecting to program, so that consumers see the right values for clock
+    and vrefresh.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+    Link: https://patchwork.freedesktop.org/patch/msgid/20170815234722.20700-1-eric@anholt.net
+    Reviewed-by: Boris Brezillon <boris.brezillon@free-electrons.com>
+    (cherry picked from commit d409eeafa9ba1c0f2eb75a2619fc787808a545e4)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
+index f5cf11dff45b..5c46910f359d 100644
+--- a/drivers/gpu/drm/vc4/vc4_dsi.c
++++ b/drivers/gpu/drm/vc4/vc4_dsi.c
+@@ -953,11 +953,7 @@ static bool vc4_dsi_encoder_mode_fixup(struct drm_encoder *encoder,
+ 	pll_clock = parent_rate / divider;
+ 	pixel_clock_hz = pll_clock / dsi->divider;
+ 
+-	/* Round up the clk_set_rate() request slightly, since
+-	 * PLLD_DSI1 is an integer divider and its rate selection will
+-	 * never round up.
+-	 */
+-	adjusted_mode->clock = pixel_clock_hz / 1000 + 1;
++	adjusted_mode->clock = pixel_clock_hz / 1000;
+ 
+ 	/* Given the new pixel clock, adjust HFP to keep vrefresh the same. */
+ 	adjusted_mode->htotal = adjusted_mode->clock * mode->htotal /
+@@ -1001,7 +997,11 @@ static void vc4_dsi_encoder_enable(struct drm_encoder *encoder)
+ 		vc4_dsi_dump_regs(dsi);
+ 	}
+ 
+-	phy_clock = pixel_clock_hz * dsi->divider;
++	/* Round up the clk_set_rate() request slightly, since
++	 * PLLD_DSI1 is an integer divider and its rate selection will
++	 * never round up.
++	 */
++	phy_clock = (pixel_clock_hz + 1000) * dsi->divider;
+ 	ret = clk_set_rate(dsi->pll_phy_clock, phy_clock);
+ 	if (ret) {
+ 		dev_err(&dsi->pdev->dev,

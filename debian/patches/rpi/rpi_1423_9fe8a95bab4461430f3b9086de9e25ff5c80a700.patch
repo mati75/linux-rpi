@@ -1,0 +1,51 @@
+commit 9fe8a95bab4461430f3b9086de9e25ff5c80a700
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Nov 27 17:29:08 2017 +0000
+
+    cgroup: Retain support for cgroup_memory=1
+    
+    As part of a misguided fix for the automatic disabling of cgroup
+    memory, a new kernel parameter "cgroup_memory" was added. This
+    extra parameter is unnecessary now that implicit memory cgroup
+    disabling works correctly, but some unfortunate users may have
+    come to rely on it.
+    
+    See: https://github.com/raspberrypi/issues/1950
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/kernel/cgroup.c b/kernel/cgroup.c
+index 49b0ca043a65..29f27f76baa6 100644
+--- a/kernel/cgroup.c
++++ b/kernel/cgroup.c
+@@ -5639,6 +5639,7 @@ int __init cgroup_init_early(void)
+ 
+ static u16 cgroup_disable_mask __initdata;
+ static u16 cgroup_enable_mask __initdata;
++static bool cgroup_enable_memory;
+ static int __init cgroup_disable(char *str);
+ 
+ /**
+@@ -5679,7 +5680,8 @@ int __init cgroup_init(void)
+ 	mutex_unlock(&cgroup_mutex);
+ 
+ 	/* Apply an implicit disable... */
+-	cgroup_disable("memory");
++	if (!cgroup_enable_memory)
++		cgroup_disable("memory");
+ 
+ 	/* ...knowing that an explicit enable will override it. */
+ 	cgroup_disable_mask &= ~cgroup_enable_mask;
+@@ -6208,6 +6210,12 @@ static int __init cgroup_enable(char *str)
+ }
+ __setup("cgroup_enable=", cgroup_enable);
+ 
++static int __init cgroup_memory(char *str)
++{
++	return !kstrtobool(str, &cgroup_enable_memory);
++}
++__setup("cgroup_memory=", cgroup_memory);
++
+ /**
+  * css_tryget_online_from_dir - get corresponding css from a cgroup dentry
+  * @dentry: directory dentry of interest

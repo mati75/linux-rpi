@@ -1,9 +1,21 @@
 this patch contains changes generated from the "rpi" tree (possiblly including upstream changes) that rebase could not linearise.
+diff --git a/block/bsg-lib.c b/block/bsg-lib.c
+index 341b8d858e67..650f427d915b 100644
+--- a/block/bsg-lib.c
++++ b/block/bsg-lib.c
+@@ -147,6 +147,7 @@ static int bsg_create_job(struct device *dev, struct request *req)
+ failjob_rls_rqst_payload:
+ 	kfree(job->request_payload.sg_list);
+ failjob_rls_job:
++	kfree(job);
+ 	return -ENOMEM;
+ }
+ 
 diff --git a/drivers/gpu/drm/vc4/vc4_bo.c b/drivers/gpu/drm/vc4/vc4_bo.c
-index 4d56cd3c08e1..e7428184353c 100644
+index bfc30dd01a79..ade90c793bf3 100644
 --- a/drivers/gpu/drm/vc4/vc4_bo.c
 +++ b/drivers/gpu/drm/vc4/vc4_bo.c
-@@ -416,14 +416,6 @@ void vc4_free_object(struct drm_gem_object *gem_bo)
+@@ -419,14 +419,6 @@ void vc4_free_object(struct drm_gem_object *gem_bo)
  		goto out;
  	}
  
@@ -34,6 +46,106 @@ index 9aff4f6f5423..1606e7f08f4b 100644
  post_msg_err:
  	/*
  	 * If the channel has been rescinded;
+diff --git a/drivers/hv/hv_fcopy.c b/drivers/hv/hv_fcopy.c
+index 75126e4e3f05..44420073edda 100644
+--- a/drivers/hv/hv_fcopy.c
++++ b/drivers/hv/hv_fcopy.c
+@@ -61,7 +61,6 @@ static DECLARE_WORK(fcopy_send_work, fcopy_send_data);
+ static const char fcopy_devname[] = "vmbus/hv_fcopy";
+ static u8 *recv_buffer;
+ static struct hvutil_transport *hvt;
+-static struct completion release_event;
+ /*
+  * This state maintains the version number registered by the daemon.
+  */
+@@ -322,7 +321,6 @@ static void fcopy_on_reset(void)
+ 
+ 	if (cancel_delayed_work_sync(&fcopy_timeout_work))
+ 		fcopy_respond_to_host(HV_E_FAIL);
+-	complete(&release_event);
+ }
+ 
+ int hv_fcopy_init(struct hv_util_service *srv)
+@@ -330,7 +328,6 @@ int hv_fcopy_init(struct hv_util_service *srv)
+ 	recv_buffer = srv->recv_buffer;
+ 	fcopy_transaction.recv_channel = srv->channel;
+ 
+-	init_completion(&release_event);
+ 	/*
+ 	 * When this driver loads, the user level daemon that
+ 	 * processes the host requests may not yet be running.
+@@ -352,5 +349,4 @@ void hv_fcopy_deinit(void)
+ 	fcopy_transaction.state = HVUTIL_DEVICE_DYING;
+ 	cancel_delayed_work_sync(&fcopy_timeout_work);
+ 	hvutil_transport_destroy(hvt);
+-	wait_for_completion(&release_event);
+ }
+diff --git a/drivers/hv/hv_kvp.c b/drivers/hv/hv_kvp.c
+index 3abfc5983c97..5e1fdc8d32ab 100644
+--- a/drivers/hv/hv_kvp.c
++++ b/drivers/hv/hv_kvp.c
+@@ -88,7 +88,6 @@ static DECLARE_WORK(kvp_sendkey_work, kvp_send_key);
+ static const char kvp_devname[] = "vmbus/hv_kvp";
+ static u8 *recv_buffer;
+ static struct hvutil_transport *hvt;
+-static struct completion release_event;
+ /*
+  * Register the kernel component with the user-level daemon.
+  * As part of this registration, pass the LIC version number.
+@@ -717,7 +716,6 @@ static void kvp_on_reset(void)
+ 	if (cancel_delayed_work_sync(&kvp_timeout_work))
+ 		kvp_respond_to_host(NULL, HV_E_FAIL);
+ 	kvp_transaction.state = HVUTIL_DEVICE_INIT;
+-	complete(&release_event);
+ }
+ 
+ int
+@@ -726,7 +724,6 @@ hv_kvp_init(struct hv_util_service *srv)
+ 	recv_buffer = srv->recv_buffer;
+ 	kvp_transaction.recv_channel = srv->channel;
+ 
+-	init_completion(&release_event);
+ 	/*
+ 	 * When this driver loads, the user level daemon that
+ 	 * processes the host requests may not yet be running.
+@@ -750,5 +747,4 @@ void hv_kvp_deinit(void)
+ 	cancel_delayed_work_sync(&kvp_timeout_work);
+ 	cancel_work_sync(&kvp_sendkey_work);
+ 	hvutil_transport_destroy(hvt);
+-	wait_for_completion(&release_event);
+ }
+diff --git a/drivers/hv/hv_snapshot.c b/drivers/hv/hv_snapshot.c
+index a76e3db0d01f..a6707133c297 100644
+--- a/drivers/hv/hv_snapshot.c
++++ b/drivers/hv/hv_snapshot.c
+@@ -66,7 +66,6 @@ static int dm_reg_value;
+ static const char vss_devname[] = "vmbus/hv_vss";
+ static __u8 *recv_buffer;
+ static struct hvutil_transport *hvt;
+-static struct completion release_event;
+ 
+ static void vss_timeout_func(struct work_struct *dummy);
+ static void vss_handle_request(struct work_struct *dummy);
+@@ -331,13 +330,11 @@ static void vss_on_reset(void)
+ 	if (cancel_delayed_work_sync(&vss_timeout_work))
+ 		vss_respond_to_host(HV_E_FAIL);
+ 	vss_transaction.state = HVUTIL_DEVICE_INIT;
+-	complete(&release_event);
+ }
+ 
+ int
+ hv_vss_init(struct hv_util_service *srv)
+ {
+-	init_completion(&release_event);
+ 	if (vmbus_proto_version < VERSION_WIN8_1) {
+ 		pr_warn("Integration service 'Backup (volume snapshot)'"
+ 			" not supported on this host version.\n");
+@@ -368,5 +365,4 @@ void hv_vss_deinit(void)
+ 	cancel_delayed_work_sync(&vss_timeout_work);
+ 	cancel_work_sync(&vss_handle_request_work);
+ 	hvutil_transport_destroy(hvt);
+-	wait_for_completion(&release_event);
+ }
 diff --git a/drivers/i2c/busses/i2c-bcm2835.c b/drivers/i2c/busses/i2c-bcm2835.c
 index 8642f580ce41..47167f403cc8 100644
 --- a/drivers/i2c/busses/i2c-bcm2835.c
@@ -49,6 +161,132 @@ index 8642f580ce41..47167f403cc8 100644
  			bcm2835_drain_rxfifo(i2c_dev);
  			val = bcm2835_i2c_readl(i2c_dev, BCM2835_I2C_S);
  		}
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index e0a80a02a9ee..d541d8af89d3 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -2702,6 +2702,8 @@ brcmf_cfg80211_set_power_mgmt(struct wiphy *wiphy, struct net_device *ndev,
+ 	 * preference in cfg struct to apply this to
+ 	 * FW later while initializing the dongle
+ 	 */
++	pr_info("power management disabled\n");
++	enabled = false;
+ 	cfg->pwr_save = enabled;
+ 	if (!check_vif_up(ifp->vif)) {
+ 
+@@ -4708,9 +4710,15 @@ static int brcmf_cfg80211_stop_ap(struct wiphy *wiphy, struct net_device *ndev)
+ 		err = brcmf_fil_cmd_int_set(ifp, BRCMF_C_DOWN, 1);
+ 		if (err < 0)
+ 			brcmf_err("BRCMF_C_DOWN error %d\n", err);
++
++		err = brcmf_fil_cmd_int_set(ifp, BRCMF_C_SET_INFRA, 0);
++		if (err < 0)
++			brcmf_err("setting INFRA mode failed %d\n", err);
++
+ 		err = brcmf_fil_cmd_int_set(ifp, BRCMF_C_SET_AP, 0);
+ 		if (err < 0)
+ 			brcmf_err("setting AP mode failed %d\n", err);
++
+ 		if (brcmf_feat_is_enabled(ifp, BRCMF_FEAT_MBSS))
+ 			brcmf_fil_iovar_int_set(ifp, "mbss", 0);
+ 		brcmf_fil_cmd_int_set(ifp, BRCMF_C_SET_REGULATORY,
+@@ -6698,12 +6706,18 @@ static s32 brcmf_translate_country_code(struct brcmf_pub *drvr, char alpha2[2],
+ 	struct brcmfmac_pd_cc *country_codes;
+ 	struct brcmfmac_pd_cc_entry *cc;
+ 	s32 found_index;
++	char ccode[BRCMF_COUNTRY_BUF_SZ];
++	int rev;
+ 	int i;
+ 
++	memcpy(ccode, alpha2, sizeof(ccode));
++	rev = -1;
++
+ 	country_codes = drvr->settings->country_codes;
+ 	if (!country_codes) {
+-		brcmf_dbg(TRACE, "No country codes configured for device\n");
+-		return -EINVAL;
++		brcmf_dbg(TRACE, "No country codes configured for device"
++				 " - use requested value\n");
++		goto use_input_value;
+ 	}
+ 
+ 	if ((alpha2[0] == ccreq->country_abbrev[0]) &&
+@@ -6727,10 +6741,14 @@ static s32 brcmf_translate_country_code(struct brcmf_pub *drvr, char alpha2[2],
+ 		brcmf_dbg(TRACE, "No country code match found\n");
+ 		return -EINVAL;
+ 	}
+-	memset(ccreq, 0, sizeof(*ccreq));
+-	ccreq->rev = cpu_to_le32(country_codes->table[found_index].rev);
+-	memcpy(ccreq->ccode, country_codes->table[found_index].cc,
++	rev = country_codes->table[found_index].rev;
++	memcpy(ccode, country_codes->table[found_index].cc,
+ 	       BRCMF_COUNTRY_BUF_SZ);
++
++use_input_value:
++	memset(ccreq, 0, sizeof(*ccreq));
++	ccreq->rev = cpu_to_le32(rev);
++	memcpy(ccreq->ccode, ccode, sizeof(ccode));
+ 	ccreq->country_abbrev[0] = alpha2[0];
+ 	ccreq->country_abbrev[1] = alpha2[1];
+ 	ccreq->country_abbrev[2] = 0;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+index ec3ad4bf0640..297fbd7db6a2 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+@@ -71,7 +71,7 @@ static int brcmf_fcmode;
+ module_param_named(fcmode, brcmf_fcmode, int, 0);
+ MODULE_PARM_DESC(fcmode, "Mode of firmware signalled flow control");
+ 
+-static int brcmf_roamoff;
++static int brcmf_roamoff = 1;
+ module_param_named(roamoff, brcmf_roamoff, int, S_IRUSR);
+ MODULE_PARM_DESC(roamoff, "Do not use internal roaming engine");
+ 
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+index f0cbd4ba4d56..3f3a73c9f9b6 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/sdio.c
+@@ -604,6 +604,7 @@ BRCMF_FW_NVRAM_DEF(4329, "brcmfmac4329-sdio.bin", "brcmfmac4329-sdio.txt");
+ BRCMF_FW_NVRAM_DEF(4330, "brcmfmac4330-sdio.bin", "brcmfmac4330-sdio.txt");
+ BRCMF_FW_NVRAM_DEF(4334, "brcmfmac4334-sdio.bin", "brcmfmac4334-sdio.txt");
+ BRCMF_FW_NVRAM_DEF(43340, "brcmfmac43340-sdio.bin", "brcmfmac43340-sdio.txt");
++BRCMF_FW_NVRAM_DEF(43341, "brcmfmac43341-sdio.bin", "brcmfmac43341-sdio.txt");
+ BRCMF_FW_NVRAM_DEF(4335, "brcmfmac4335-sdio.bin", "brcmfmac4335-sdio.txt");
+ BRCMF_FW_NVRAM_DEF(43362, "brcmfmac43362-sdio.bin", "brcmfmac43362-sdio.txt");
+ BRCMF_FW_NVRAM_DEF(4339, "brcmfmac4339-sdio.bin", "brcmfmac4339-sdio.txt");
+@@ -621,6 +622,7 @@ static struct brcmf_firmware_mapping brcmf_sdio_fwnames[] = {
+ 	BRCMF_FW_NVRAM_ENTRY(BRCM_CC_4330_CHIP_ID, 0xFFFFFFFF, 4330),
+ 	BRCMF_FW_NVRAM_ENTRY(BRCM_CC_4334_CHIP_ID, 0xFFFFFFFF, 4334),
+ 	BRCMF_FW_NVRAM_ENTRY(BRCM_CC_43340_CHIP_ID, 0xFFFFFFFF, 43340),
++	BRCMF_FW_NVRAM_ENTRY(BRCM_CC_43341_CHIP_ID, 0xFFFFFFFF, 43341),
+ 	BRCMF_FW_NVRAM_ENTRY(BRCM_CC_4335_CHIP_ID, 0xFFFFFFFF, 4335),
+ 	BRCMF_FW_NVRAM_ENTRY(BRCM_CC_43362_CHIP_ID, 0xFFFFFFFE, 43362),
+ 	BRCMF_FW_NVRAM_ENTRY(BRCM_CC_4339_CHIP_ID, 0xFFFFFFFF, 4339),
+diff --git a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+index d0407d9ad782..f1fb8a3c7a32 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
++++ b/drivers/net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h
+@@ -36,6 +36,7 @@
+ #define BRCM_CC_4330_CHIP_ID		0x4330
+ #define BRCM_CC_4334_CHIP_ID		0x4334
+ #define BRCM_CC_43340_CHIP_ID		43340
++#define BRCM_CC_43341_CHIP_ID		43341
+ #define BRCM_CC_43362_CHIP_ID		43362
+ #define BRCM_CC_4335_CHIP_ID		0x4335
+ #define BRCM_CC_4339_CHIP_ID		0x4339
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c
+index 87ca7cc10aec..82d53895ce4d 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8821ae/hw.c
+@@ -1128,7 +1128,7 @@ static u8 _rtl8821ae_dbi_read(struct rtl_priv *rtlpriv, u16 addr)
+ 	}
+ 	if (0 == tmp) {
+ 		read_addr = REG_DBI_RDATA + addr % 4;
+-		ret = rtl_read_byte(rtlpriv, read_addr);
++		ret = rtl_read_word(rtlpriv, read_addr);
+ 	}
+ 	return ret;
+ }
 diff --git a/drivers/usb/gadget/function/f_hid.c b/drivers/usb/gadget/function/f_hid.c
 index b6d4b484c51a..5815120c0402 100644
 --- a/drivers/usb/gadget/function/f_hid.c

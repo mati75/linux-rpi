@@ -1,0 +1,34 @@
+commit fdb867cc409646109541c4b35752451766aafa41
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Thu Nov 16 14:22:29 2017 +0000
+
+    drm/vc4: Add support for DRM_FORMAT_RGB888 and DRM_FORMAT_BGR888
+    
+    Filling out the list of supported formats based on those the
+    hardware can support.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+    Reviewed-by: Eric Anholt <eric@anholt.net>
+    Link: https://patchwork.freedesktop.org/patch/msgid/b551205d1c33fa49eef2c33ed2d60c5339b2f299.1510841336.git.dave.stevenson@raspberrypi.org
+    (cherry picked from commit 88f8156fba43d040dc5af42f88db2c53d6c69443)
+
+diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
+index d3111e672893..83e8e2455b1f 100644
+--- a/drivers/gpu/drm/vc4/vc4_plane.c
++++ b/drivers/gpu/drm/vc4/vc4_plane.c
+@@ -120,6 +120,14 @@ static const struct hvs_format {
+ 		.pixel_order = HVS_PIXEL_ORDER_ABGR, .has_alpha = false,
+ 	},
+ 	{
++		.drm = DRM_FORMAT_RGB888, .hvs = HVS_PIXEL_FORMAT_RGB888,
++		.pixel_order = HVS_PIXEL_ORDER_XRGB, .has_alpha = false,
++	},
++	{
++		.drm = DRM_FORMAT_BGR888, .hvs = HVS_PIXEL_FORMAT_RGB888,
++		.pixel_order = HVS_PIXEL_ORDER_XBGR, .has_alpha = false,
++	},
++	{
+ 		.drm = DRM_FORMAT_YUV422,
+ 		.hvs = HVS_PIXEL_FORMAT_YCBCR_YUV422_3PLANE,
+ 	},

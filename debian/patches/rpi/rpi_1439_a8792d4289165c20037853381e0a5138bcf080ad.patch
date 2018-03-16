@@ -1,0 +1,83 @@
+commit a8792d4289165c20037853381e0a5138bcf080ad
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Jan 12 09:15:01 2018 +0000
+
+    overlays: Add uart0 overlay to change pin usage
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index b1f2ec2fdb3e..8090fee1d5a4 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -115,6 +115,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	spi2-2cs.dtbo \
+ 	spi2-3cs.dtbo \
+ 	tinylcd35.dtbo \
++	uart0.dtbo \
+ 	uart1.dtbo \
+ 	vc4-fkms-v3d.dtbo \
+ 	vc4-kms-v3d.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index 34777b4209fd..1cf89d6423ac 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1643,8 +1643,19 @@ Params: speed                   Display SPI bus speed
+                 dtoverlay=tinylcd35,touch,touchgpio=3
+ 
+ 
++Name:   uart0
++Info:   Change the pin usage of uart0
++Load:   dtoverlay=uart0,<param>=<val>
++Params: txd0_pin                GPIO pin for TXD0 (14, 32 or 36 - default 14)
++
++        rxd0_pin                GPIO pin for RXD0 (15, 33 or 37 - default 15)
++
++        pin_func                Alternative pin function - 4(Alt0) for 14&15,
++                                7(Alt3) for 32&33, 6(Alt2) for 36&37
++
++
+ Name:   uart1
+-Info:   Enable uart1 in place of uart0
++Info:   Change the pin usage of uart1
+ Load:   dtoverlay=uart1,<param>=<val>
+ Params: txd1_pin                GPIO pin for TXD1 (14, 32 or 40 - default 14)
+ 
+diff --git a/arch/arm/boot/dts/overlays/uart0-overlay.dts b/arch/arm/boot/dts/overlays/uart0-overlay.dts
+new file mode 100755
+index 000000000000..20b2a609c511
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/uart0-overlay.dts
+@@ -0,0 +1,32 @@
++/dts-v1/;
++/plugin/;
++
++/{
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target = <&uart0>;
++		__overlay__ {
++			pinctrl-names = "default";
++			pinctrl-0 = <&uart0_pins>;
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&gpio>;
++		__overlay__ {
++			uart0_pins: uart0_pins {
++				brcm,pins = <14 15>;
++				brcm,function = <4>; /* alt0 */
++				brcm,pull = <0 2>;
++			};
++		};
++	};
++
++	__overrides__ {
++		txd0_pin = <&uart0_pins>,"brcm,pins:0";
++		rxd0_pin = <&uart0_pins>,"brcm,pins:4";
++		pin_func = <&uart0_pins>,"brcm,function:0";
++	};
++};

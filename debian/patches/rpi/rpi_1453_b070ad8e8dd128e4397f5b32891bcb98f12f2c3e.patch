@@ -1,0 +1,34 @@
+commit b070ad8e8dd128e4397f5b32891bcb98f12f2c3e
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Feb 5 10:37:54 2018 +0000
+
+    config: Add SND_USB_HIFACE=m
+    
+    See: https://github.com/raspberrypi/linux/issues/2368
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index aab56f885f3e..96fbcc64100a 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -888,6 +888,7 @@ CONFIG_SND_USB_UA101=m
+ CONFIG_SND_USB_CAIAQ=m
+ CONFIG_SND_USB_CAIAQ_INPUT=y
+ CONFIG_SND_USB_6FIRE=m
++CONFIG_SND_USB_HIFACE=m
+ CONFIG_SND_SOC=m
+ CONFIG_SND_BCM2835_SOC_I2S=m
+ CONFIG_SND_BCM2708_SOC_GOOGLEVOICEHAT_SOUNDCARD=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index ce5f5b66cb38..7e25253f6abc 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -882,6 +882,7 @@ CONFIG_SND_USB_UA101=m
+ CONFIG_SND_USB_CAIAQ=m
+ CONFIG_SND_USB_CAIAQ_INPUT=y
+ CONFIG_SND_USB_6FIRE=m
++CONFIG_SND_USB_HIFACE=m
+ CONFIG_SND_SOC=m
+ CONFIG_SND_BCM2835_SOC_I2S=m
+ CONFIG_SND_BCM2708_SOC_GOOGLEVOICEHAT_SOUNDCARD=m

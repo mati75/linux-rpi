@@ -1,0 +1,42 @@
+commit 3a0343b5cb4293b524a50f2da1714fa03121a482
+Author: Aaron Shaw <shawaj@gmail.com>
+Date:   Thu Dec 28 17:31:52 2017 +0000
+
+    add backlight control to rpi-display overlay
+
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index a1a46deea45b..f876876eb982 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1305,6 +1305,7 @@ Params: speed                   Display SPI bus speed
+         debug                   Debug output level {0-7}
+         xohms                   Touchpanel sensitivity (X-plate resistance)
+         swapxy                  Swap x and y axis
++        backlight               Change backlight GPIO pin {e.g. 12, 18}
+ 
+ 
+ Name:   rpi-ft5406
+diff --git a/arch/arm/boot/dts/overlays/rpi-display-overlay.dts b/arch/arm/boot/dts/overlays/rpi-display-overlay.dts
+index d7e72eef594e..533b5c140b54 100644
+--- a/arch/arm/boot/dts/overlays/rpi-display-overlay.dts
++++ b/arch/arm/boot/dts/overlays/rpi-display-overlay.dts
+@@ -79,11 +79,13 @@
+ 		};
+ 	};
+ 	__overrides__ {
+-		speed =   <&rpidisplay>,"spi-max-frequency:0";
+-		rotate =  <&rpidisplay>,"rotate:0";
+-		fps =     <&rpidisplay>,"fps:0";
+-		debug =   <&rpidisplay>,"debug:0";
+-		xohms =   <&rpidisplay_ts>,"ti,x-plate-ohms;0";
+-		swapxy =  <&rpidisplay_ts>,"ti,swap-xy?";
++		speed =     <&rpidisplay>,"spi-max-frequency:0";
++		rotate =    <&rpidisplay>,"rotate:0";
++		fps =       <&rpidisplay>,"fps:0";
++		debug =     <&rpidisplay>,"debug:0";
++		xohms =     <&rpidisplay_ts>,"ti,x-plate-ohms;0";
++		swapxy =    <&rpidisplay_ts>,"ti,swap-xy?";
++		backlight = <&rpidisplay>,"led-gpios:4",
++		            <&rpi_display_pins>,"brcm,pins:0";
+ 	};
+ };

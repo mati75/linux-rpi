@@ -1,0 +1,36 @@
+commit 50e5cb0d080eb7949db63d1bc5e8327fd2710eee
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Sep 14 16:16:24 2017 +0100
+
+    config: Add CONFIG_GPIO_WATCHDOG=m
+    
+    Enable the gpio_wdt module, to support external watchdogs.
+    
+    See: https://github.com/raspberrypi/linux/issues/2199
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 1cbfeb00889c..74293f19e7d3 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -668,6 +668,7 @@ CONFIG_SENSORS_TMP102=m
+ CONFIG_THERMAL=y
+ CONFIG_THERMAL_BCM2835=y
+ CONFIG_WATCHDOG=y
++CONFIG_GPIO_WATCHDOG=m
+ CONFIG_BCM2835_WDT=y
+ CONFIG_UCB1400_CORE=m
+ CONFIG_MFD_STMPE=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index d0a9d90b6873..6625fdb53f4e 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -662,6 +662,7 @@ CONFIG_SENSORS_TMP102=m
+ CONFIG_THERMAL=y
+ CONFIG_THERMAL_BCM2835=y
+ CONFIG_WATCHDOG=y
++CONFIG_GPIO_WATCHDOG=m
+ CONFIG_BCM2835_WDT=y
+ CONFIG_UCB1400_CORE=m
+ CONFIG_MFD_STMPE=y

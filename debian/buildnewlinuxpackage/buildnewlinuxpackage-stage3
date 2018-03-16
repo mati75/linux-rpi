@@ -57,4 +57,10 @@ if ! git diff --quiet; then
 	git commit -a -m 'apply manual raspbian patches'
 fi
 
+chmod 644 arch/arm/boot/dts/overlays/*
+if ! git diff --quiet; then
+	git commit -a -m 'Remove executable bits from device tree overlays'
+fi
+
+
 dgit --quilt=auto quilt-fixup

@@ -1,0 +1,28 @@
+commit 6e03226fe8814efadb6732f6c0e560fca08215d1
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Oct 17 15:04:29 2017 +0100
+
+    lan78xx: Enable LEDs if no valid EEPROM or OTP
+    
+    For applications of the LAN78xx that don't have valid programmed
+    EEPROMs or OTPs, enabling both LEDs by default seems reasonable.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 0798b260c38d..13238cb527ca 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2216,6 +2216,12 @@ static int lan78xx_reset(struct lan78xx_net *dev)
+ 
+ 	ret = lan78xx_read_reg(dev, HW_CFG, &buf);
+ 	buf |= HW_CFG_MEF_;
++
++	/* If no valid EEPROM and no valid OTP, enable the LEDs by default */
++	if (lan78xx_read_eeprom(dev, 0, 0, NULL) &&
++	    lan78xx_read_otp(dev, 0, 0, NULL))
++	    buf |= HW_CFG_LED0_EN_ | HW_CFG_LED1_EN_;
++
+ 	ret = lan78xx_write_reg(dev, HW_CFG, buf);
+ 
+ 	ret = lan78xx_read_reg(dev, USB_CFG0, &buf);

@@ -1,0 +1,32 @@
+commit a6312636d2186e6610aac41c3d20edf0a13b0865
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Oct 27 21:34:12 2017 +0100
+
+    config: Add CONFIG_W1_SLAVE_DS2438=m
+    
+    See: https://github.com/raspberrypi/linux/issues/2246
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 889922c425ea..10be4184f8bf 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -649,6 +649,7 @@ CONFIG_W1_SLAVE_DS2406=m
+ CONFIG_W1_SLAVE_DS2423=m
+ CONFIG_W1_SLAVE_DS2431=m
+ CONFIG_W1_SLAVE_DS2433=m
++CONFIG_W1_SLAVE_DS2438=m
+ CONFIG_W1_SLAVE_DS2760=m
+ CONFIG_W1_SLAVE_DS2780=m
+ CONFIG_W1_SLAVE_DS2781=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 6a098ee66707..76842f6fd2c5 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -643,6 +643,7 @@ CONFIG_W1_SLAVE_DS2406=m
+ CONFIG_W1_SLAVE_DS2423=m
+ CONFIG_W1_SLAVE_DS2431=m
+ CONFIG_W1_SLAVE_DS2433=m
++CONFIG_W1_SLAVE_DS2438=m
+ CONFIG_W1_SLAVE_DS2760=m
+ CONFIG_W1_SLAVE_DS2780=m
+ CONFIG_W1_SLAVE_DS2781=m

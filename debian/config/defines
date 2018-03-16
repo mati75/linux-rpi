@@ -4,25 +4,32 @@ ignore-changes:
  __cpuhp_*
  bpf_analyzer
  cxl_*
+ cpu_tlbstate
  inet_frag_*
  inet_frags_*
  mm_iommu_*
  mv_mbus_*
  register_cxl_calls
  register_key_type
+ tcp_cong_avoid_ai
+ tcp_slow_start
  unregister_cxl_calls
  module:arch/x86/kvm/*
  module:drivers/crypto/ccp/*
  module:drivers/hv/*
  module:drivers/iio/common/hid-sensors/*
  module:drivers/iio/common/st_sensors/**
+ module:drivers/md/dm-*
  module:drivers/net/wireless/**
  module:drivers/nvdimm/*
+ module:drivers/nvme/target/*
  module:drivers/power/supply/bq27xxx_battery
  module:drivers/s390/net/qeth
  module:drivers/s390/net/qeth*
  module:drivers/scsi/cxgbi/*
  module:drivers/scsi/libiscs*
+ module:drivers/scsi/libsas/*
+ module:drivers/scsi/hisi_sas/*
  module:drivers/scsi/qla2xxx/qla2xxx
  module:drivers/scsi/ufs/*
  module:drivers/target/**
@@ -30,9 +37,13 @@ ignore-changes:
  module:drivers/usb/gadget/**
  module:drivers/usb/host/**
  module:drivers/usb/musb/**
+ module:drivers/usb/usbip/*
  module:fs/nfs/nfs
  module:net/ceph/libceph
+ module:net/ipv4/inet_diag
  module:net/l2tp/**
+ module:net/sctp/*
+ module:net/vmw_vsock/*
  module:sound/firewire/snd-firewire-lib
 # btree library is only selected by few drivers so not useful OOT
  btree_*
@@ -90,7 +101,7 @@ arches:
  sparc64
  tilegx
  x32
-compiler: gcc-6
+compiler: gcc-4.9
 featuresets:
  none
  rt
@@ -99,7 +110,7 @@ featuresets:
 debug-info: true
 
 [featureset-rt_base]
-enabled: false
+enabled: true
 
 [description]
 part-long-up: This kernel is not suitable for SMP (multi-processor,
@@ -112,7 +123,7 @@ initramfs-generators: initramfs-tools initramfs-fallback
 
 [relations]
 # compilers
-gcc-6: gcc-6 <!stage1 !cross>, gcc-6-@gnu-type-package@:native <!stage1 cross>
+gcc-4.9: gcc-4.9 <!stage1 !cross>, gcc-6-@gnu-type-package@:native <!stage1 cross>
 
 # initramfs-generators
 initramfs-fallback: linux-initramfs-tool

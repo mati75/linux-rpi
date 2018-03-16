@@ -1,0 +1,36 @@
+commit 562bcea37438dc88c0f65a10ee57bb4a50342ecd
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Nov 30 09:04:07 2017 +0000
+
+    config: Add GPIO_PCF857X=m
+    
+    The PCF8574 & 5 are I2C-connected 8- & 16-bit GPIO expanders.
+    
+    See: https://github.com/raspberrypi/linux/issues/2294
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index dc8b77f0637d..8800a1081bb7 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -633,6 +633,7 @@ CONFIG_PPS_CLIENT_GPIO=m
+ CONFIG_GPIO_SYSFS=y
+ CONFIG_GPIO_BCM_EXP=y
+ CONFIG_GPIO_BCM_VIRT=y
++CONFIG_GPIO_PCF857X=m
+ CONFIG_GPIO_ARIZONA=m
+ CONFIG_GPIO_STMPE=y
+ CONFIG_GPIO_MCP23S08=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 2e5a841c54ea..28266427f843 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -627,6 +627,7 @@ CONFIG_PPS=m
+ CONFIG_PPS_CLIENT_LDISC=m
+ CONFIG_PPS_CLIENT_GPIO=m
+ CONFIG_GPIO_SYSFS=y
++CONFIG_GPIO_PCF857X=m
+ CONFIG_GPIO_ARIZONA=m
+ CONFIG_GPIO_STMPE=y
+ CONFIG_GPIO_MCP23S08=m

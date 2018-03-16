@@ -1,0 +1,22 @@
+commit 62019955f218942bffc0e8a95d9492341da9e9ad
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Jan 22 17:26:38 2018 +0000
+
+    serial: 8250: bcm2835aux - suppress EPROBE_DEFER
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/tty/serial/8250/8250_bcm2835aux.c b/drivers/tty/serial/8250/8250_bcm2835aux.c
+index a23c7da42ea8..4f8b8c971868 100644
+--- a/drivers/tty/serial/8250/8250_bcm2835aux.c
++++ b/drivers/tty/serial/8250/8250_bcm2835aux.c
+@@ -54,7 +54,8 @@ static int bcm2835aux_serial_probe(struct platform_device *pdev)
+ 	data->clk = devm_clk_get(&pdev->dev, NULL);
+ 	ret = PTR_ERR_OR_ZERO(data->clk);
+ 	if (ret) {
+-		dev_err(&pdev->dev, "could not get clk: %d\n", ret);
++		if (ret != -EPROBE_DEFER)
++			dev_err(&pdev->dev, "could not get clk: %d\n", ret);
+ 		return ret;
+ 	}
+ 

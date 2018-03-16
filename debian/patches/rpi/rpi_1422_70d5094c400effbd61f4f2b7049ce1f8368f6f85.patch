@@ -1,0 +1,53 @@
+commit 70d5094c400effbd61f4f2b7049ce1f8368f6f85
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Nov 27 17:14:54 2017 +0000
+
+    cgroup: Fix automatic disabling of cgroup "memory"
+    
+    Some Raspberry Pis have limited RAM and most users won't use the
+    cgroup memory support so it is disabled by default. The previous
+    implementation relied on the memory cgroup being encountered first,
+    which is not guaranteed to be the case. Change the implementation
+    to be registration-order-agnostic.
+    
+    See: https://github.com/raspberrypi/issues/1950
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/kernel/cgroup.c b/kernel/cgroup.c
+index 2650df194b5d..49b0ca043a65 100644
+--- a/kernel/cgroup.c
++++ b/kernel/cgroup.c
+@@ -5637,7 +5637,9 @@ int __init cgroup_init_early(void)
+ 	return 0;
+ }
+ 
+-static u16 cgroup_disable_mask __initdata = 1<<0;
++static u16 cgroup_disable_mask __initdata;
++static u16 cgroup_enable_mask __initdata;
++static int __init cgroup_disable(char *str);
+ 
+ /**
+  * cgroup_init - cgroup initialization
+@@ -5676,6 +5678,12 @@ int __init cgroup_init(void)
+ 
+ 	mutex_unlock(&cgroup_mutex);
+ 
++	/* Apply an implicit disable... */
++	cgroup_disable("memory");
++
++	/* ...knowing that an explicit enable will override it. */
++	cgroup_disable_mask &= ~cgroup_enable_mask;
++
+ 	for_each_subsys(ss, ssid) {
+ 		if (ss->early_init) {
+ 			struct cgroup_subsys_state *css =
+@@ -6193,7 +6201,7 @@ static int __init cgroup_enable(char *str)
+ 			    strcmp(token, ss->legacy_name))
+ 				continue;
+ 
+-			cgroup_disable_mask &= ~(1 << i);
++			cgroup_enable_mask |= 1 << i;
+ 		}
+ 	}
+ 	return 1;

@@ -1,0 +1,89 @@
+commit 30a645ab8596d624140b1362bb8fadc7c7700492
+Author: Allo <sparky-dev@allo.com>
+Date:   Mon Oct 16 22:22:24 2017 +0530
+
+    Bug fix: initial max volume level & default mode value. (#2224)
+    
+    Bug fix: initial max volume level & default mode value.
+    
+    Signed-off-by: allocom <sparky-dev@allo.com>
+
+diff --git a/sound/soc/bcm/allo-piano-dac-plus.c b/sound/soc/bcm/allo-piano-dac-plus.c
+index 730f57cb6730..1800f5e4d414 100644
+--- a/sound/soc/bcm/allo-piano-dac-plus.c
++++ b/sound/soc/bcm/allo-piano-dac-plus.c
+@@ -118,7 +118,7 @@ static int __snd_allo_piano_dsp_program(struct snd_soc_pcm_runtime *rtd,
+ 		rate = 192000;
+ 
+ 	if (lowpass > 14)
+-		glb_ptr->set_lowpass = lowpass = 3;
++		glb_ptr->set_lowpass = lowpass = 0;
+ 
+ 	if (mode > 3)
+ 		glb_ptr->set_mode = mode = 0;
+@@ -262,6 +262,7 @@ static int snd_allo_piano_dual_mode_put(struct snd_kcontrol *kcontrol,
+ 			glb_ptr->set_mode = 0;
+ 		} else {
+ 			glb_ptr->dual_mode = 0;
++			return 0;
+ 		}
+ 	}
+ 
+@@ -441,6 +442,14 @@ static int pcm512x_set_reg_sub(struct snd_kcontrol *kcontrol,
+ 			return ret;
+ 	}
+ 
++	if (digital_gain_0db_limit) {
++		ret = snd_soc_limit_volume(card, "Subwoofer Playback Volume",
++					207);
++		if (ret < 0)
++			dev_warn(card->dev, "Failed to set volume limit: %d\n",
++				ret);
++	}
++
+ 	ret = snd_soc_write(rtd->codec_dais[1]->codec,
+ 			PCM512x_DIGITAL_VOLUME_3, (~right_val));
+ 	if (ret < 0)
+@@ -541,6 +550,14 @@ static int pcm512x_set_reg_master(struct snd_kcontrol *kcontrol,
+ 
+ 	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[0].name);
+ 
++	if (digital_gain_0db_limit) {
++		ret = snd_soc_limit_volume(card, "Master Playback Volume",
++					207);
++		if (ret < 0)
++			dev_warn(card->dev, "Failed to set volume limit: %d\n",
++				ret);
++	}
++
+ 	if (glb_ptr->dual_mode != 1) {
+ 		ret = snd_soc_write(rtd->codec_dais[1]->codec,
+ 				PCM512x_DIGITAL_VOLUME_2, (~left_val));
+@@ -693,6 +710,8 @@ static int snd_allo_piano_dac_init(struct snd_soc_pcm_runtime *rtd)
+ 
+ 	memset(glb_ptr, 0x00, sizeof(glb_ptr));
+ 	card->drvdata = glb_ptr;
++	glb_ptr->dual_mode = 2;
++	glb_ptr->set_mode = 0;
+ 
+ 	mutex_init(&glb_ptr->lock);
+ 
+@@ -815,18 +834,6 @@ static int snd_allo_piano_dac_hw_params(
+ 		}
+ 	}
+ 
+-	if (digital_gain_0db_limit) {
+-		ret = snd_soc_limit_volume(card,
+-				"Subwoofer Playback Volume", 207);
+-		if (ret < 0)
+-			dev_warn(card->dev, "Failed to set volume limit: %d\n",
+-				ret);
+-		ret = snd_soc_limit_volume(card, "Master Playback Volume", 207);
+-		if (ret < 0)
+-			dev_warn(card->dev, "Failed to set volume limit: %d\n",
+-				ret);
+-	}
+-
+ 	ret = snd_allo_piano_dsp_program(rtd, glb_ptr->set_mode, rate,
+ 						glb_ptr->set_lowpass);
+ 	if (ret < 0)
