@@ -1,4 +1,4 @@
-linux (4.15.11-1rpi1) buster-staging; urgency=medium
+linux (4.15.11-1+rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -117,7 +117,7 @@ linux (4.15.11-1rpi1) buster-staging; urgency=medium
   * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
   * Remove ext3 modules from d-i package list.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 20 Feb 2018 06:19:53 +0100
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 21 Mar 2018 08:37:09 +0100
 
 linux (4.15.11-1) unstable; urgency=medium
 
