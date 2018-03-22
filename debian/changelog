@@ -1,4 +1,4 @@
-linux (4.15.11-1+rpi1) buster-staging; urgency=medium
+linux (4.16~rc6-1~exp1+rpi1) experimental; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -118,6 +118,69 @@ linux (4.15.11-1+rpi1) buster-staging; urgency=medium
   * Remove ext3 modules from d-i package list.
 
  -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 21 Mar 2018 08:37:09 +0100
+
+linux (4.16~rc6-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Jeremy Stanley ]
+  * [x86] Enable CONFIG_GPD_POCKET_FAN as a module (provides fan control on
+    GPD Pocket UMPC systems) (Closes: #893451)
+
+  [ Uwe Kleine-König ]
+  * [arm64] enable various drivers as module for teres-i OSHW laptop
+    (Closes: #892786)
+
+  [ Helge Deller ]
+  * [hppa] Re-enable 32-bit SMP kernel build. Qemu now supports it.
+
+  [ Ben Hutchings ]
+  * udeb: Add dependency from nic-modules to zlib-modules (fixes FTBFS on
+    some architectures)
+  * i40e: Add kconfig dependency to ensure cmpxchg64() is available
+    (fixes FTBFS on some architectures)
+  * [ia64] Re-add configuration for kernel and udebs:
+    - Revert "Remove all support for ia64" (Closes: #886693)
+    - Disable IRDA, consistent with other architectures
+    - linux-image: Don't suggest fdutils
+    - Compile with gcc-7
+    - linux-image: Improve flavour descriptions
+    - udeb: Combine core-modules/kernel-image and scsi{,-common,-extra}-modules
+    - udeb: Add i2c-modules
+
+  [ Vagrant Cascadian ]
+  * [armhf] Enable ARCH_MESON and related drivers.
+  * [armhf] Add device-tree patches from linux-next to support USB and
+    Ethernet on meson8b.
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Tue, 20 Mar 2018 13:52:03 +0000
+
+linux (4.16~rc5-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Uwe Kleine-König ]
+  * netfilter: enable NFT_FIB_NETDEV as module
+
+  [ Thadeu Lima de Souza Cascardo ]
+  * [powerpc,ppc64el,ppc64] Enable CRASH_DUMP (Closes: #883432)
+
+  [ Bastian Blank ]
+  * Drop note about Xen from long descriptions.
+
+  [ Vagrant Cascadian ]
+  * [arm64] Enable ROCKCHIP_IODOMAIN as a module, to enable PCIe reset.
+  * [arm64] Enable REGULATOR_FAN53555 as a module, enabling cpufreq to
+    work on rk3399 A72 cores.
+  * [arm64] Apply patch from linux-next to fix eMMC corruption on
+    Odroid-C2 (Closes: #879072).
+
+  [ Ben Hutchings ]
+  * debian/control: Update profile qualification for build-deps on bison
+    and flex, which are now used to build kconfig
+  * debian/rules.d/tools/kconfig/Makefile: Use bison and flex to build kconfig
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Tue, 13 Mar 2018 02:06:57 +0000
 
 linux (4.15.11-1) unstable; urgency=medium
 
