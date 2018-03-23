@@ -6,13 +6,14 @@
 set -x
 set -e
 debdir=`pwd`
-upstream_tag=v4.15.11
-rpi_branch=rpi-4.15.y
+upstream_tag=v4.16-rc6
+rpi_branch=rpi-4.16.y
 rpi_tree=rpi/${rpi_branch}
 #rpi_tree=d00322d695cfce3ce9ec15efebe411b34142ad41
 patch_dir=${debdir}/debian/patches
 rpi_patches=${patch_dir}/rpi
-upstream_gitrepo=git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+upstream_gitrepo=https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+#upstream_gitrepo=git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
 #canonical git repo for ckt "upstream" releases
 #upstream_gitrepo=git://kernel.ubuntu.com/ubuntu/linux.git
 

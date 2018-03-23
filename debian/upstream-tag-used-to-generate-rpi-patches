@@ -1,41 +1,37 @@
-tag v4.15.11
-Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Mon Mar 19 09:16:30 2018 +0100
+tag v4.16-rc6
+Tagger: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun Mar 18 17:48:54 2018 -0700
 
-This is the 4.15.11 stable release
+Linux 4.16-rc6
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlqvcd4ACgkQONu9yGCS
-aT454w/7B8+xQATVk/YGU7gTbxfEPdCjS0w2GMOHZmqyCg7t3YyvELFLYdQvBeFB
-z60h1z3x2UqewW1YBXq/wMpj4PQ5a0GV7ilD+1+BGN4OBLJrg81wD4guCR3x+CzC
-rQ6cbAt5JkJL/wLI+LSlwZG3UZnnBiKap1giDOEz6541vSAT1AFgsX73QWBglFKF
-e1GjqwG88W3eAs7V68HvxKgaXy5nBeBTlHjcI4Nmm9ukHOcZhvC3A4VnXRvndBvd
-/7pEdA0PWs9US5yPIQwNkB211D3ZDdzjprx88+heK7aPHe8fzQOligTEzbYX1nPq
-yDhsGRDfI+WIeIK3p2/rP5tCQWRZnNXR8QqGXkvufZRt9+BRd6X2580H5MS8mB6I
-4kEdftvVf42s/dQjOzZGBQYiZfGMMHn0YFZI6zRy/LmZGvkrOYPEmUI5sAa8F4CD
-DopKcQFVj5BDaG+GooQRhwfmLlz2dqM0Ha7VTZbhgFFgJ50UyhloXRt/rxk2VuAh
-HlYo0QzlCCajCsD7zucookL85kxBbnOAaOEWyj2rBd+az0pIq+RdCUPdOZSiBq+y
-ezypRPmxaO9eFNug/NWXdp5ZSf4wdHJVcAuLEneOafZ2mBNtPa1QQNrhCAE0Capx
-R7u6sDStdKPhSPEX9FWNneYhk8F4MbBdwyPbrT5q4YdewqQP/OE=
-=gsvf
+iQFSBAABCAA8FiEEq68RxlopcLEwq+PEeb4+QwBBGIYFAlqvCPYeHHRvcnZhbGRz
+QGxpbnV4LWZvdW5kYXRpb24ub3JnAAoJEHm+PkMAQRiGOaAH/171cgZGFEXSONxK
+3O1AAv61wN5K/ISMt6mnelWR6fZg195FarOx0Rnq7Ot8OWuVa8CGcyT4vX4Z7nb9
+SVMQKNMPCVQE4WCDOv6S0njChmRC0BxBoVJtTN9fhywdYgX1KcaTS/drMRHACF5n
+rB9eouMQScfMzKGAW08gp5NvEGJ6W1SLX7La3/u0751dYisdJSP7+vFZNxUrGXEA
+yIPOQjFu0Tfo8GXz/BwC678RZVzVLN0sE6+/vM7zNnoDlsRVkdDIVMo3UiVqm/NK
+B37/TlZz8CYoapoKnRRB5giXnSPDSXtsikbGy3mcy0u5imGe+ZgdjrdYSaLk31cR
+NVZY08k=
+=pu3X
 -----END PGP SIGNATURE-----
 
-commit 51d480eafd15d9fea08d58aa828f9b02332a0396
-Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Mon Mar 19 09:10:00 2018 +0100
+commit c698ca5278934c0ae32297a8725ced2e27585d7f
+Author: Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sun Mar 18 17:48:42 2018 -0700
 
-    Linux 4.15.11
+    Linux 4.16-rc6
 
 diff --git a/Makefile b/Makefile
-index 7eed0f168b13..74c0f5e8dd55 100644
+index e02d092bc2d6..d65e2e229017 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
+@@ -2,7 +2,7 @@
  VERSION = 4
- PATCHLEVEL = 15
--SUBLEVEL = 10
-+SUBLEVEL = 11
- EXTRAVERSION =
+ PATCHLEVEL = 16
+ SUBLEVEL = 0
+-EXTRAVERSION = -rc5
++EXTRAVERSION = -rc6
  NAME = Fearless Coyote
  
+ # *DOCUMENTATION*

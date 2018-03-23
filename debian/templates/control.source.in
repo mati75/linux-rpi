@@ -64,6 +64,7 @@ Build-Depends-Indep:
  graphviz <!stage1 !nodoc>,
  python-sphinx <!stage1 !nodoc>,
  python-sphinx-rtd-theme <!stage1 !nodoc>,
+ flex, bison
 Rules-Requires-Root: no
 Vcs-Git: https://salsa.debian.org/kernel-team/linux.git
 Vcs-Browser: https://salsa.debian.org/kernel-team/linux

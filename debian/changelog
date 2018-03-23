@@ -117,7 +117,7 @@ linux (4.16~rc6-1~exp1+rpi1) experimental; urgency=medium
   * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
   * Remove ext3 modules from d-i package list.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 21 Mar 2018 08:37:09 +0100
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 22 Mar 2018 10:53:34 +0100
 
 linux (4.16~rc6-1~exp1) experimental; urgency=medium
 

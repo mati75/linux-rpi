@@ -136,7 +136,7 @@ class VersionLinux(Version):
 (\.\d+)?
 (?:
     (?P<revision_experimental>
-        ~exp\d+
+        ~exp\d+\+rpi\d+
     )
     |
     (?P<revision_security>
