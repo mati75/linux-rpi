@@ -129,7 +129,3 @@ gcc-7: gcc-7 <!stage1 !cross>, gcc-7-@gnu-type-package@ <!stage1 cross>
 # initramfs-generators
 initramfs-fallback: linux-initramfs-tool
 initramfs-tools: initramfs-tools (>= 0.120+deb8u2)
-
-[packages]
-tools: false
-

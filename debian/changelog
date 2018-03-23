@@ -1,3 +1,10 @@
+linux (4.15.11-1+rpi2) buster-staging; urgency=medium
+
+  * Reenable tools.
+  * Fix arm64 build.
+
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 22 Mar 2018 11:21:36 +0100
+
 linux (4.15.11-1+rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
