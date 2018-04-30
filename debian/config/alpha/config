@@ -443,7 +443,6 @@ CONFIG_MTD_CFI_STAA=m
 CONFIG_MTD_RAM=m
 CONFIG_MTD_ROM=m
 CONFIG_MTD_ABSENT=m
-CONFIG_MTD_XIP=y
 
 ##
 ## file: drivers/mtd/devices/Kconfig
@@ -796,6 +795,12 @@ CONFIG_PCMCIA_QLOGIC=m
 CONFIG_PCMCIA_SYM53C500=m
 
 ##
+## file: drivers/staging/ipx/Kconfig
+##
+CONFIG_IPX=m
+# CONFIG_IPX_INTERN is not set
+
+##
 ## file: drivers/tty/Kconfig
 ##
 CONFIG_VT=y
@@ -945,12 +950,6 @@ CONFIG_ROSE=m
 ##
 CONFIG_DECNET=m
 # CONFIG_DECNET_ROUTER is not set
-
-##
-## file: net/ipx/Kconfig
-##
-CONFIG_IPX=m
-# CONFIG_IPX_INTERN is not set
 
 ##
 ## file: net/lapb/Kconfig
