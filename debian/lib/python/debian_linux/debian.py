@@ -181,10 +181,10 @@ class VersionLinux(Version):
     )?
     |
     (?P<revision_other>
-        [^-+]+
+        [^-]+
     )
 )
-(?:\+b\d+)?
+(?:\+r\+b\d+)?
 $
 """
     _version_linux_re = re.compile(_version_linux_rules, re.X)

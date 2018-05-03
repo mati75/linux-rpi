@@ -1,41 +1,41 @@
-tag v4.15.17
+tag v4.16.5
 Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Thu Apr 12 12:31:21 2018 +0200
+Date:   Thu Apr 26 11:00:41 2018 +0200
 
-This is the 4.15.17 stable release
+This is the 4.16.5 stable release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlrPNXkACgkQONu9yGCS
-aT6nbg/9GH4sVEiGlHB/suX11YXtEcKBWeyM9sSQ0WnJEzpJWfLBkDU03ImXqB7Z
-YlPQM2/X8Qugv/oKfPZYbntH3NBMA4BFgeZBCFNGV4dDftWEkruFunhzd8qW9N+r
-Hahls7ydgJgNHzNuMpbsvTFc9F2U3/8Cs4X9t82W+M0h+98Pobtxyxl5ktfCyHwF
-iaTqxyAWxXlQ+q5Lf2sDHH8NznMgyIa+ZzSC/hEcaXo7QyiHYBq0ypHJybvC2+ui
-aKTa1VY8vlaSZlgnp2Y9fYasayUJMOqZ9nj7D4RKHxmAHgIm360FKkxOMO6/OWi4
-6noFr0aOdCQGDUh7GACC145nCSLZqgu2XIH6n8kiVSqqghKznJEIsuFYVZgA02kL
-C7iW3j08rsFIJ9HD3NIs5dkOnhjAfzooGEIs3GmWtRVCBGJc9+wiDQ6XNkd/U8JA
-0QwVkrID/PUrOC95UEPJo/BiV9j9MTkgMAVE0ZuDgHqX797lZSEPVDO5xAkOq82f
-aNqqtFMu8tbLs6kyleu+Kl0bbrqL+D1g2y7bzcx8/UfOFoIC/TQk4hPmt4PxGdDF
-jFCe/7QLt5Su71HRHST1ioUPCQ1k3mS7WnwS7vz7PStkD2Pg557wNWz31OBDEcEG
-mqTA1lELwXDPcSyzH6KHdCe6Z9lVLS8SwSyFOlNVcPFbDFMGqt4=
-=AfA4
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlrhlTkACgkQONu9yGCS
+aT5v5RAA1Dwb6/tRwftCw4H+sn0dEJT3TdGQMi9iJwMtAqZ0xfErCpehfXo6fluO
+EhIQkIMCtM9l+KrrPozt9rG4P0Ix/HU5jmQqhYPl04pWjsrBER6aziTJ+MhWY26m
+a2UftGmILxiV/iCgx2GvpkFN6/a5NM4P2t6Ljkw81wvFTkPACisz/Gn6JFoNFJgo
+1jls+9P8MPCj6zNKjaWogzVlrimijvmONhAiCjA4eUqXYm4T29QfRJ+/kMcP0NPc
+CuXdSKHjDkIPzFBJsnAEhW3Nj/opTt7evgFS6Ay7+7sISxaXRhxZ0nj5HlsicTIO
+z7C/MCab08UcwjTV8kHk9Y1UjKfPzmFIvCMANlDyKobZvcMiwKk+VJSICNSDjpiC
+1jpyZkEs8wngRZILd5yAabaqZXfbBoSo0qPJ54H3Vwh10jicFLSMlhfdPhKDy4OU
+nMSfaraM7Wo5mkcb7n680wXVRoBUo/I7U9jj7J+PjEi1Gm7yNZ8hJQMtJiS/VL4K
+O2vTFsPEBa6ezAM4ZF+y3f3f2pevmSQ4OdH2Lvzu7WbKPAtq+oG7lYM+U8VZbyK4
+IMmwMIZpuO3uzIx3sJHG+yVZ44uE45+X4JJHxFyIHY3VdDyurYsy4nW0MAE2xJhF
+CF50cpxTYucIFaghczWX29P6MFVLBu84IF7JdVXO3/r9+f145VY=
+=WpQV
 -----END PGP SIGNATURE-----
 
-commit b22a1fa1b34f17ef3a5cc6007e0705375de3d5dd
+commit e5ce9f6879d3fe20435f34dfd86fb76c36072916
 Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Thu Apr 12 12:31:21 2018 +0200
+Date:   Thu Apr 26 11:00:39 2018 +0200
 
-    Linux 4.15.17
+    Linux 4.16.5
 
 diff --git a/Makefile b/Makefile
-index b28f0f721ec7..cfff73b62eb5 100644
+index d51175192ac1..6678a90f355b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
- PATCHLEVEL = 15
--SUBLEVEL = 16
-+SUBLEVEL = 17
+ PATCHLEVEL = 16
+-SUBLEVEL = 4
++SUBLEVEL = 5
  EXTRAVERSION =
  NAME = Fearless Coyote
  
