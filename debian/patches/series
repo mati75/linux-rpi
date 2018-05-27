@@ -709,7 +709,6 @@ bugfix/all/perf-hwbp-simplify-the-perf-hwbp-code-fix-documentat.patch
 
 # Fix ABI changes
 
-
 rpi/rpi_1000_df585c81fd08256cfa2aa67d178b11d109606083.patch
 rpi/rpi_1001_d911fd1e5c1448caf47977e08050c2f79447f786.patch
 rpi/rpi_1002_05901f4b437330bc3ece1e993c2bde73a15b409f.patch

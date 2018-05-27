@@ -1,4 +1,4 @@
-linux (3.16.56-3+rpi1) jessie-staging; urgency=medium
+linux (3.16.56-1+rpi1) jessie-staging; urgency=medium
 
   [ Raspbian forward porter ]
   [changes brought forward from 3.16.7-ckt4-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sun, 18 Jan 2015 13:41:28 +0000]
@@ -33,7 +33,7 @@ linux (3.16.56-3+rpi1) jessie-staging; urgency=medium
     which conflicted with the rpi patches.
   * Add RTC related kernel changes requested by Diederik
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 09 Jan 2018 17:35:13 +0100
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 03 May 2018 22:43:05 +0200
 
 linux (3.16.56-1) jessie-security; urgency=high
 
