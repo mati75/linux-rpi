@@ -1,0 +1,55 @@
+commit 5ffa215c4248f0e0eedbcdae75fb502a144c9807
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Feb 21 13:19:28 2018 +0000
+
+    config: CONFIG_LIRC is now a boolean
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index e5e3c253ce44..e4f80428eff3 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -666,7 +666,7 @@ CONFIG_REGULATOR_FIXED_VOLTAGE=m
+ CONFIG_REGULATOR_ARIZONA_LDO1=m
+ CONFIG_REGULATOR_ARIZONA_MICSUPP=m
+ CONFIG_RC_CORE=y
+-CONFIG_LIRC=m
++CONFIG_LIRC=y
+ CONFIG_RC_DEVICES=y
+ CONFIG_RC_ATI_REMOTE=m
+ CONFIG_IR_IMON=m
+@@ -1171,7 +1171,6 @@ CONFIG_FB_TFT_WATTEROTT=m
+ CONFIG_FB_FLEX=m
+ CONFIG_FB_TFT_FBTFT_DEVICE=m
+ CONFIG_BCM2835_VCHIQ=y
+-CONFIG_BCM2835_VCHIQ_SUPPORT_MEMDUMP=y
+ CONFIG_SND_BCM2835=m
+ CONFIG_VIDEO_BCM2835=m
+ CONFIG_MAILBOX=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index c3758a1b221f..aef188e28104 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -659,7 +659,7 @@ CONFIG_REGULATOR_FIXED_VOLTAGE=m
+ CONFIG_REGULATOR_ARIZONA_LDO1=m
+ CONFIG_REGULATOR_ARIZONA_MICSUPP=m
+ CONFIG_RC_CORE=y
+-CONFIG_LIRC=m
++CONFIG_LIRC=y
+ CONFIG_RC_DEVICES=y
+ CONFIG_RC_ATI_REMOTE=m
+ CONFIG_IR_IMON=m
+@@ -1177,7 +1177,6 @@ CONFIG_FB_TFT_WATTEROTT=m
+ CONFIG_FB_FLEX=m
+ CONFIG_FB_TFT_FBTFT_DEVICE=m
+ CONFIG_BCM2835_VCHIQ=y
+-CONFIG_BCM2835_VCHIQ_SUPPORT_MEMDUMP=y
+ CONFIG_SND_BCM2835=m
+ CONFIG_VIDEO_BCM2835=m
+ CONFIG_MAILBOX=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1146_5ffa215c4248f0e0eedbcdae75fb502a144c9807.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1146_5ffa215c4248f0e0eedbcdae75fb502a144c9807.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

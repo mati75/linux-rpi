@@ -1,0 +1,66 @@
+commit b1d880f9921b5f0e6ec5b0b75fe1935e9e2d3eee
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Mar 21 16:04:18 2018 +0000
+
+    BCM27XX_DT: Set LED modes from Device Tree
+    
+    The new default values for LAN7515 (LAN7800) are:
+    
+      LED0 = 1 (link1000/activity)
+      LED1 = 6 (link10/link100/activity)
+    
+    Also add two dtparams - eth_led0 and eth_led1 - to provide user control
+    over the LEDs.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm283x-rpi-lan7515.dtsi b/arch/arm/boot/dts/bcm283x-rpi-lan7515.dtsi
+index 1b1075d4aa5c..154d48b7c45d 100644
+--- a/arch/arm/boot/dts/bcm283x-rpi-lan7515.dtsi
++++ b/arch/arm/boot/dts/bcm283x-rpi-lan7515.dtsi
+@@ -22,6 +22,11 @@
+ 				reg = <1>;
+ 				microchip,eee-enabled;
+ 				microchip,tx-lpi-timer = <600>; /* non-aggressive*/
++				/*
++				 * led0 = 1:link1000/activity
++				 * led1 = 6:link10/100/activity
++				 */
++				microchip,led-modes = <1 6>;
+ 			};
+ 		};
+ 	};
+@@ -32,5 +37,7 @@
+ 	__overrides__ {
+ 		eee = <&ethernet>,"microchip,eee-enabled?";
+ 		tx_lpi_timer = <&ethernet>,"microchip,tx-lpi-timer:0";
++		eth_led0 = <&ethernet>,"microchip,led-modes:0";
++		eth_led1 = <&ethernet>,"microchip,led-modes:4";
+ 	};
+ };
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index 3e260a9325fb..9652c741377b 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -93,6 +93,16 @@ Params:
+                                 compatible devices (default "on"). See also
+                                 "tx_lpi_timer".
+ 
++        eth_led0                Set mode of LED0 (usually orange) (default
++                                "1"). The legal values are:
++                                0=link/activity          1=link1000/activity
++                                2=link100/activity       3=link10/activity
++                                4=link100/1000/activity  5=link10/1000/activity
++                                6=link10/100/activity    14=off    15=on
++
++        eth_led1                Set mode of LED1 (usually green) (default
++                                "6"). See eth_led0 for legal values.
++
+         i2c_arm                 Set to "on" to enable the ARM's i2c interface
+                                 (default "off")
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1210_b1d880f9921b5f0e6ec5b0b75fe1935e9e2d3eee.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1210_b1d880f9921b5f0e6ec5b0b75fe1935e9e2d3eee.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

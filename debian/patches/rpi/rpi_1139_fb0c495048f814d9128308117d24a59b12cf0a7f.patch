@@ -1,0 +1,31 @@
+commit fb0c495048f814d9128308117d24a59b12cf0a7f
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Feb 19 17:04:42 2018 +0000
+
+    BCM270X_DT: Add brcm,bcm2835-sdhci as a fallback
+    
+    Although downstream uses a different MMC/SDHCI driver there is
+    no reason why can't support the upstream as a fallback.
+    
+    See: https://github.com/raspberrypi/firmware/issues/943
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm270x.dtsi b/arch/arm/boot/dts/bcm270x.dtsi
+index c7c58265cd5e..5c12450d2c30 100644
+--- a/arch/arm/boot/dts/bcm270x.dtsi
++++ b/arch/arm/boot/dts/bcm270x.dtsi
+@@ -61,7 +61,7 @@
+ 		/delete-node/ sdhci@7e300000;
+ 
+ 		mmc: mmc@7e300000 {
+-			compatible = "brcm,bcm2835-mmc";
++			compatible = "brcm,bcm2835-mmc", "brcm,bcm2835-sdhci";
+ 			reg = <0x7e300000 0x100>;
+ 			interrupts = <2 30>;
+ 			clocks = <&clocks BCM2835_CLOCK_EMMC>;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1139_fb0c495048f814d9128308117d24a59b12cf0a7f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1139_fb0c495048f814d9128308117d24a59b12cf0a7f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

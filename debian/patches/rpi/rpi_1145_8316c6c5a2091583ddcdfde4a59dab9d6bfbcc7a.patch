@@ -1,0 +1,102 @@
+commit 8316c6c5a2091583ddcdfde4a59dab9d6bfbcc7a
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Feb 20 17:32:02 2018 +0000
+
+    overlays: Add sc16is752-i2c overlay
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index a4c5b740bf74..1429d4adbe6b 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -100,6 +100,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	rpi-tv.dtbo \
+ 	rra-digidac1-wm8741-audio.dtbo \
+ 	sc16is750-i2c.dtbo \
++	sc16is752-i2c.dtbo \
+ 	sc16is752-spi1.dtbo \
+ 	sdhost.dtbo \
+ 	sdio.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index be63795ad5ef..2576151e825b 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1447,14 +1447,23 @@ Params: <None>
+ 
+ Name:   sc16is750-i2c
+ Info:   Overlay for the NXP SC16IS750 UART with I2C Interface
+-        Enables the chip on I2C1 at 0x48. To select another address,
+-        please refer to table 10 in reference manual.
+-
++        Enables the chip on I2C1 at 0x48 (or the "addr" parameter value). To
++        select another address, please refer to table 10 in reference manual.
+ Load:   dtoverlay=sc16is750-i2c,<param>=<val>
+ Params: int_pin                 GPIO used for IRQ (default 24)
+         addr                    Address (default 0x48)
+ 
+ 
++Name:   sc16is752-i2c
++Info:   Overlay for the NXP SC16IS752 dual UART with I2C Interface
++        Enables the chip on I2C1 at 0x48 (or the "addr" parameter value). To
++        select another address, please refer to table 10 in reference manual.
++Load:   dtoverlay=sc16is752-i2c,<param>=<val>
++Params: int_pin                 GPIO used for IRQ (default 24)
++        addr                    Address (default 0x48)
++        xtal                    On-board crystal frequency (default 14745600)
++
++
+ Name:   sc16is752-spi1
+ Info:   Overlay for the NXP SC16IS752 Dual UART with SPI Interface
+         Enables the chip on SPI1.
+diff --git a/arch/arm/boot/dts/overlays/sc16is752-i2c-overlay.dts b/arch/arm/boot/dts/overlays/sc16is752-i2c-overlay.dts
+new file mode 100644
+index 000000000000..e43e81d5a28f
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/sc16is752-i2c-overlay.dts
+@@ -0,0 +1,40 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2835";
++
++	fragment@0 {
++		target = <&i2c1>;
++
++		frag1: __overlay__ {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "okay";
++
++			sc16is752: sc16is752@48 {
++				compatible = "nxp,sc16is752";
++				reg = <0x48>; // i2c address
++				clocks = <&sc16is752_clk>;
++				interrupt-parent = <&gpio>;
++				interrupts = <24 0x2>; /* IRQ_TYPE_EDGE_FALLING */
++				gpio-controller;
++				#gpio-cells = <0>;
++				i2c-max-frequency = <400000>;
++				status = "okay";
++
++				sc16is752_clk: sc16is752_clk {
++					compatible = "fixed-clock";
++					#clock-cells = <0>;
++					clock-frequency = <14745600>;
++				};
++			};
++		};
++	};
++
++	__overrides__ {
++		int_pin = <&sc16is752>,"interrupts:0";
++		addr = <&sc16is752>,"reg:0";
++		xtal = <&sc16is752>,"clock-frequency:0";
++	};
++};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1145_8316c6c5a2091583ddcdfde4a59dab9d6bfbcc7a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1145_8316c6c5a2091583ddcdfde4a59dab9d6bfbcc7a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

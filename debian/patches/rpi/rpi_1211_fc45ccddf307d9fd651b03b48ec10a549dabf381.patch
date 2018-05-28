@@ -1,0 +1,26 @@
+commit fc45ccddf307d9fd651b03b48ec10a549dabf381
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Jan 23 11:41:54 2017 -0800
+
+    BCM270X: Disable VEC unless vc4-kms-v3d is present.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+    (cherry picked from commit dabd52db47d2e799323639734787e3a338c2b2a5)
+
+diff --git a/arch/arm/boot/dts/bcm2708-rpi.dtsi b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+index 17963a9c3322..d105d4e208f2 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+@@ -155,3 +155,7 @@ sdhost_pins: &sdhost_gpio48 {
+ &cpu_thermal {
+ 	/delete-node/ trips;
+ };
++
++&vec {
++	status = "disabled";
++};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1211_fc45ccddf307d9fd651b03b48ec10a549dabf381.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1211_fc45ccddf307d9fd651b03b48ec10a549dabf381.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

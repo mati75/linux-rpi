@@ -1,0 +1,37 @@
+commit b5eff9a155d5d6727d610076db07554e9ca7c325
+Author: Matthias Reichl <hias@horus.com>
+Date:   Tue Feb 6 15:37:22 2018 +0100
+
+    config: enable Audio Graph Card module
+    
+    Signed-off-by: Matthias Reichl <hias@horus.com>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index e7ca185380e8..fae07ca7ef71 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -899,6 +899,7 @@ CONFIG_SND_SOC_CS4271_I2C=m
+ CONFIG_SND_SOC_SPDIF=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
++CONFIG_SND_AUDIO_GRAPH_CARD=m
+ CONFIG_HID_BATTERY_STRENGTH=y
+ CONFIG_HIDRAW=y
+ CONFIG_UHID=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index f8a2159ef53d..f4c9ec4d6b7b 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -892,6 +892,7 @@ CONFIG_SND_SOC_CS4271_I2C=m
+ CONFIG_SND_SOC_SPDIF=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
++CONFIG_SND_AUDIO_GRAPH_CARD=m
+ CONFIG_HID_BATTERY_STRENGTH=y
+ CONFIG_HIDRAW=y
+ CONFIG_UHID=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1183_b5eff9a155d5d6727d610076db07554e9ca7c325.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1183_b5eff9a155d5d6727d610076db07554e9ca7c325.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

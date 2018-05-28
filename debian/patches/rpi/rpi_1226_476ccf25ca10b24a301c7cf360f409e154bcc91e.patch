@@ -1,0 +1,44 @@
+commit 476ccf25ca10b24a301c7cf360f409e154bcc91e
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Mon Apr 9 14:31:54 2018 +0100
+
+    net: lan78xx: Request s/w csum check on VLAN tagged packets.
+    
+    There appears to be some issue in the LAN78xx where the checksum
+    computed on a VLAN tagged packet is incorrect, or at least not
+    in the form that the kernel is after. This is most easily shown
+    by pinging a device via a VLAN tagged interface and it will dump
+    out the error message and stack trace from netdev_rx_csum_fault.
+    It has also been seen with standard TCP and UDP packets.
+    
+    Until this is fully understood, request that the network stack
+    computes the checksum on packets signalled as having a VLAN tag
+    applied.
+    
+    See https://github.com/raspberrypi/linux/issues/2458
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 1eae19dd4119..858871b93ced 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2983,8 +2983,12 @@ static void lan78xx_rx_csum_offload(struct lan78xx_net *dev,
+ 				    struct sk_buff *skb,
+ 				    u32 rx_cmd_a, u32 rx_cmd_b)
+ {
++	/* Checksum offload appears to be flawed if used with VLANs.
++	 * Elect for sw checksum check instead.
++	 */
+ 	if (!(dev->net->features & NETIF_F_RXCSUM) ||
+-	    unlikely(rx_cmd_a & RX_CMD_A_ICSM_)) {
++	    unlikely(rx_cmd_a & RX_CMD_A_ICSM_) ||
++	    (rx_cmd_a & RX_CMD_A_FVTG_)) {
+ 		skb->ip_summed = CHECKSUM_NONE;
+ 	} else {
+ 		skb->csum = ntohs((u16)(rx_cmd_b >> RX_CMD_B_CSUM_SHIFT_));
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1226_476ccf25ca10b24a301c7cf360f409e154bcc91e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1226_476ccf25ca10b24a301c7cf360f409e154bcc91e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

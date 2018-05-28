@@ -1,0 +1,118 @@
+commit 5369d504fef39e19af22bee8f6d19240393d1661
+Author: Nathan Chancellor <natechancellor@gmail.com>
+Date:   Sun Mar 4 20:07:35 2018 -0700
+
+    net: rtl8192cu: Fix implicit fallthrough warnings
+    
+    These warnings appear with GCC 7.3.0 from toolchains.bootlin.com:
+    
+    ../drivers/net/wireless/realtek/rtl8192cu/core/rtw_mlme_ext.c: In function ‘mgt_dispatcher’:
+    ../drivers/net/wireless/realtek/rtl8192cu/core/rtw_mlme_ext.c:734:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
+        if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
+          ^
+    ../drivers/net/wireless/realtek/rtl8192cu/core/rtw_mlme_ext.c:739:3: note: here
+       case WIFI_ASSOCREQ:
+       ^~~~
+    ../drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/rtl8192c_phycfg.c: In function ‘phy_TxPwrIdxToDbm’:
+    ../drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/rtl8192c_phycfg.c:2365:10: warning: this statement may fall through [-Wimplicit-fallthrough=]
+       Offset = -8;
+       ~~~~~~~^~~~
+    ../drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/rtl8192c_phycfg.c:2366:2: note: here
+      default:
+      ^~~~~~~
+    ../drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/usb/usb_halinit.c: In function ‘GetHwReg8192CU’:
+    ../drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/usb/usb_halinit.c:5694:20: warning: this statement may fall through [-Wimplicit-fallthrough=]
+        *((u16 *)(val)) = pHalData->BasicRateSet;
+        ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
+    ../drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/usb/usb_halinit.c:5695:3: note: here
+       case HW_VAR_TXPAUSE:
+       ^~~~
+    ../drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_linux.c: In function ‘set_group_key’:
+    ../drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_linux.c:7383:11: warning: this statement may fall through [-Wimplicit-fallthrough=]
+        keylen = 16;
+        ~~~~~~~^~~~
+    ../drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_linux.c:7384:3: note: here
+       default:
+       ^~~~~~~
+    ../drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c: In function ‘set_group_key’:
+    ../drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c:822:11: warning: this statement may fall through [-Wimplicit-fallthrough=]
+        keylen = 16;
+        ~~~~~~~^~~~
+    ../drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c:823:3: note: here
+       default:
+       ^~~~~~~
+    
+    None of them appear to be a real issue but it is trivial to make the
+    warnings go away.
+    
+    Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+
+diff --git a/drivers/net/wireless/realtek/rtl8192cu/core/rtw_mlme_ext.c b/drivers/net/wireless/realtek/rtl8192cu/core/rtw_mlme_ext.c
+index e20c116a9cf8..2a9a2ee47860 100755
+--- a/drivers/net/wireless/realtek/rtl8192cu/core/rtw_mlme_ext.c
++++ b/drivers/net/wireless/realtek/rtl8192cu/core/rtw_mlme_ext.c
+@@ -733,9 +733,10 @@ void mgt_dispatcher(_adapter *padapter, union recv_frame *precv_frame)
+ 		case WIFI_AUTH:
+ 			if(check_fwstate(pmlmepriv, WIFI_AP_STATE) == _TRUE)
+ 				ptable->func = &OnAuth;
++				/* falls through */
+ 			else
+ 				ptable->func = &OnAuthClient;
+-			//pass through
++				/* falls through */
+ 		case WIFI_ASSOCREQ:
+ 		case WIFI_REASSOCREQ:
+ 			_mgt_dispatcher(padapter, ptable, precv_frame);	
+diff --git a/drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/rtl8192c_phycfg.c b/drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/rtl8192c_phycfg.c
+index 1bae6dad889d..ebbb5ec1f997 100755
+--- a/drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/rtl8192c_phycfg.c
++++ b/drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/rtl8192c_phycfg.c
+@@ -2363,6 +2363,7 @@ phy_TxPwrIdxToDbm(
+ 	case WIRELESS_MODE_G:
+ 	case WIRELESS_MODE_N_24G:
+ 		Offset = -8;
++		break;
+ 	default:
+ 		Offset = -8;	
+ 		break;
+diff --git a/drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/usb/usb_halinit.c b/drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/usb/usb_halinit.c
+index ff894732ba90..92af57c374ef 100755
+--- a/drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/usb/usb_halinit.c
++++ b/drivers/net/wireless/realtek/rtl8192cu/hal/rtl8192c/usb/usb_halinit.c
+@@ -5692,6 +5692,7 @@ _func_enter_;
+ 	{
+ 		case HW_VAR_BASIC_RATE:
+ 			*((u16 *)(val)) = pHalData->BasicRateSet;
++			/* falls through */
+ 		case HW_VAR_TXPAUSE:
+ 			val[0] = rtw_read8(Adapter, REG_TXPAUSE);
+ 			break;
+diff --git a/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c b/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c
+index 6c7d1fde52f2..163057e723a1 100755
+--- a/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c
++++ b/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_cfg80211.c
+@@ -810,6 +810,7 @@ static int set_group_key(_adapter *padapter, u8 *key, u8 alg, int keyid)
+ 		case _TKIP_WTMIC_:		
+ 		case _AES_:
+ 			keylen = 16;		
++			break;
+ 		default:
+ 			keylen = 16;		
+ 	}
+diff --git a/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_linux.c b/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_linux.c
+index 67acc73a85db..f21c2fb0d140 100755
+--- a/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_linux.c
++++ b/drivers/net/wireless/realtek/rtl8192cu/os_dep/linux/ioctl_linux.c
+@@ -7381,6 +7381,7 @@ static int set_group_key(_adapter *padapter, u8 *key, u8 alg, int keyid)
+ 		case _TKIP_WTMIC_:		
+ 		case _AES_:
+ 			keylen = 16;		
++			break;
+ 		default:
+ 			keylen = 16;		
+ 	}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1161_5369d504fef39e19af22bee8f6d19240393d1661.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1161_5369d504fef39e19af22bee8f6d19240393d1661.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

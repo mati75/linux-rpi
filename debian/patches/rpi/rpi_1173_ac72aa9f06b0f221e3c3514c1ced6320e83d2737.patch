@@ -1,0 +1,26 @@
+commit ac72aa9f06b0f221e3c3514c1ced6320e83d2737
+Author: Sugizaki Yukimasa <i.can.speak.c.and.basic@gmail.com>
+Date:   Mon Jan 8 21:11:23 2018 +0900
+
+    vcsm: Fix memory leaking on clean_invalid2 ioctl handler
+    
+    Signed-off-by: Sugizaki Yukimasa <i.can.speak.c.and.basic@gmail.com>
+
+diff --git a/drivers/char/broadcom/vc_sm/vmcs_sm.c b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+index 95963ffba51a..380437f41cc6 100644
+--- a/drivers/char/broadcom/vc_sm/vmcs_sm.c
++++ b/drivers/char/broadcom/vc_sm/vmcs_sm.c
+@@ -2990,7 +2990,7 @@ static long vc_sm_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 							op->block_count, op->block_size,
+ 							op->inter_block_stride, op->invalidate_mode);
+ 					if (ret)
+-						goto out;
++						break;
+ 				}
+ 				kfree(block);
+ 			}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1173_ac72aa9f06b0f221e3c3514c1ced6320e83d2737.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1173_ac72aa9f06b0f221e3c3514c1ced6320e83d2737.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

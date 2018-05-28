@@ -1,0 +1,23 @@
+commit a56d14ab9edc42e333d65fb62781ad2343ce8cc7
+Author: eccgecko <36884529+eccgecko@users.noreply.github.com>
+Date:   Sun May 20 17:00:39 2018 +0200
+
+    config: Add LZ4 compression support to arm64 kernel (#2559)
+
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index c01d370241f1..9064d79256ec 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -1272,6 +1272,7 @@ CONFIG_CRYPTO_TGR192=m
+ CONFIG_CRYPTO_WP512=m
+ CONFIG_CRYPTO_CAST5=m
+ CONFIG_CRYPTO_DES=y
++CONFIG_CRYPTO_LZ4=m
+ CONFIG_CRYPTO_USER_API_SKCIPHER=m
+ CONFIG_ARM64_CRYPTO=y
+ CONFIG_CRC_ITU_T=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1253_a56d14ab9edc42e333d65fb62781ad2343ce8cc7.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1253_a56d14ab9edc42e333d65fb62781ad2343ce8cc7.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

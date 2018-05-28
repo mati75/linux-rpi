@@ -1,0 +1,30 @@
+commit d6b7f1d92832c1524e1bbaec86ed0e83226cd11a
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Tue Dec 6 17:05:39 2016 +0000
+
+    bcm2835-rng: Avoid initialising if already enabled
+    
+    Avoids the 0x40000 cycles of warmup again if firmware has already used it
+
+diff --git a/drivers/char/hw_random/bcm2835-rng.c b/drivers/char/hw_random/bcm2835-rng.c
+index 7a84cec30c3a..a61b69c73e08 100644
+--- a/drivers/char/hw_random/bcm2835-rng.c
++++ b/drivers/char/hw_random/bcm2835-rng.c
+@@ -105,8 +105,10 @@ static int bcm2835_rng_init(struct hwrng *rng)
+ 	}
+ 
+ 	/* set warm-up count & enable */
+-	rng_writel(priv, RNG_WARMUP_COUNT, RNG_STATUS);
+-	rng_writel(priv, RNG_RBGEN, RNG_CTRL);
++	if (!(rng_readl(priv, RNG_CTRL) & RNG_RBGEN)) {
++		rng_writel(priv, RNG_WARMUP_COUNT, RNG_STATUS);
++		rng_writel(priv, RNG_RBGEN, RNG_CTRL);
++	}
+ 
+ 	return ret;
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1020_d6b7f1d92832c1524e1bbaec86ed0e83226cd11a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1020_d6b7f1d92832c1524e1bbaec86ed0e83226cd11a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

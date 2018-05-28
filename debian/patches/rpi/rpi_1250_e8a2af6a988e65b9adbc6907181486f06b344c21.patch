@@ -1,0 +1,33 @@
+commit e8a2af6a988e65b9adbc6907181486f06b344c21
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Sat May 12 21:23:00 2018 +0100
+
+    firmware/raspberrypi: Add two new messages
+    
+    RPI_FIRMWARE_GET_CLOCK_MEASURED is similar to RPI_FIRMWARE_GET_CLOCK,
+    except that it uses a hardware feature to count the clock pulses to
+    measure the real clock speed.
+    
+    RPI_FIRMWARE_NOTIFY_REBOOT informs the firmware that the OS is about to
+    reboot, allowing it to make any necessary adjustments.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/include/soc/bcm2835/raspberrypi-firmware.h b/include/soc/bcm2835/raspberrypi-firmware.h
+index 95cb67be1d58..3c57f456a0e4 100644
+--- a/include/soc/bcm2835/raspberrypi-firmware.h
++++ b/include/soc/bcm2835/raspberrypi-firmware.h
+@@ -78,6 +78,8 @@ enum rpi_firmware_property_tag {
+ 	RPI_FIRMWARE_GET_CUSTOMER_OTP =                       0x00030021,
+ 	RPI_FIRMWARE_GET_DOMAIN_STATE =                       0x00030030,
+ 	RPI_FIRMWARE_GET_THROTTLED =                          0x00030046,
++	RPI_FIRMWARE_GET_CLOCK_MEASURED =                     0x00030047,
++	RPI_FIRMWARE_NOTIFY_REBOOT =                          0x00030048,
+ 	RPI_FIRMWARE_SET_CLOCK_STATE =                        0x00038001,
+ 	RPI_FIRMWARE_SET_CLOCK_RATE =                         0x00038002,
+ 	RPI_FIRMWARE_SET_VOLTAGE =                            0x00038003,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1250_e8a2af6a988e65b9adbc6907181486f06b344c21.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1250_e8a2af6a988e65b9adbc6907181486f06b344c21.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

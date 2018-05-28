@@ -1,0 +1,51 @@
+commit 44306f05ff935d8eb5443904d861b0752ec78164
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Apr 24 14:42:27 2018 +0100
+
+    gpiolib: Don't prevent IRQ usage of output GPIOs
+    
+    Upstream Linux deems using output GPIOs to generate IRQs as a bogus
+    use case, even though the BCM2835 GPIO controller is capable of doing
+    so. A number of users would like to make use of this facility, so
+    disable the checks.
+    
+    See: https://github.com/raspberrypi/linux/issues/2527
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/gpio/gpiolib.c b/drivers/gpio/gpiolib.c
+index 2d18b598c011..93697913164d 100644
+--- a/drivers/gpio/gpiolib.c
++++ b/drivers/gpio/gpiolib.c
+@@ -53,6 +53,8 @@
+ #define	extra_checks	0
+ #endif
+ 
++#define dont_test_bit(b,d) (0)
++
+ /* Device and char device-related information */
+ static DEFINE_IDA(gpio_ida);
+ static dev_t gpio_devt;
+@@ -2478,7 +2480,7 @@ int gpiod_direction_output(struct gpio_desc *desc, int value)
+ 		value = !!value;
+ 
+ 	/* GPIOs used for IRQs shall not be set as output */
+-	if (test_bit(FLAG_USED_AS_IRQ, &desc->flags)) {
++	if (dont_test_bit(FLAG_USED_AS_IRQ, &desc->flags)) {
+ 		gpiod_err(desc,
+ 			  "%s: tried to set a GPIO tied to an IRQ as output\n",
+ 			  __func__);
+@@ -3109,7 +3111,7 @@ int gpiochip_lock_as_irq(struct gpio_chip *chip, unsigned int offset)
+ 			set_bit(FLAG_IS_OUT, &desc->flags);
+ 	}
+ 
+-	if (test_bit(FLAG_IS_OUT, &desc->flags)) {
++	if (dont_test_bit(FLAG_IS_OUT, &desc->flags)) {
+ 		chip_err(chip,
+ 			  "%s: tried to flag a GPIO set as output for IRQ\n",
+ 			  __func__);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1236_44306f05ff935d8eb5443904d861b0752ec78164.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1236_44306f05ff935d8eb5443904d861b0752ec78164.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

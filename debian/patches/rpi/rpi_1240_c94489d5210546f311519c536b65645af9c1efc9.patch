@@ -1,0 +1,54 @@
+commit c94489d5210546f311519c536b65645af9c1efc9
+Author: Stefan Wahren <stefan.wahren@i2se.com>
+Date:   Thu Apr 26 14:49:37 2018 +0200
+
+    ARM: bcm_defconfig: Re-enable QCA7000 SPI driver
+    
+    Since commit b2f98200c73c ("net: qualcomm: make qca_7k_common a
+    separate kernel module") the config parameter for the QCA7000 SPI
+    driver has changed. So re-enable the QCA7000 SPI driver in all
+    defconfigs, so we can use the qca7000-overlay again.
+    
+    Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index bc26764f6f70..12162a505b6c 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -444,6 +444,7 @@ CONFIG_NETCONSOLE=m
+ CONFIG_TUN=m
+ CONFIG_VETH=m
+ CONFIG_ENC28J60=m
++CONFIG_QCA7000_SPI=m
+ CONFIG_MDIO_BITBANG=m
+ CONFIG_PPP=m
+ CONFIG_PPP_BSDCOMP=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 34f1b22c76ff..2615a17e864d 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -439,6 +439,7 @@ CONFIG_NETCONSOLE=m
+ CONFIG_TUN=m
+ CONFIG_VETH=m
+ CONFIG_ENC28J60=m
++CONFIG_QCA7000_SPI=m
+ CONFIG_MDIO_BITBANG=m
+ CONFIG_PPP=m
+ CONFIG_PPP_BSDCOMP=m
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index ff5d079c1bbf..a3d3d0cb9253 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -430,6 +430,7 @@ CONFIG_NETCONSOLE=m
+ CONFIG_TUN=m
+ CONFIG_VETH=m
+ CONFIG_ENC28J60=m
++CONFIG_QCA7000_SPI=m
+ CONFIG_MDIO_BITBANG=m
+ CONFIG_PPP=m
+ CONFIG_PPP_BSDCOMP=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1240_c94489d5210546f311519c536b65645af9c1efc9.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1240_c94489d5210546f311519c536b65645af9c1efc9.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

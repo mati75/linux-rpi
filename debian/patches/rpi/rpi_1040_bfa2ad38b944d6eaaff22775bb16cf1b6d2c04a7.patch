@@ -1,0 +1,34 @@
+commit bfa2ad38b944d6eaaff22775bb16cf1b6d2c04a7
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Dec 12 12:12:46 2017 +0000
+
+    staging: vchiq_arm: Make debugfs failure non-fatal
+    
+    It can be useful to be able to open multiple vchiq instances in a
+    single process. This currently fails due to a debugfs collision,
+    so make such a failure non-fatal.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index c2c440009cac..e48b1ef39031 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -1685,11 +1685,7 @@ vchiq_open(struct inode *inode, struct file *file)
+ 		instance->state = state;
+ 		instance->pid = current->tgid;
+ 
+-		ret = vchiq_debugfs_add_instance(instance);
+-		if (ret != 0) {
+-			kfree(instance);
+-			return ret;
+-		}
++		(void)vchiq_debugfs_add_instance(instance);
+ 
+ 		sema_init(&instance->insert_event, 0);
+ 		sema_init(&instance->remove_event, 0);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1040_bfa2ad38b944d6eaaff22775bb16cf1b6d2c04a7.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1040_bfa2ad38b944d6eaaff22775bb16cf1b6d2c04a7.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

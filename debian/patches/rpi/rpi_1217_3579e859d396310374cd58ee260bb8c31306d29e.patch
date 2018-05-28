@@ -1,0 +1,51 @@
+commit 3579e859d396310374cd58ee260bb8c31306d29e
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Thu Mar 29 16:05:28 2018 +0100
+
+    config: Add IPVLAN module
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index dfa0e88c0722..4c6fef9f7c99 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -346,6 +346,7 @@ CONFIG_NET_ACT_SKBEDIT=m
+ CONFIG_NET_ACT_CSUM=m
+ CONFIG_BATMAN_ADV=m
+ CONFIG_OPENVSWITCH=m
++CONFIG_NET_L3_MASTER_DEV=y
+ CONFIG_NET_PKTGEN=m
+ CONFIG_HAMRADIO=y
+ CONFIG_AX25=m
+@@ -436,6 +437,7 @@ CONFIG_BONDING=m
+ CONFIG_DUMMY=m
+ CONFIG_IFB=m
+ CONFIG_MACVLAN=m
++CONFIG_IPVLAN=m
+ CONFIG_VXLAN=m
+ CONFIG_NETCONSOLE=m
+ CONFIG_TUN=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index c5f6be50d816..14dcdad1a6df 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -341,6 +341,7 @@ CONFIG_NET_ACT_SKBEDIT=m
+ CONFIG_NET_ACT_CSUM=m
+ CONFIG_BATMAN_ADV=m
+ CONFIG_OPENVSWITCH=m
++CONFIG_NET_L3_MASTER_DEV=y
+ CONFIG_NET_PKTGEN=m
+ CONFIG_HAMRADIO=y
+ CONFIG_AX25=m
+@@ -431,6 +432,7 @@ CONFIG_BONDING=m
+ CONFIG_DUMMY=m
+ CONFIG_IFB=m
+ CONFIG_MACVLAN=m
++CONFIG_IPVLAN=m
+ CONFIG_VXLAN=m
+ CONFIG_NETCONSOLE=m
+ CONFIG_TUN=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1217_3579e859d396310374cd58ee260bb8c31306d29e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1217_3579e859d396310374cd58ee260bb8c31306d29e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

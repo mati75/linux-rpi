@@ -1,0 +1,43 @@
+commit 634e59bf1185355a28be1cccdd37bf266f750173
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Wed Apr 4 16:34:24 2018 +0100
+
+    net: lan78xx: Allow for VLAN headers in timeout.
+    
+    The frame abort timeout being set by lan78xx_set_rx_max_frame_length
+    didn't account for any VLAN headers, resulting in very low
+    throughput if used with tagged VLANs.
+    Use VLAN_ETH_HLEN instead of ETH_HLEN to correct for this.
+    
+    See https://github.com/raspberrypi/linux/issues/2458
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 324906737a4c..1344c66c6bd3 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2218,7 +2218,7 @@ static int lan78xx_change_mtu(struct net_device *netdev, int new_mtu)
+ 	if ((ll_mtu % dev->maxpacket) == 0)
+ 		return -EDOM;
+ 
+-	ret = lan78xx_set_rx_max_frame_length(dev, new_mtu + ETH_HLEN);
++	ret = lan78xx_set_rx_max_frame_length(dev, new_mtu + VLAN_ETH_HLEN);
+ 
+ 	netdev->mtu = new_mtu;
+ 
+@@ -2518,7 +2518,8 @@ static int lan78xx_reset(struct lan78xx_net *dev)
+ 	buf |= FCT_TX_CTL_EN_;
+ 	ret = lan78xx_write_reg(dev, FCT_TX_CTL, buf);
+ 
+-	ret = lan78xx_set_rx_max_frame_length(dev, dev->net->mtu + ETH_HLEN);
++	ret = lan78xx_set_rx_max_frame_length(dev,
++					      dev->net->mtu + VLAN_ETH_HLEN);
+ 
+ 	ret = lan78xx_read_reg(dev, MAC_RX, &buf);
+ 	buf |= MAC_RX_RXEN_;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1220_634e59bf1185355a28be1cccdd37bf266f750173.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1220_634e59bf1185355a28be1cccdd37bf266f750173.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

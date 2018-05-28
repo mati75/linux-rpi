@@ -1,0 +1,55 @@
+commit 93651c46e55727e64b4866db0dfd3536b8ea3361
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Fri Aug 25 19:18:13 2017 +0100
+
+    cache: export clean and invalidate
+
+diff --git a/arch/arm/mm/cache-v6.S b/arch/arm/mm/cache-v6.S
+index 24659952c278..1ee5bc3a1018 100644
+--- a/arch/arm/mm/cache-v6.S
++++ b/arch/arm/mm/cache-v6.S
+@@ -201,7 +201,7 @@ ENTRY(v6_flush_kern_dcache_area)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-v6_dma_inv_range:
++ENTRY(v6_dma_inv_range)
+ #ifdef CONFIG_DMA_CACHE_RWFO
+ 	ldrb	r2, [r0]			@ read for ownership
+ 	strb	r2, [r0]			@ write for ownership
+@@ -246,7 +246,7 @@ v6_dma_inv_range:
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-v6_dma_clean_range:
++ENTRY(v6_dma_clean_range)
+ 	bic	r0, r0, #D_CACHE_LINE_SIZE - 1
+ 1:
+ #ifdef CONFIG_DMA_CACHE_RWFO
+diff --git a/arch/arm/mm/cache-v7.S b/arch/arm/mm/cache-v7.S
+index 215df435bfb9..4ad00c37d4fe 100644
+--- a/arch/arm/mm/cache-v7.S
++++ b/arch/arm/mm/cache-v7.S
+@@ -350,7 +350,7 @@ ENDPROC(v7_flush_kern_dcache_area)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-v7_dma_inv_range:
++ENTRY(v7_dma_inv_range)
+ 	dcache_line_size r2, r3
+ 	sub	r3, r2, #1
+ 	tst	r0, r3
+@@ -378,7 +378,7 @@ ENDPROC(v7_dma_inv_range)
+  *	- start   - virtual start address of region
+  *	- end     - virtual end address of region
+  */
+-v7_dma_clean_range:
++ENTRY(v7_dma_clean_range)
+ 	dcache_line_size r2, r3
+ 	sub	r3, r2, #1
+ 	bic	r0, r0, r3
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1113_93651c46e55727e64b4866db0dfd3536b8ea3361.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1113_93651c46e55727e64b4866db0dfd3536b8ea3361.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

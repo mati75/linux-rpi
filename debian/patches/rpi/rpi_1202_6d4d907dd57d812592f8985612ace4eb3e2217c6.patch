@@ -1,0 +1,59 @@
+commit 6d4d907dd57d812592f8985612ace4eb3e2217c6
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Mar 7 08:21:29 2018 +0000
+
+    ARM: dts: Add model-specific compatible strings
+    
+    The upstream Pi DTs are model-specific, with both the model and
+    compatible strings identifying the model. Downstream groups the
+    closely-related models, with only the chip name in the compatible
+    strings and a model string patched by the firmware.
+    
+    Bring the downstream model-specific DTs closer to upstream by
+    adding model-specific compatible strings.
+    
+    See: https://github.com/raspberrypi/firmware/issues/943
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm2708-rpi-0-w.dts b/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
+index 8299f8a4e2a4..ef0b0f040ca5 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
++++ b/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
+@@ -3,6 +3,7 @@
+ #include "bcm2708.dtsi"
+ 
+ / {
++	compatible = "raspberrypi,model-zero-w", "brcm,bcm2835";
+ 	model = "Raspberry Pi Zero W";
+ 
+ 	chosen {
+diff --git a/arch/arm/boot/dts/bcm2709-rpi-2-b.dts b/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
+index b7d483470665..442d2ebbdd36 100644
+--- a/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
++++ b/arch/arm/boot/dts/bcm2709-rpi-2-b.dts
+@@ -4,6 +4,7 @@
+ #include "bcm283x-rpi-smsc9514.dtsi"
+ 
+ / {
++	compatible = "raspberrypi,2-model-b", "brcm,bcm2836";
+ 	model = "Raspberry Pi 2 Model B";
+ };
+ 
+diff --git a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+index a72c2fed5c52..3d16b7040c3e 100644
+--- a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+@@ -8,6 +8,7 @@
+ #include "bcm283x-rpi-smsc9514.dtsi"
+ 
+ / {
++	compatible = "raspberrypi,3-model-b", "brcm,bcm2837";
+ 	model = "Raspberry Pi 3 Model B";
+ 
+ 	chosen {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1202_6d4d907dd57d812592f8985612ace4eb3e2217c6.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1202_6d4d907dd57d812592f8985612ace4eb3e2217c6.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

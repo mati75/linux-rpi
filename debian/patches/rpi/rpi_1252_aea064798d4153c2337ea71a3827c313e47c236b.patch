@@ -1,0 +1,39 @@
+commit aea064798d4153c2337ea71a3827c313e47c236b
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Sun May 20 14:35:16 2018 +0100
+
+    config: Add CONFIG_MTD_BLOCK2MTD=m
+    
+    See: https://github.com/raspberrypi/linux/issues/2163
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index bd3ad2ad7546..15981ea9f0c6 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -398,6 +398,7 @@ CONFIG_CMA_SIZE_MBYTES=5
+ CONFIG_MTD=m
+ CONFIG_MTD_BLOCK=m
+ CONFIG_MTD_M25P80=m
++CONFIG_MTD_BLOCK2MTD=m
+ CONFIG_MTD_NAND=m
+ CONFIG_MTD_SPI_NOR=m
+ CONFIG_MTD_UBI=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index ae4adbda0086..46c922337d25 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -393,6 +393,7 @@ CONFIG_CMA_SIZE_MBYTES=5
+ CONFIG_MTD=m
+ CONFIG_MTD_BLOCK=m
+ CONFIG_MTD_M25P80=m
++CONFIG_MTD_BLOCK2MTD=m
+ CONFIG_MTD_NAND=m
+ CONFIG_MTD_SPI_NOR=m
+ CONFIG_MTD_UBI=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1252_aea064798d4153c2337ea71a3827c313e47c236b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1252_aea064798d4153c2337ea71a3827c313e47c236b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

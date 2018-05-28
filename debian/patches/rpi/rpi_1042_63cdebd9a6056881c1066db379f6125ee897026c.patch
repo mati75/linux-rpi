@@ -1,0 +1,54 @@
+commit 63cdebd9a6056881c1066db379f6125ee897026c
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Wed Jan 17 13:54:41 2018 +0000
+
+    Revert "softirq: Let ksoftirqd do its job"
+    
+    This reverts commit 4cd13c21b207e80ddb1144c576500098f2d5f882.
+
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index 24d243ef8e71..20632bdab1fc 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -77,17 +77,6 @@ static void wakeup_softirqd(void)
+ 		wake_up_process(tsk);
+ }
+ 
+-/*
+- * If ksoftirqd is scheduled, we do not want to process pending softirqs
+- * right now. Let ksoftirqd handle this at its own rate, to get fairness.
+- */
+-static bool ksoftirqd_running(void)
+-{
+-	struct task_struct *tsk = __this_cpu_read(ksoftirqd);
+-
+-	return tsk && (tsk->state == TASK_RUNNING);
+-}
+-
+ /*
+  * preempt_count and SOFTIRQ_OFFSET usage:
+  * - preempt_count is changed by SOFTIRQ_OFFSET on entering or leaving
+@@ -325,7 +314,7 @@ asmlinkage __visible void do_softirq(void)
+ 
+ 	pending = local_softirq_pending();
+ 
+-	if (pending && !ksoftirqd_running())
++	if (pending)
+ 		do_softirq_own_stack();
+ 
+ 	local_irq_restore(flags);
+@@ -352,9 +341,6 @@ void irq_enter(void)
+ 
+ static inline void invoke_softirq(void)
+ {
+-	if (ksoftirqd_running())
+-		return;
+-
+ 	if (!force_irqthreads) {
+ #ifdef CONFIG_HAVE_IRQ_EXIT_ON_IRQ_STACK
+ 		/*
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1042_63cdebd9a6056881c1066db379f6125ee897026c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1042_63cdebd9a6056881c1066db379f6125ee897026c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

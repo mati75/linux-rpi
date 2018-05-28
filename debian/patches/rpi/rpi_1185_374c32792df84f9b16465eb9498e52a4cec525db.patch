@@ -1,0 +1,47 @@
+commit 374c32792df84f9b16465eb9498e52a4cec525db
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Nov 13 14:23:48 2017 -0800
+
+    drm/vc4: Fix crash if we have to unbind HDMI.
+    
+    We need the card to unregister before the codec that the card
+    references.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 984501e3f0b0..acc2a46fab7e 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -1129,7 +1129,7 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *hdmi)
+ 	 * snd_soc_card_get_drvdata() if needed.
+ 	 */
+ 	snd_soc_card_set_drvdata(card, hdmi);
+-	ret = devm_snd_soc_register_card(dev, card);
++	ret = snd_soc_register_card(card);
+ 	if (ret) {
+ 		dev_err(dev, "Could not register sound card: %d\n", ret);
+ 		goto unregister_codec;
+@@ -1146,13 +1146,16 @@ static int vc4_hdmi_audio_init(struct vc4_hdmi *hdmi)
+ static void vc4_hdmi_audio_cleanup(struct vc4_hdmi *hdmi)
+ {
+ 	struct device *dev = &hdmi->pdev->dev;
++	struct snd_soc_card *card = &hdmi->audio.card;
+ 
+ 	/*
+ 	 * If drvdata is not set this means the audio card was not
+ 	 * registered, just skip codec unregistration in this case.
+ 	 */
+-	if (dev_get_drvdata(dev))
++	if (dev_get_drvdata(dev)) {
++		snd_soc_unregister_card(card);
+ 		snd_soc_unregister_codec(dev);
++	}
+ }
+ 
+ #ifdef CONFIG_DRM_VC4_HDMI_CEC
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1185_374c32792df84f9b16465eb9498e52a4cec525db.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1185_374c32792df84f9b16465eb9498e52a4cec525db.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

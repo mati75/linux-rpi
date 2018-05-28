@@ -1,0 +1,52 @@
+commit ea2fba9fa5feb6867113b5577973dee812ccea1a
+Author: hdoverobinson <hdoverobinson@gmail.com>
+Date:   Tue Mar 13 06:58:39 2018 -0400
+
+    added capture_clear option to pps-gpio via dtoverlay (#2433)
+
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index d72ed0a725ed..77d6df9a7d6f 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1286,7 +1286,10 @@ Info:   Configures the pps-gpio (pulse-per-second time signal via GPIO).
+ Load:   dtoverlay=pps-gpio,<param>=<val>
+ Params: gpiopin                 Input GPIO (default "18")
+         assert_falling_edge     When present, assert is indicated by a falling
+-                                edge, rather than by a rising edge
++                                edge, rather than by a rising edge (default
++                                off)
++        capture_clear           Generate clear events on the trailing edge
++                                (default off)
+ 
+ 
+ Name:   pwm
+diff --git a/arch/arm/boot/dts/overlays/pps-gpio-overlay.dts b/arch/arm/boot/dts/overlays/pps-gpio-overlay.dts
+index 9ee4bdfa6167..af29b870f1a1 100644
+--- a/arch/arm/boot/dts/overlays/pps-gpio-overlay.dts
++++ b/arch/arm/boot/dts/overlays/pps-gpio-overlay.dts
+@@ -33,5 +33,6 @@
+ 			  <&pps_pins>,"brcm,pins:0",
+ 			  <&pps_pins>,"reg:0";
+ 		assert_falling_edge = <&pps>,"assert-falling-edge?";
++		capture_clear = <&pps>,"capture-clear?";
+ 	};
+ };
+diff --git a/drivers/pps/clients/pps-gpio.c b/drivers/pps/clients/pps-gpio.c
+index 333ad7d5b45b..ec9c4de48070 100644
+--- a/drivers/pps/clients/pps-gpio.c
++++ b/drivers/pps/clients/pps-gpio.c
+@@ -119,6 +119,9 @@ static int pps_gpio_probe(struct platform_device *pdev)
+ 
+ 		if (of_get_property(np, "assert-falling-edge", NULL))
+ 			data->assert_falling_edge = true;
++
++                if (of_get_property(np, "capture-clear", NULL))
++                        data->capture_clear = true;
+ 	}
+ 
+ 	/* GPIO setup */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1162_ea2fba9fa5feb6867113b5577973dee812ccea1a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1162_ea2fba9fa5feb6867113b5577973dee812ccea1a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

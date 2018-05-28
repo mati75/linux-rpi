@@ -1,0 +1,25 @@
+commit 8a11a391da85b514045e25899e00aecae9aa225b
+Author: Nick Bulleid <nedbulleid@fastmail.com>
+Date:   Sat May 12 20:44:34 2018 +0100
+
+    Added export feature to gpio-poweroff documentation
+    
+    Signed-off-by: Nick Bulleid <nedbulleid@fastmail.com>
+
+diff --git a/Documentation/devicetree/bindings/power/reset/gpio-poweroff.txt b/Documentation/devicetree/bindings/power/reset/gpio-poweroff.txt
+index e62d53d844cc..c9328a9223fa 100644
+--- a/Documentation/devicetree/bindings/power/reset/gpio-poweroff.txt
++++ b/Documentation/devicetree/bindings/power/reset/gpio-poweroff.txt
+@@ -27,6 +27,7 @@ Optional properties:
+   it to an output when the power-off handler is called. If this optional
+   property is not specified, the GPIO is initialized as an output in its
+   inactive state.
++- export : Export the GPIO line to the sysfs system
+ 
+ Examples:
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1247_8a11a391da85b514045e25899e00aecae9aa225b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1247_8a11a391da85b514045e25899e00aecae9aa225b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

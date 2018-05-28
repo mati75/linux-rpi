@@ -1,0 +1,157 @@
+commit 4497feaf1ed9143f34ef103053d0959fc418503d
+Author: RF William Hollender <whollender@gmail.com>
+Date:   Sun Feb 18 14:41:43 2018 -0600
+
+    Add support for SuperAudioBoard sound card (#2386)
+    
+    SuperAudioBoard support using simple-audio-card driver.
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index 3c8222020562..a4c5b740bf74 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -118,6 +118,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	spi2-1cs.dtbo \
+ 	spi2-2cs.dtbo \
+ 	spi2-3cs.dtbo \
++	superaudioboard.dtbo \
+ 	tinylcd35.dtbo \
+ 	uart0.dtbo \
+ 	uart1.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index dadbccc18f45..65a93e655575 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1658,6 +1658,12 @@ Params: cs0_pin                 GPIO pin for CS0 (default 43 - BCM SPI2_CE0).
+                                 is 'okay' or enabled).
+ 
+ 
++Name:   superaudioboard
++Info:   Configures the SuperAudioBoard sound card
++Load:   dtoverlay=superaudioboard,<param>=<val>
++Params: gpiopin                 GPIO pin for codec reset
++
++
+ Name:   tinylcd35
+ Info:   3.5" Color TFT Display by www.tinylcd.com
+         Options: Touch, RTC, keypad
+diff --git a/arch/arm/boot/dts/overlays/superaudioboard-overlay.dts b/arch/arm/boot/dts/overlays/superaudioboard-overlay.dts
+new file mode 100755
+index 000000000000..e625faeed7fb
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/superaudioboard-overlay.dts
+@@ -0,0 +1,73 @@
++// Definitions for SuperAudioBoard
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2708";
++
++	fragment@0 {
++		target = <&sound>;
++		__overlay__ {
++			compatible = "simple-audio-card";
++			i2s-controller = <&i2s>;
++			status = "okay";
++
++			simple-audio-card,name = "SuperAudioBoard";
++
++			simple-audio-card,widgets =
++				"Line", "Line In",
++				"Line", "Line Out";
++
++			simple-audio-card,routing =
++				"Line Out","AOUTA+",
++				"Line Out","AOUTA-",
++				"Line Out","AOUTB+",
++				"Line Out","AOUTB-",
++				"AINA","Line In",
++				"AINB","Line In";
++
++			simple-audio-card,format = "i2s";
++
++			simple-audio-card,bitclock-master = <&sound_master>;
++			simple-audio-card,frame-master = <&sound_master>;
++
++			simple-audio-card,cpu {
++				sound-dai = <&i2s>;
++				dai-tdm-slot-num = <2>;
++				dai-tdm-slot-width = <32>;
++			};
++
++			sound_master: simple-audio-card,codec {
++				sound-dai = <&cs4271>;
++				system-clock-frequency = <24576000>;
++			};
++		};
++	};
++
++	fragment@1 {
++		target = <&i2s>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++    
++	fragment@2 {
++		target = <&i2c1>;
++		__overlay__ {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			status = "okay";
++
++			cs4271: cs4271@10 {
++				#sound-dai-cells = <0>;
++				compatible = "cirrus,cs4271";
++				reg = <0x10>;
++				status = "okay";
++				reset-gpio = <&gpio 26 0>; /* Pin 26, active high */
++			};
++		};
++	};
++	__overrides__ {
++		gpiopin = <&cs4271>,"reset-gpio:4";
++	};
++};
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 85a6792db5a3..e5e3c253ce44 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -896,6 +896,7 @@ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
+ CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
++CONFIG_SND_SOC_CS4271_I2C=m
+ CONFIG_SND_SOC_SPDIF=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 63043e53772a..c3758a1b221f 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -889,6 +889,7 @@ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
+ CONFIG_SND_SOC_ADAU7002=m
+ CONFIG_SND_SOC_AK4554=m
++CONFIG_SND_SOC_CS4271_I2C=m
+ CONFIG_SND_SOC_SPDIF=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 003209bf2362..1352f5d343e0 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -872,6 +872,7 @@ CONFIG_SND_BCM2708_SOC_ALLO_PIANO_DAC=m
+ CONFIG_SND_PISOUND=m
+ CONFIG_SND_SOC_ADAU1701=m
+ CONFIG_SND_SOC_AK4554=m
++CONFIG_SND_SOC_CS4271_I2C=m
+ CONFIG_SND_SOC_WM8804_I2C=m
+ CONFIG_SND_SIMPLE_CARD=m
+ CONFIG_SOUND_PRIME=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1137_4497feaf1ed9143f34ef103053d0959fc418503d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1137_4497feaf1ed9143f34ef103053d0959fc418503d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

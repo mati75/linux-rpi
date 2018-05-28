@@ -1,0 +1,27 @@
+commit 8ff2b7387093926f64a6e37b334b089b45c28df0
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Apr 5 13:29:02 2018 +0100
+
+    arm64: Add CONFIG_SERIAL_DEV_BUS=m to bcmrpi3_defconfig
+    
+    See: https://github.com/raspberrypi/linux/issues/2479
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 50acf25b1f28..69aea2f6da4a 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -595,6 +595,7 @@ CONFIG_SERIAL_AMBA_PL011=y
+ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
+ CONFIG_SERIAL_SC16IS7XX=m
+ CONFIG_SERIAL_SC16IS7XX_SPI=y
++CONFIG_SERIAL_DEV_BUS=m
+ CONFIG_TTY_PRINTK=y
+ CONFIG_HW_RANDOM=y
+ CONFIG_RAW_DRIVER=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1224_8ff2b7387093926f64a6e37b334b089b45c28df0.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1224_8ff2b7387093926f64a6e37b334b089b45c28df0.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

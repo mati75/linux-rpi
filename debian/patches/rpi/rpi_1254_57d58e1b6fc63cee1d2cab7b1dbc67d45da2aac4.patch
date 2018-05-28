@@ -1,0 +1,51 @@
+commit 57d58e1b6fc63cee1d2cab7b1dbc67d45da2aac4
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Sun May 20 19:31:11 2018 +0100
+
+    config: Add KEYBOARD_MATRIX=m
+    
+    See: https://github.com/raspberrypi/linux/pull/2150
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 15981ea9f0c6..1b0823282257 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -547,6 +547,7 @@ CONFIG_INPUT_JOYDEV=m
+ CONFIG_INPUT_EVDEV=m
+ # CONFIG_KEYBOARD_ATKBD is not set
+ CONFIG_KEYBOARD_GPIO=m
++CONFIG_KEYBOARD_MATRIX=m
+ # CONFIG_INPUT_MOUSE is not set
+ CONFIG_INPUT_JOYSTICK=y
+ CONFIG_JOYSTICK_IFORCE=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 46c922337d25..fb6948384a65 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -542,6 +542,7 @@ CONFIG_INPUT_JOYDEV=m
+ CONFIG_INPUT_EVDEV=m
+ # CONFIG_KEYBOARD_ATKBD is not set
+ CONFIG_KEYBOARD_GPIO=m
++CONFIG_KEYBOARD_MATRIX=m
+ # CONFIG_INPUT_MOUSE is not set
+ CONFIG_INPUT_JOYSTICK=y
+ CONFIG_JOYSTICK_IFORCE=m
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 9064d79256ec..0e91d71b1b86 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -530,6 +530,7 @@ CONFIG_INPUT_JOYDEV=m
+ CONFIG_INPUT_EVDEV=m
+ # CONFIG_KEYBOARD_ATKBD is not set
+ CONFIG_KEYBOARD_GPIO=m
++CONFIG_KEYBOARD_MATRIX=m
+ # CONFIG_INPUT_MOUSE is not set
+ CONFIG_INPUT_JOYSTICK=y
+ CONFIG_JOYSTICK_IFORCE=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1254_57d58e1b6fc63cee1d2cab7b1dbc67d45da2aac4.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1254_57d58e1b6fc63cee1d2cab7b1dbc67d45da2aac4.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

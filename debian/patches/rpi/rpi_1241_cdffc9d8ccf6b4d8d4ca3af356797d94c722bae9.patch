@@ -1,0 +1,41 @@
+commit cdffc9d8ccf6b4d8d4ca3af356797d94c722bae9
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Apr 30 15:57:00 2018 +0100
+
+    config: Add CONFIG_BATTERY_GAUGE_LTC2941=m
+    
+    Support the LTC294x range of I2C-connected battery monitors.
+    
+    See: https://github.com/raspberrypi/linux/issues/2537
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 12162a505b6c..92c60b400f37 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -648,6 +648,7 @@ CONFIG_W1_SLAVE_DS28E04=m
+ CONFIG_POWER_RESET=y
+ CONFIG_POWER_RESET_GPIO=y
+ CONFIG_BATTERY_DS2760=m
++CONFIG_BATTERY_GAUGE_LTC2941=m
+ CONFIG_HWMON=m
+ CONFIG_SENSORS_DS1621=m
+ CONFIG_SENSORS_JC42=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 2615a17e864d..17e074448ac2 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -641,6 +641,7 @@ CONFIG_W1_SLAVE_DS28E04=m
+ CONFIG_POWER_RESET=y
+ CONFIG_POWER_RESET_GPIO=y
+ CONFIG_BATTERY_DS2760=m
++CONFIG_BATTERY_GAUGE_LTC2941=m
+ CONFIG_HWMON=m
+ CONFIG_SENSORS_DS1621=m
+ CONFIG_SENSORS_JC42=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1241_cdffc9d8ccf6b4d8d4ca3af356797d94c722bae9.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1241_cdffc9d8ccf6b4d8d4ca3af356797d94c722bae9.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,40 @@
+commit 27458083bd0b5cd1e5a5addb557e821f724d2c1c
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Tue Apr 10 13:08:36 2018 +0100
+
+    net: lan78xx: Reduce s/w csum check on VLANs
+    
+    With HW_VLAN_CTAG_RX enabled we don't observe the checksum
+    issue, so amend the workaround to only drop back to s/w
+    checksums if VLAN offload is disabled.
+    
+    See #2458.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index d98d91fab53a..c22606b4d888 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2995,12 +2995,13 @@ static void lan78xx_rx_csum_offload(struct lan78xx_net *dev,
+ 				    struct sk_buff *skb,
+ 				    u32 rx_cmd_a, u32 rx_cmd_b)
+ {
+-	/* Checksum offload appears to be flawed if used with VLANs.
+-	 * Elect for sw checksum check instead.
++	/* HW Checksum offload appears to be flawed if used when not stripping
++	 * VLAN headers.
+ 	 */
+ 	if (!(dev->net->features & NETIF_F_RXCSUM) ||
+ 	    unlikely(rx_cmd_a & RX_CMD_A_ICSM_) ||
+-	    (rx_cmd_a & RX_CMD_A_FVTG_)) {
++	    ((rx_cmd_a & RX_CMD_A_FVTG_) &&
++	     !(dev->net->features & NETIF_F_HW_VLAN_CTAG_RX))) {
+ 		skb->ip_summed = CHECKSUM_NONE;
+ 	} else {
+ 		skb->csum = ntohs((u16)(rx_cmd_b >> RX_CMD_B_CSUM_SHIFT_));
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1229_27458083bd0b5cd1e5a5addb557e821f724d2c1c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1229_27458083bd0b5cd1e5a5addb557e821f724d2c1c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

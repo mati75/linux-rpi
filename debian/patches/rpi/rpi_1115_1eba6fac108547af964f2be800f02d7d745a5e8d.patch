@@ -1,0 +1,41 @@
+commit 1eba6fac108547af964f2be800f02d7d745a5e8d
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Nov 14 11:03:22 2017 +0000
+
+    mcp2515: Use DT-supplied interrupt flags
+    
+    The MCP2515 datasheet clearly describes a level-triggered interrupt
+    pin. Therefore the receiving interrupt controller must also be
+    configured for level-triggered operation otherwise there is a danger
+    of a missed interrupt condition blocking all subsequent interrupts.
+    The ONESHOT flag ensures that the interrupt is masked until the
+    threaded interrupt handler exits.
+    
+    Rather than change the flags globally (they must have worked for at
+    least one user), allow the flags to be overridden from Device Tree
+    in the event that the device has a DT node.
+    
+    See: https://github.com/raspberrypi/linux/issues/2175
+         https://github.com/raspberrypi/linux/issues/2263
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
+index 98d118b3aaf4..271c7f981f2a 100644
+--- a/drivers/net/can/spi/mcp251x.c
++++ b/drivers/net/can/spi/mcp251x.c
+@@ -951,6 +951,9 @@ static int mcp251x_open(struct net_device *net)
+ 	priv->tx_skb = NULL;
+ 	priv->tx_len = 0;
+ 
++	if (spi->dev.of_node)
++	    flags = 0;
++
+ 	ret = request_threaded_irq(spi->irq, NULL, mcp251x_can_ist,
+ 				   flags | IRQF_ONESHOT, DEVICE_NAME, priv);
+ 	if (ret) {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1115_1eba6fac108547af964f2be800f02d7d745a5e8d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1115_1eba6fac108547af964f2be800f02d7d745a5e8d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

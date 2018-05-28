@@ -1,0 +1,46 @@
+commit ac3c5d04139eb11ca19114765da1421118d950b4
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Feb 19 17:29:15 2018 +0000
+
+    overlays: i2c-gpio: Support for multiple instances
+    
+    Add a 'bus' parameter that, if set to a unique, non-zero
+    value, allows multiple i2c-gpio instances to coexist. The chosen
+    value doesn't determine the /dev/i2c-* value, but starting with
+    1 or 2 and counting upwards seems sensible. N.B. The bus parameter
+    has a default value of zero, so one instance doesn't need to specify
+    a value.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index 65a93e655575..b066b19d2661 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -693,6 +693,9 @@ Params: i2c_gpio_sda            GPIO used for I2C data (default "23")
+         i2c_gpio_delay_us       Clock delay in microseconds
+                                 (default "2" = ~100kHz)
+ 
++        bus                     Set to a unique, non-zero value if wanting
++                                multiple i2c-gpio busses (default "0")
++
+ 
+ Name:   i2c-mux
+ Info:   Adds support for a number of I2C bus multiplexers on i2c_arm
+diff --git a/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts b/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
+index b72b32e93677..3f692c1a8958 100644
+--- a/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
++++ b/arch/arm/boot/dts/overlays/i2c-gpio-overlay.dts
+@@ -38,6 +38,6 @@
+ 		i2c_gpio_sda = <&i2c_gpio>,"gpios:4";
+ 		i2c_gpio_scl = <&i2c_gpio>,"gpios:16";
+ 		i2c_gpio_delay_us = <&i2c_gpio>,"i2c-gpio,delay-us:0";
++		bus = <&i2c_gpio>, "reg:0";
+ 	};
+ };
+-
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1140_ac3c5d04139eb11ca19114765da1421118d950b4.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1140_ac3c5d04139eb11ca19114765da1421118d950b4.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
