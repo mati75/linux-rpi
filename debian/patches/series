@@ -97,6 +97,8 @@ bugfix/x86/kvm-x86-rename-update_db_bp_intercept-to-update_bp_i.patch
 bugfix/x86/kvm-x86-bit-ops-emulation-ignores-offset-on-64-bit.patch
 bugfix/x86/KVM-x86-pass-host_initiated-to-functions-that-read-M.patch
 bugfix/x86/KVM-VMX-Fix-host-initiated-access-to-guest-MSR_TSC_A.patch
+bugfix/x86/x86-microcode-fix-accessing-dis_ucode_ldr-on-32-bit.patch
+bugfix/x86/x86-microcode-amd-do-not-load-when-running-on-a-hype.patch
 
 features/all/readq-writeq-Add-explicit-lo_hi_-read-write-_q-and-h.patch
 
@@ -109,6 +111,7 @@ features/mips/MIPS-increase-MAX-PHYSMEM-BITS-on-Loongson-3-only.patch
 features/mips/MIPS-Add-numa-api-support.patch
 features/mips/MIPS-Add-Loongson-3B-support.patch
 features/mips/MIPS-Loongson-3-Enable-the-COP2-usage.patch
+features/mips/mips-respect-the-isa-level-in-fcsr-handling.patch
 features/mips/MIPS-Loongson-Rename-CONFIG_LEMOTE_MACH3A-to-CONFIG_.patch
 features/mips/MIPS-Loongson-3-Add-Loongson-LS3A-RS780E-1-way-machi.patch
 features/mips/MIPS-octeon-Add-support-for-the-UBNT-E200-board.patch
@@ -252,6 +255,8 @@ bugfix/x86/mmap-remember-the-map_fixed-flag-as-vm_fixed.patch
 bugfix/x86/mmap-add-an-exception-to-the-stack-gap-for-hotspot-jvm.patch
 bugfix/all/locks-remove-i_have_this_lease-check-from-__break_le.patch
 bugfix/all/locks-__break_lease-cleanup-in-preparation-of-allowi.patch
+bugfix/all/tun-allow-positive-return-values-on-dev_get_valid_na.patch
+bugfix/all/sctp-fix-mangled-ipv4-addresses-on-a-ipv6-listening-.patch
 
 # memfd_create() & kdbus backport
 features/all/kdbus/mm-allow-drivers-to-prevent-new-writable-mappings.patch
@@ -706,6 +711,9 @@ bugfix/x86/x86-mce-serialize-sysfs-changes.patch
 bugfix/all/drm-udl-properly-check-framebuffer-mmap-offsets.patch
 bugfix/all/staging-ncpfs-memory-corruption-in-ncp_read_kernel.patch
 bugfix/all/perf-hwbp-simplify-the-perf-hwbp-code-fix-documentat.patch
+bugfix/x86/x86-traps-enable-debug_stack-after-cpu_init-for-trap.patch
+bugfix/x86/x86-entry-64-Don-t-use-IST-entry-for-BP-stack.patch
+bugfix/x86/kvm-x86-fix-icebp-instruction-handling.patch
 
 # Fix ABI changes
 

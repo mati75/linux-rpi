@@ -1,4 +1,4 @@
-linux (3.16.56-1+rpi1) jessie-staging; urgency=medium
+linux (3.16.56-1+deb8u1+rpi1) jessie-staging; urgency=medium
 
   [ Raspbian forward porter ]
   [changes brought forward from 3.16.7-ckt4-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sun, 18 Jan 2015 13:41:28 +0000]
@@ -33,7 +33,27 @@ linux (3.16.56-1+rpi1) jessie-staging; urgency=medium
     which conflicted with the rpi patches.
   * Add RTC related kernel changes requested by Diederik
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Thu, 03 May 2018 22:43:05 +0200
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Mon, 28 May 2018 15:17:14 +0200
+
+linux (3.16.56-1+deb8u1) jessie-security; urgency=high
+
+  [ Ben Hutchings ]
+  * [mipsel] Apply the Loongson-3 part of "Respect the ISA level in FCSR
+    handling" (fixes FTBFS)
+  * tun: allow positive return values on dev_get_valid_name() call
+    (Closes: #897427, regression in 3.16.56-1)
+  * [x86] microcode: Fix accessing dis_ucode_ldr on 32-bit
+  * [x86] microcode: Do not load when running on a hypervisor
+    (Closes: #898067, regression in 3.16.56-1)
+  * sctp: Fix mangled IPv4 addresses on a IPv6 listening socket
+    (Closes: #898100, regression in 3.16.56-1)
+  * [x86] traps: Enable DEBUG_STACK after cpu_init() for TRAP_DB/BP
+
+  [ Salvatore Bonaccorso ]
+  * [x86] x86/entry/64: Don't use IST entry for #BP stack (CVE-2018-8897)
+  * [x86] kvm: fix icebp instruction handling (CVE-2018-1087)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Tue, 08 May 2018 16:11:04 +0100
 
 linux (3.16.56-1) jessie-security; urgency=high
 
