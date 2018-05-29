@@ -1,4 +1,4 @@
-linux (3.16.56-1+deb8u1+rpi1) jessie-staging; urgency=medium
+linux (3.16.56-1+rpi1+deb8u1) jessie-staging; urgency=medium
 
   [ Raspbian forward porter ]
   [changes brought forward from 3.16.7-ckt4-1+rpi1 by Peter Michael Green <plugwash@raspbian.org> at Sun, 18 Jan 2015 13:41:28 +0000]
