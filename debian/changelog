@@ -1,4 +1,4 @@
-linux (4.16.16-1+rpi1) buster-staging; urgency=medium
+linux (4.16.16-2+rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -117,7 +117,14 @@ linux (4.16.16-1+rpi1) buster-staging; urgency=medium
   * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
   * Remove ext3 modules from d-i package list.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 19 Jun 2018 23:23:14 +0200
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Fri, 22 Jun 2018 23:13:40 +0200
+
+linux (4.16.16-2) unstable; urgency=medium
+
+  * [powerpc*] Ignore further ABI changes in cxl.
+  * [ia64] Add compress-modules udeb.
+
+ -- Bastian Blank <waldi@debian.org>  Fri, 22 Jun 2018 11:50:22 +0200
 
 linux (4.16.16-1) unstable; urgency=medium
 
