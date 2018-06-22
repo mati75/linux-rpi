@@ -108,7 +108,7 @@ featuresets:
  rt
 
 [build]
-debug-info: true
+debug-info: false
 # Disable code signing by default; this can be overridden per-architecture
 signed-code: false
 
