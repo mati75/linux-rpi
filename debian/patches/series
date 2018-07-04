@@ -5,14 +5,15 @@ debian/kernelvariables.patch
 debian/gitignore.patch
 debian/ia64-hardcode-arch-script-output.patch
 debian/mips-disable-werror.patch
+debian/mips-boston-disable-its.patch
 debian/arch-sh4-fix-uimage-build.patch
 debian/powerpcspe-omit-uimage.patch
-features/all/Kbuild-kconfig-Verbose-version-of-listnewconfig.patch
 debian/modpost-symbol-prefix.patch
 debian/tools-perf-version.patch
 debian/tools-perf-install.patch
 debian/wireless-add-debian-wireless-regdb-certificates.patch
-debian/parisc-fix-make-target.patch
+debian/export-symbols-needed-by-android-drivers.patch
+debian/android-enable-building-ashmem-and-binder-as-modules.patch
 
 # Fixes/improvements to firmware loading
 features/all/drivers-media-dvb-usb-af9005-request_firmware.patch
@@ -52,11 +53,9 @@ debian/fjes-disable-autoload.patch
 debian/fanotify-taint-on-use-of-fanotify_access_permissions.patch
 debian/btrfs-warn-about-raid5-6-being-experimental-at-mount.patch
 
-# Reduce noise for bug #852324
-debian/amd64-don-t-warn-about-expected-w+x-pages-on-xen.patch
-
 # Arch bug fixes
 bugfix/arm/arm-dts-kirkwood-fix-sata-pinmux-ing-for-ts419.patch
+bugfix/arm64/dts-rockchip-correct-voltage-selector-firefly-RK3399.patch
 bugfix/x86/platform-x86-ideapad-laptop-add-ideapad-310-15ikb-to.patch
 bugfix/x86/platform-x86-ideapad-laptop-add-ideapad-v310-15isk-t.patch
 bugfix/x86/platform-x86-ideapad-laptop-add-y520-15ikbn-to-no_hw.patch
@@ -74,25 +73,15 @@ features/mips/MIPS-increase-MAX-PHYSMEM-BITS-on-Loongson-3-only.patch
 features/mips/MIPS-Loongson-3-Add-Loongson-LS3A-RS780E-1-way-machi.patch
 features/x86/x86-memtest-WARN-if-bad-RAM-found.patch
 features/x86/x86-make-x32-syscall-support-conditional.patch
-# meson8b device-tree updates from next-20180316 to enable USB and Ethernet.
-features/armhf/meson8/0001-ARM-dts-meson8b-grow-the-reset-controller-memory-zon.patch
-features/armhf/meson8/0002-ARM-dts-meson8-add-the-reset-controller.patch
-features/armhf/meson8/0003-ARM-dts-meson8-add-the-USB-reset-line.patch
-features/armhf/meson8/0004-ARM-dts-meson8b-extend-ethernet-controller-descripti.patch
-features/armhf/meson8/0005-ARM-dts-meson8b-odroidc1-ethernet-support.patch
-features/armhf/meson8/0006-ARM-dts-meson8b-add-the-I2C-clocks.patch
-# Add sata support for Tegra210/Jetson-TX1 from mainline.
-features/arm64/tegra210-sata/0001-ata-ahci_tegra-Update-initialization-sequence.patch
-features/arm64/tegra210-sata/0002-ata-ahci_tegra-initialize-regulators-from-soc-struct.patch
-features/arm64/tegra210-sata/0003-ata-ahci_tegra-disable-devslp-for-Tegra124.patch
-features/arm64/tegra210-sata/0004-ata-ahci_tegra-disable-DIPM.patch
-features/arm64/tegra210-sata/0005-ata-ahci_tegra-Add-AHCI-support-for-Tegra210.patch
-features/arm64/tegra210-sata/0006-arm64-tegra-Add-SATA-node-for-Tegra210.patch
-features/arm64/tegra210-sata/0007-arm64-tegra-Enable-AHCI-on-Jetson-TX1.patch
-features/arm64/arm64-dts-allwinner-a64-add-simplefb-for-A64-SoC.patch
 # Add support for Raspberry PI 3b+
-#features/armhf/ARM-dts-bcm2837-Add-Raspberry-Pi-3-B.patch
-#features/arm64/arm64-dts-broadcom-Add-reference-to-Raspberry-Pi-3-B.patch
+features/armhf/ARM-dts-bcm2837-Add-Raspberry-Pi-3-B.patch
+features/arm64/arm64-dts-broadcom-Add-reference-to-Raspberry-Pi-3-B.patch
+# Add device-tree for Pinebook from linux next-20180625
+features/arm64/pinebook/0001-arm64-allwinner-a64-Add-RTC-clock-to-phandle-32kHz-e.patch
+features/arm64/pinebook/0002-arm64-dts-allwinner-a64-add-R_I2C-controller.patch
+features/arm64/pinebook/0003-arm64-dts-allwinner-a64-Add-PWM-controllers.patch
+features/arm64/pinebook/0004-arm64-dts-allwinner-add-support-for-Pinebook.patch
+features/arm64/pinebook/0005-arm64-dts-allwinner-a64-add-SRAM-controller-device-t.patch
 
 # Miscellaneous bug fixes
 bugfix/all/kbuild-use-nostdinc-in-compile-tests.patch
@@ -102,10 +91,9 @@ bugfix/all/partially-revert-usb-kconfig-using-select-for-usb_co.patch
 bugfix/all/kbuild-include-addtree-remove-quotes-before-matching-path.patch
 debian/revert-objtool-fix-config_stack_validation-y-warning.patch
 bugfix/all/i40e-build-for-64-bit-targets-only.patch
-bugfix/all/hv_netvsc-Fix-a-network-regression-after-ifdown-ifup.patch
+bugfix/all/ib-fix-rdma_rxe-and-infiniband_rdmavt-dependencies-f.patch
 
 # Miscellaneous features
-features/all/kbuild-use-fmacro-prefix-map-to-make-__file__-a-rela.patch
 
 # Lockdown (formerly 'securelevel') patchset
 features/all/lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -126,7 +114,6 @@ features/all/lockdown/0015-ACPI-Limit-access-to-custom_method-when-the-kernel-i.
 features/all/lockdown/0016-acpi-Ignore-acpi_rsdp-kernel-param-when-the-kernel-h.patch
 features/all/lockdown/0017-acpi-Disable-ACPI-table-override-if-the-kernel-is-lo.patch
 features/all/lockdown/0018-acpi-Disable-APEI-error-injection-if-the-kernel-is-l.patch
-features/all/lockdown/0019-scsi-Lock-down-the-eata-driver.patch
 features/all/lockdown/0020-Prohibit-PCMCIA-CIS-storage-when-the-kernel-is-locke.patch
 features/all/lockdown/0021-Lock-down-TIOCSSERIAL.patch
 features/all/lockdown/0022-Lock-down-module-params-that-specify-hardware-parame.patch
@@ -144,8 +131,20 @@ features/all/lockdown/arm64-add-kernel-config-option-to-lock-down-when.patch
 
 # Security fixes
 debian/i386-686-pae-pci-set-pci-nobios-by-default.patch
-bugfix/all/xfs-enhance-dinode-verifier.patch
-bugfix/all/xfs-set-format-back-to-extents-if-xfs_bmap_extents_t.patch
+bugfix/x86/virt-vbox-Only-copy_from_user-the-request-header-onc.patch
+bugfix/all/tracing-check-for-no-filter-when-processing-event-fi.patch
+bugfix/all/ext4-add-corruption-check-in-ext4_xattr_set_entry.patch
+bugfix/all/ext4-always-verify-the-magic-number-in-xattr-blocks.patch
+bugfix/all/ext4-always-check-block-group-bounds-in-ext4_init_bl.patch
+bugfix/all/ext4-make-sure-bitmaps-and-the-inode-table-don-t-ove.patch
+bugfix/all/ext4-only-look-at-the-bg_flags-field-if-it-is-valid.patch
+bugfix/all/ext4-verify-the-depth-of-extent-tree-in-ext4_find_ex.patch
+bugfix/all/ext4-clear-i_data-in-ext4_inode_info-when-removing-i.patch
+bugfix/all/ext4-never-move-the-system.data-xattr-out-of-the-ino.patch
+bugfix/all/jbd2-don-t-mark-block-as-modified-if-the-handle-is-o.patch
+bugfix/all/ext4-avoid-running-out-of-journal-credits-when-appen.patch
+bugfix/all/ext4-add-more-inode-number-paranoia-checks.patch
+bugfix/all/jfs-fix-inconsistency-between-memory-allocation-and-.patch
 
 # Fix exported symbol versions
 bugfix/all/module-disable-matching-missing-version-crc.patch
@@ -166,173 +165,3 @@ bugfix/all/lockdep-stub-nmi-watchdog-reset.patch
 debian/wireless-disable-regulatory.db-direct-loading.patch
 
 # ABI maintenance
-
-rpi/rpi_1000_890958c4fe4fb5f8e3108728892aaf6f0c805f06.patch
-rpi/rpi_1001_a34a467b05ff93d68f4d9e813500f783738ace8b.patch
-rpi/rpi_1002_070f8eb001a07c8c4ede2e8b02259f7458e03013.patch
-rpi/rpi_1003_df0de1cc69a0a17bfc737d9cda04ddb7c1b7899d.patch
-rpi/rpi_1004_67905f6c061465608e435caeb2151661b8e1554d.patch
-rpi/rpi_1005_d004578a26fa8280bc45475e6afbb453e282fe56.patch
-rpi/rpi_1006_ad71e00777a28a48872566f6a7b9103cd950b2eb.patch
-rpi/rpi_1007_ea4a068897c397dfaadf8a8bbda7f9555721fbc6.patch
-rpi/rpi_1008_d967129d0768f2d2964c58951e7397b0c008c0b3.patch
-rpi/rpi_1009_99c00ac041fd6997591fe5c55252d2834c2e90ee.patch
-rpi/rpi_1010_53f27d135a0ded5b98ffa040e54b4fcdb30d9708.patch
-rpi/rpi_1011_adf69e09f1e41f65a43a19483247c6664d7e6813.patch
-rpi/rpi_1012_8ab0e850c06d485e094914e6d63f0f9b325ff63f.patch
-rpi/rpi_1013_ac9d72460918aa13c6ce523cbb4ec2063dc223ab.patch
-rpi/rpi_1014_7d9a992c41fb9095d047ca388c397d8c27d7afd2.patch
-rpi/rpi_1015_8f784ed7f047e590f48ab6ea90c64f7e2f379f26.patch
-rpi/rpi_1016_fdbb5fbf7fd8c79c102d6a03b93498989f2de1ed.patch
-rpi/rpi_1017_42d353c3cb8f95e6ae600063dc9033c6e27fc87f.patch
-rpi/rpi_1018_3bf12f899d4c85d248fd26d8cd2d2939462db7eb.patch
-rpi/rpi_1019_ca44ad8c7b95bdcabdd48279edf1a9b792ecc78f.patch
-rpi/rpi_1020_79bfdced74aab8cd3c335d13893ad924556300b7.patch
-rpi/rpi_1021_cf3c728d63ee087596c28437b72bc12fd8258300.patch
-rpi/rpi_1022_52f014aa43fc2f148665b691bbaaeeb462f053c0.patch
-rpi/rpi_1023_94ecdd5646088c6415ae2eb10f41634b47c05c64.patch
-rpi/rpi_1024_23fb28ba8378c4e57d5ee6f934f028e5862175ec.patch
-rpi/rpi_1025_b40da63ea1b006e38a97f826676701e5e8acd222.patch
-rpi/rpi_1026_45ae7bca64ce37488db99ecec768ef8ea5891ffd.patch
-rpi/rpi_1027_9e3f7023acf03d032d86e9a21c87d363e9b8c96d.patch
-rpi/rpi_1028_5faf5cd17f504f5ac0ce7838bbba72ad0681e463.patch
-rpi/rpi_1029_d2a542ae2b55a40a7d3479a3e2e54ac264d397ec.patch
-rpi/rpi_1030_edce1681f56a9428904b24911c6c1b163009e6e6.patch
-rpi/rpi_1031_73ac1c4fd828c5c8a308253f9c6e8788acaf5c4d.patch
-rpi/rpi_1032_a754727eba1b9350a48412270ed5ce5f3f06dbbf.patch
-rpi/rpi_1033_2ae9e19ebb9acb9cf0a60c3f53542a66a14df380.patch
-rpi/rpi_1034_283d33be153e5b3efabf5756933ad54797d680ad.patch
-rpi/rpi_1035_10cd8b22c08409fce5a03c77044fcdb76fb5f204.patch
-rpi/rpi_1036_dab3a925d07dc50b9ceab03dc027b682ed12d786.patch
-rpi/rpi_1037_0f5d9c00947b180b0441fa1ce2cbb74f9d05e8ea.patch
-rpi/rpi_1038_f1d4f495e3d6e638cbf14ea98fd20d0045382ec7.patch
-rpi/rpi_1039_ca6032f293eb5d7a35eb54c4c5b52995ce78731f.patch
-rpi/rpi_1040_47aff6d8b68ebdc8a3ea2a9ef2e39ea3fc0d770f.patch
-rpi/rpi_1041_477b916be15e11331bc20838a2524c124a4e8e34.patch
-rpi/rpi_1042_af326945bbdc88e5236ad86a68e43d4ec2a06669.patch
-rpi/rpi_1043_9d6f12e7f2dd9d989ec62640cdc458461bac1c85.patch
-rpi/rpi_1044_ec97ee90132a9a0cf4eedc13bfd2e747d04dcc7f.patch
-rpi/rpi_1045_4d3300f0dd2334e6893174c8514e9610cc7359d2.patch
-rpi/rpi_1046_3c174c7c3ec8aa3f64024a8da111231312c10fb7.patch
-rpi/rpi_1047_084e789000f73e234df0d2690651e773246e6ec8.patch
-rpi/rpi_1048_d175aea3fcdba0ab403c8226fa81c2893d41f45c.patch
-rpi/rpi_1049_b65b7760570f44556b4cd9ca71cfda597ac7b05e.patch
-rpi/rpi_1050_ffc0ec8b988844285c2eb4a3d092cddfc521f8c2.patch
-rpi/rpi_1051_1aa03c3a61e27f73a88c5f11d02300365acca75a.patch
-rpi/rpi_1052_edbd47d9e98cbabe79320a09102a34d5994ee9f9.patch
-rpi/rpi_1053_69360ca556dc37f8cc4b6905fd5637adc34c86a2.patch
-rpi/rpi_1054_dc96b5b662af65021f1d6e675a9f54f90cc0fd00.patch
-rpi/rpi_1055_4540c7af7da88c601e0b0de76b4c520233c9faf2.patch
-rpi/rpi_1056_aa2ad42c61b5491cc4698e728e64f7df96453b08.patch
-rpi/rpi_1057_f9b6fd4beff2615e4a03cf5eedc1f10fdde2063d.patch
-rpi/rpi_1058_a762a800fd850763c3742b471007fde7e64dea96.patch
-rpi/rpi_1059_5b1c97f0d62fdd284ed2a65c01a393f7c1e6505b.patch
-rpi/rpi_1060_22586982f7a16a3df6b0b1ca159a44ce6c7dfbe9.patch
-rpi/rpi_1061_5206e6a0fe6a64111096bf0fddbefb60d3a0a00a.patch
-rpi/rpi_1062_550e6cd3c758f67a5704ed2eda8b370390d67d7a.patch
-rpi/rpi_1063_b93be5c886d1bf7eaef7439fd8ae82ab05dcf45b.patch
-rpi/rpi_1064_6a539230edd307c7955fe4f99c0de89b0fd1b681.patch
-rpi/rpi_1065_ae196545d37ed34e272a307db7c21ec2f5f4eaf7.patch
-rpi/rpi_1066_b34d38f50bb09cbcedb10c9eb0ae6ce8a61675ba.patch
-rpi/rpi_1067_12779d45ca48353e6a0e8b6ba4c7957d2e8c71c9.patch
-rpi/rpi_1068_b90825fa9b8ab1526db60980383c4ececf463e72.patch
-rpi/rpi_1069_3a7d4dba38224bb317acaa999c6a677e9b128986.patch
-rpi/rpi_1070_dcf0fd544a42c59d25acf0c59b27b226f6873441.patch
-rpi/rpi_1071_60daee80e4190cf47ff11c4509cd12303fb2962e.patch
-rpi/rpi_1072_5816bface1df375d03d731bdb81f6a0c44dad9b4.patch
-rpi/rpi_1073_76b6820e7f499b015b6ef469adf5a958a65a6a90.patch
-rpi/rpi_1074_e3026ee9759ea459b575b7ba3204ea57f1e978a0.patch
-rpi/rpi_1075_2417a174bdeeb7545d1b458bbbcdd9f27e6f5706.patch
-rpi/rpi_1076_2d8f6d9197a91418a2e9ce1a6d72ee2c2944c0d1.patch
-rpi/rpi_1077_939fc3f91cac214d9ff0214e045ebeae4e4771d1.patch
-rpi/rpi_1078_59edd3322b07f0c48fe0029581ff32f2a8dc800b.patch
-rpi/rpi_1079_a5b537380ee9260380930150dc7d4889e4eea744.patch
-rpi/rpi_1080_fac55c23ea5554c6a947f94e9828864cf7c686b9.patch
-rpi/rpi_1081_17454b455533d1a4a1406b62ad2da8690ec1db08.patch
-rpi/rpi_1082_6be18aa362908806213390f2205753ede0aa4424.patch
-rpi/rpi_1083_0abef0452e513fa08b95db546481effb2442bda2.patch
-rpi/rpi_1084_e74b87a3361c4880bd1cef4c6e5325d65301d580.patch
-rpi/rpi_1085_903304ed31926875a93f83b83bb6cbdcbadb58ea.patch
-rpi/rpi_1086_1d3cd03a5ca8bd621b94d9e83604a03095cfc080.patch
-rpi/rpi_1087_bd75fc9d90e9555cb27b5d250376f3698c7ebeb3.patch
-rpi/rpi_1088_28bb4abbe21899e5c4acd4e072a582ac875c4b63.patch
-rpi/rpi_1089_5b29d7fe113774973c9a0bdeb785e98df073c9ce.patch
-rpi/rpi_1090_8178adf53ee6b2613bcc47c85c5eaf7b64b708c0.patch
-rpi/rpi_1091_56d4a10e06631f664d7eb6d68ddfbac5844270e7.patch
-rpi/rpi_1092_ef61c6cc92e2ca0817055167fa5fa0136ba23ee5.patch
-rpi/rpi_1093_b3d1df21c459d02d41926c4d07117cad02161694.patch
-rpi/rpi_1094_b8bb607470a2d41048877f2e473bbc0b60b93e1d.patch
-rpi/rpi_1095_6233ac2990094d756535c107927b54bbf881ca9e.patch
-rpi/rpi_1096_f5c6ea5414714a7723072f44a21f10aedfb788df.patch
-rpi/rpi_1097_be0b302cb6f75ee972a978d0451c3e7302121bf3.patch
-rpi/rpi_1098_b366a3c3882aa8274b3d58dad92c63a9a44663f9.patch
-rpi/rpi_1099_21370c9768e623a7050c744627b785c0b86363b4.patch
-rpi/rpi_1100_5847d83dfd26dda39cb761df806626f28da8e141.patch
-rpi/rpi_1101_48e2736df3db01dbbde4b63e20a3155f90af91bd.patch
-rpi/rpi_1102_4e516944b38e73217dc3cb43f3af0417e95f9768.patch
-rpi/rpi_1103_9bc7fc5e6da1dbc74069b5c8b9bb291b3993bfd1.patch
-rpi/rpi_1104_d3433f385aeeefbc7a32095c390e7e539ed4fd4e.patch
-rpi/rpi_1105_ed84af4ebab075e711cd5ecd1c9f3976dc2c9de5.patch
-rpi/rpi_1106_af94a8e1bbb211b5b286a706fb0a248d797d956a.patch
-rpi/rpi_1107_ffe5c4a6a88dca9c1af9e104fae8944ffd52077e.patch
-rpi/rpi_1108_334e2f9c948d9f7aebf7b88d1d0201f8f85024fb.patch
-rpi/rpi_1109_fbe27378bbb61b496d98b57d92ba903ac993cdb1.patch
-rpi/rpi_1110_5041f32ac4b92ad5775dc07ad31272533909be9b.patch
-rpi/rpi_1111_6b09b353655a9eeb99af8e80cda1b9cd651b9447.patch
-rpi/rpi_1112_db5aff503d716df34033b997a6350143b9168b1c.patch
-rpi/rpi_1113_c933d1f1f30e1c1e217d887683b5fe7df2be5635.patch
-rpi/rpi_1114_d6ba7a6bd0ed9dbcd1f6e4f0fa8fe091b12cae19.patch
-rpi/rpi_1115_2ada356c9d031855e01e0055e3867ea64a50ae36.patch
-rpi/rpi_1116_3b1aabeb0a6b3121b9729aa4352c2124e12a840a.patch
-rpi/rpi_1117_3c6a38df0a4ca56b70e9591bf359bd9a9ddbbc33.patch
-rpi/rpi_1118_cd53319b76f48bfda1698e9c69538ffd5281c367.patch
-rpi/rpi_1119_d6d7d2e439d53a6a7eb7d14d754d6af60f3b3ab3.patch
-rpi/rpi_1120_fe01f0a42c93bb75b0d00950ae4cb412b0f2a358.patch
-rpi/rpi_1121_dbbe0dc6c6e97a074e0d03eb53dd5b1a181802f4.patch
-rpi/rpi_1122_f352906199e81ee575cc11eba3add121ffe8aa65.patch
-rpi/rpi_1123_d659bc0ee974cd6a1bff34f7f31f3fde02d5b09e.patch
-rpi/rpi_1124_496690e69bd205460d688f9440198718f7f040e3.patch
-rpi/rpi_1125_2893f96c3e66692d7dd294b422803688ddca9fce.patch
-rpi/rpi_1126_36e2b31b0081a5a646f27f707bc1bbd6b0ba882c.patch
-rpi/rpi_1127_d4022a77b5617eb1f39ccae2de371ca20928d6c7.patch
-rpi/rpi_1128_3bce5e4eae1e7c9b30edcc6de99d8390171f1a69.patch
-rpi/rpi_1129_0d4900f3553bd966292ad941035112e42b70a30f.patch
-rpi/rpi_1130_2c88a83daa233e17079c871441c5c2f9f7f73821.patch
-rpi/rpi_1131_9101d3c3853a53e1e31655d441a5c9659e6330b0.patch
-rpi/rpi_1132_a66e31e7406b2ad76c5a477e9a6b8f1cd9ed2219.patch
-rpi/rpi_1133_d49b751145f2e440e515eb175b3cf92680a4767e.patch
-rpi/rpi_1134_d15f76be617d2496404aa15f711eb731b98d0afa.patch
-rpi/rpi_1135_7fcdac494bb26c38dcf5d89a0d2c8a1d79d37229.patch
-rpi/rpi_1136_d137093a17d02e66b518751c5fab6595584143fb.patch
-rpi/rpi_1137_539c7640db92f46c6e0049f280e172e5a125b091.patch
-rpi/rpi_1138_c71d22f4bf76a2cd1fe430ff3d83f76847a82e53.patch
-rpi/rpi_1139_7211a29874efc0e3c7ee8550dbe874b99d06f5c4.patch
-rpi/rpi_1140_ab004d9a36a8cba24e9c3a8e483a8c541a9893b5.patch
-rpi/rpi_1141_e10a63b7e90009c38c9b4b6bf6823b441d57a1d9.patch
-rpi/rpi_1142_5c94ac724abe920379fce1b522d51b3cbb4089c3.patch
-rpi/rpi_1143_e65c1e035f1be99e4010fb734c3d63700e880f1a.patch
-rpi/rpi_1144_2d15bb91d839b0fb46da42adcabb9e922c421652.patch
-rpi/rpi_1145_f41ccce7701b3f71431b7931c7a66fdd102d49f3.patch
-rpi/rpi_1146_325f5f0ec83190f5da79a46600247e8dafc2fae6.patch
-rpi/rpi_1147_ba64f52f009723edaed9bfe8893242d32f9de613.patch
-rpi/rpi_1148_0340b6508698de7d77c03cda85d5d9a183e56338.patch
-rpi/rpi_1149_07571e431bdea70a7442195a8c5a24699b3da589.patch
-rpi/rpi_1150_4417810646e55dba32a049812e7abf1e72e1312f.patch
-rpi/rpi_1151_f832514dd02e9d32952dd10ae7e5f50a58e99142.patch
-rpi/rpi_1152_1eb788b7d5784466f4f10889d7dbdfcfce78f97b.patch
-rpi/rpi_1153_54fa919f00136e778f3087e40ae375f0d6a37e04.patch
-rpi/rpi_1154_0ee21d6d8b32d794a3a7a258482f4ab8447beaa3.patch
-rpi/rpi_1155_e4df324ef6fbc9574250fbeb58f9a19c8c157f56.patch
-rpi/rpi_1156_a4222485ca980d582ffceec840839fcba19dca97.patch
-rpi/rpi_1157_5078fdabfdb627349f8ab44a811e71912e1b99dd.patch
-rpi/rpi_1158_e0ded0fa5fb42e791e8002aae8cb0cacac37b96a.patch
-rpi/rpi_1159_b915598392d8beec8fcb9640b24b28d9d20486c5.patch
-rpi/rpi_1160_fe7f2b2bd731cbbeb0bc43a2070fbe93d63bf68f.patch
-rpi/rpi_1161_baea109c03c5afc7533ee40e3857b03f357b9cf8.patch
-rpi/rpi_1162_c1f105397913085a02a2210eb11adfef7738c3de.patch
-rpi/rpi_1163_8690cb94d60dd702ab330430b722159ba09ae0db.patch
-rpi/rpi_1164_e15649ec518d929dbdb209f4e43722e1580d5eba.patch
-rpi/rpi_1165_1be9a434751b9efeca067efbc4c0050df21082e7.patch
-rpi/rpi_1166_1a05ea6e5e42ec8a4270cb8a34fc9548d81976ca.patch
-rpi/rpi_1167_5ed2c275f7672ed307f61f1ef8c43c3817de5af8.patch
-rpi/rpi_9999_other_changes.patch

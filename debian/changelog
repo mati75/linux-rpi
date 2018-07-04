@@ -119,6 +119,310 @@ linux (4.16.16-2+rpi1) buster-staging; urgency=medium
 
  -- Mateusz Łukasik <mati75@linuxmint.pl>  Fri, 22 Jun 2018 23:13:40 +0200
 
+linux (4.17.3-1) unstable; urgency=medium
+
+  * New upstream stable update:
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.17.3
+    - net: aquantia: fix unsigned numvecs comparison with less than zero
+    - bonding: re-evaluate force_primary when the primary slave name changes
+    - cdc_ncm: avoid padding beyond end of skb
+    - ipv6: allow PMTU exceptions to local routes
+    - [armhf,arm64] net: dsa: add error handling for pskb_trim_rcsum
+    - net/sched: act_simple: fix parsing of TCA_DEF_DATA
+    - tcp: verify the checksum of the first data segment in a new connection
+    - socket: close race condition between sock_close() and sockfs_setattr()
+      (CVE-2018-12232)
+    - udp: fix rx queue len reported by diag and proc interface
+    - net: in virtio_net_hdr only add VLAN_HLEN to csum_start if payload holds
+      vlan
+    - ACPICA: AML parser: attempt to continue loading table after error
+    - ext4: fix hole length detection in ext4_ind_map_blocks()
+    - ext4: update mtime in ext4_punch_hole even if no blocks are released
+    - ext4: do not allow external inodes for inline data (CVE-2018-11412)
+    - ext4: bubble errors from ext4_find_inline_data_nolock() up to ext4_iget()
+    - ext4: correctly handle a zero-length xattr with a non-zero e_value_offs
+      (CVE-2018-10840)
+    - ext4: fix fencepost error in check for inode count overflow during resize
+    - driver core: Don't ignore class_dir_create_and_add() failure.
+    - Btrfs: allow empty subvol= again
+    - Btrfs: fix clone vs chattr NODATASUM race
+    - Btrfs: fix memory and mount leak in btrfs_ioctl_rm_dev_v2()
+    - btrfs: return error value if create_io_em failed in cow_file_range
+    - btrfs: scrub: Don't use inode pages for device replace
+    - ALSA: usb-audio: Disable the quirk for Nura headset
+    - ALSA: hda - Handle kzalloc() failure in snd_hda_attach_pcm_stream()
+    - [x86] MCE: Fix stack out-of-bounds write in mce-inject.c: Flags_read()
+    - smb3: fix various xid leaks
+    - smb3: on reconnect set PreviousSessionId field
+    - CIFS: 511c54a2f69195b28afb9dd119f03787b1625bb4 adds a check for session
+      expiry
+    - cifs: For SMB2 security informaion query, check for minimum sized
+      security descriptor instead of sizeof FileAllInformation class
+    - nbd: fix nbd device deletion
+    - nbd: update size when connected
+    - nbd: use bd_set_size when updating disk size
+    - blk-mq: reinit q->tag_set_list entry only after grace period
+    - bdi: Move cgroup bdi_writeback to a dedicated low concurrency workqueue
+    - cpufreq: Fix new policy initialization during limits updates via sysfs
+    - cpufreq: governors: Fix long idle detection logic in load calculation
+    - libata: zpodd: small read overflow in eject_tray()
+    - libata: Drop SanDisk SD7UB3Q*G1001 NOLPM quirk
+    - nvme/pci: Sync controller reset for AER slot_reset
+    - [x86] vector: Fix the args of vector_alloc tracepoint
+    - [x86] apic/vector: Prevent hlist corruption and leaks
+    - [x86] apic: Provide apic_ack_irq()
+    - [x86] ioapic: Use apic_ack_irq()
+    - [x86] platform/uv: Use apic_ack_irq()
+    - irq_remapping: Use apic_ack_irq()
+    - genirq/generic_pending: Do not lose pending affinity update
+    - genirq/affinity: Defer affinity setting if irq chip is busy
+    - genirq/migration: Avoid out of line call if pending is not set
+    - [x86] intel_rdt: Enable CMT and MBM on new Skylake stepping
+    - media: uvcvideo: Prevent setting unavailable flags
+    - media: rc: ensure input/lirc device can be opened after register
+    - iwlwifi: fw: harden page loading code
+    - [x86] HID: intel_ish-hid: ipc: register more pm callbacks to support
+      hibernation
+    - HID: wacom: Correct logical maximum Y for 2nd-gen Intuos Pro large
+    - vhost: fix info leak due to uninitialized memory (CVE-2018-1118)
+    - fs/binfmt_misc.c: do not allow offset overflow
+    - mm, page_alloc: do not break __GFP_THISNODE by zonelist reset
+
+  [ Ben Hutchings ]
+  * [amd64,arm64,armhf] android: Build modules to support Anbox
+    (Closes: #901492)
+    - Export symbols needed by Android drivers
+    - Enable building ashmem and binder as modules
+    - Enable ANDROID
+    - Enable ANDROID_BINDER_IPC, ASHMEM as modules
+    - Set ANDROID_BINDER_DEVICES="binder"
+    - Disable ANDROID_BINDER_IPC_32BIT
+  * [mips*] Increase RELOCATION_TABLE_SIZE to 0x00140000 (fixes FTBFS)
+  * Set ABI to 1
+  * [x86,arm64] Disable code signing for upload to unstable
+  * [x86] virt: vbox: Only copy_from_user the request-header once
+    (CVE-2018-12633)
+  * [x86] vboxguest: Enable VBOXGUEST and DRM_VBOXVIDEO as modules
+  * aufs: Update support patchset to aufs4.x-rcN-20180611
+  * debian/rules.d/scripts/mod/gendef.py: Use Python 3
+  * debian/rules: Fix pkg.linux.notools build profile
+  * tracing: Check for no filter when processing event filters (CVE-2018-12714)
+  * dm: Enable DM_INTEGRITY as module (except on armel) (Closes: #896649)
+  * debian/lib/python/debian_linux/debian.py: Accept arbitrary revision
+    suffixes (Closes: #898087)
+  * ext4: add corruption check in ext4_xattr_set_entry() (CVE-2018-10879)
+  * ext4: always verify the magic number in xattr blocks (CVE-2018-10879)
+  * ext4: always check block group bounds in ext4_init_block_bitmap()
+    (CVE-2018-10878)
+  * ext4: make sure bitmaps and the inode table don't overlap with bg
+    descriptors (CVE-2018-10878)
+  * ext4: only look at the bg_flags field if it is valid (CVE-2018-10876)
+  * ext4: verify the depth of extent tree in ext4_find_extent()
+    (CVE-2018-10877)
+  * ext4: clear i_data in ext4_inode_info when removing inline data
+    (CVE-2018-10881)
+  * ext4: never move the system.data xattr out of the inode body
+    (CVE-2018-10880)
+  * jbd2: don't mark block as modified if the handle is out of credits
+    (CVE-2018-10883)
+  * ext4: avoid running out of journal credits when appending to an inline file
+    (CVE-2018-10883)
+  * ext4: add more inode number paranoia checks (CVE-2018-10882)
+  * jfs: Fix inconsistency between memory allocation and ea_buf->max_size
+    (CVE-2018-12233)
+  * debian/control: Move bison and flex to Build-Depends (Closes: #901712)
+
+  [ Romain Perier ]
+  * [x86] amdgpu: Enable DCN 1.0 Raven family (Closes: #901349)
+  * [armhf] Enable missing SND_EDMA_SOC for davinci-mcasp on the BeagleBoneBlack
+
+  [ Vagrant Cascadian ]
+  * [arm64] Add device-tree to support Pinebook.
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 02 Jul 2018 22:13:27 +0100
+
+linux (4.17.2-1~exp1) experimental; urgency=medium
+
+  * New upstream release: https://kernelnewbies.org/Linux_4.17
+
+  * New upstream stable update:
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.17.1
+    - netfilter: nf_flow_table: attach dst to skbs
+    - bnx2x: use the right constant
+    - ip6mr: only set ip6mr_table from setsockopt when ip6mr_new_table succeeds
+    - ipv6: omit traffic class when calculating flow hash
+    - l2tp: fix refcount leakage on PPPoL2TP sockets
+    - netdev-FAQ: clarify DaveM's position for stable backports
+    - net: metrics: add proper netlink validation
+    - net/packet: refine check for priv area size
+    - rtnetlink: validate attributes in do_setlink()
+    - sctp: not allow transport timeout value less than HZ/5 for hb_timer
+    - team: use netdev_features_t instead of u32
+    - vrf: check the original netdevice for generating redirect
+    - net: dsa: b53: Fix for brcm tag issue in Cygnus SoC
+    - ipmr: fix error path when ipmr_new_table fails
+    - PCI: hv: Do not wait forever on a device that has disappeared
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.17.2
+    - crypto: chelsio - request to HW should wrap
+    - blkdev_report_zones_ioctl(): Use vmalloc() to allocate large buffers
+    - KVM: X86: Fix reserved bits check for MOV to CR3
+    - KVM: x86: introduce linear_{read,write}_system
+    - kvm: fix typo in flag name
+    - kvm: nVMX: Enforce cpl=0 for VMX instructions
+    - KVM: x86: pass kvm_vcpu to kvm_read_guest_virt and kvm_write_guest_virt_system
+    - kvm: x86: use correct privilege level for sgdt/sidt/fxsave/fxrstor access
+    - staging: android: ion: Switch to pr_warn_once in ion_buffer_destroy
+    - NFC: pn533: don't send USB data off of the stack
+    - usbip: vhci_sysfs: fix potential Spectre v1
+    - usb-storage: Add support for FL_ALWAYS_SYNC flag in the UAS driver
+    - usb-storage: Add compatibility quirk flags for G-Technologies G-Drive
+    - Input: xpad - add GPD Win 2 Controller USB IDs
+    - phy: qcom-qusb2: Fix crash if nvmem cell not specified
+    - usb: core: message: remove extra endianness conversion in usb_set_isoch_delay
+    - usb: typec: wcove: Remove dependency on HW FSM
+    - usb: gadget: function: printer: avoid wrong list handling in printer_write()
+    - usb: gadget: udc: renesas_usb3: fix double phy_put()
+    - usb: gadget: udc: renesas_usb3: should remove debugfs
+    - usb: gadget: udc: renesas_usb3: should call pm_runtime_enable() before add udc
+    - usb: gadget: udc: renesas_usb3: should call devm_phy_get() before add udc
+    - usb: gadget: udc: renesas_usb3: should fail if devm_phy_get() returns error
+    - usb: gadget: udc: renesas_usb3: disable the controller's irqs for reconnecting
+    - serial: sh-sci: Stop using printk format %pCr
+    - tty/serial: atmel: use port->name as name in request_irq()
+    - serial: samsung: fix maxburst parameter for DMA transactions
+    - serial: 8250: omap: Fix idling of clocks for unused uarts
+    - vmw_balloon: fixing double free when batching mode is off
+    - doc: fix sysfs ABI documentation
+    - arm64: defconfig: Enable CONFIG_PINCTRL_MT7622 by default
+    - tty: pl011: Avoid spuriously stuck-off interrupts
+    - crypto: ccree - correct host regs offset
+    - Input: goodix - add new ACPI id for GPD Win 2 touch screen
+    - Input: elan_i2c - add ELAN0612 (Lenovo v330 14IKB) ACPI ID
+    - crypto: caam - strip input zeros from RSA input buffer
+    - crypto: caam - fix DMA mapping dir for generated IV
+    - crypto: caam - fix IV DMA mapping and updating
+    - crypto: caam/qi - fix IV DMA mapping and updating
+    - crypto: caam - fix size of RSA prime factor q
+    - crypto: cavium - Fix fallout from CONFIG_VMAP_STACK
+    - crypto: cavium - Limit result reading attempts
+    - crypto: vmx - Remove overly verbose printk from AES init routines
+    - crypto: vmx - Remove overly verbose printk from AES XTS init
+    - crypto: omap-sham - fix memleak
+
+  [ Vagrant Cascadian ]
+  * [armhf] Enable MFD_AC100 and RTC_DRV_AC100, used in allwinner A80/A83t
+    systems.
+
+  [ Helge Deller ]
+  * [hppa] Disable debug info due to required disk size.
+
+  [ Bastian Blank ]
+  * [cloud-amd64] Enable VIRTUALIZATION. (closes: #900861)
+  * [cloud-amd64] Enable MEMORY_HOTPLUG.
+
+  [ Romain Perier ]
+  * [arm64] correct voltage selector for Firefly-RK3399 (Closes: #900799)
+
+  [ Vagrant Cascadian ]
+  * [arm64] Enable configuration options used in Firefly-RK3399:
+    DRM_ROCKCHIP, ROCKCHIP_ANALOGIX_DP, ROCKCHIP_DW_HDMI,
+    ROCKCHIP_DW_MIPI_DSI, ROCKCHIP_SARADC, ROCKCHIP_IOMMU, ROCKCHIP_EFUSE,
+    PHY_ROCKCHIP_TYPEC, ROCKCHIP_THERMAL (Closes: #901159).
+    Thanks to Heinrich Schuchardt.
+
+ -- Bastian Blank <waldi@debian.org>  Tue, 19 Jun 2018 22:00:47 +0200
+
+linux (4.17~rc7-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Romain Perier]
+  * Update patch debian/wireless-disable-regulatory.db-direct-loading.patch to
+    fix a FTBFS with undefined symbol reg_query_regdb_wmm() that is used by
+    wireless driver iwlwifi.
+
+  [ Luca Boccassi ]
+  * Disable building linux-doc-* and tools documentation when the "nodoc"
+    build profile is used.
+  * Add new "pkg.linux.nosource" build profile that disables building the
+    linux-source-* package, and a "[packages] source" option for the
+    debian/config/defines file that defines the default behaviour.
+  * Remove redundant "Dual License" from debian/copyright to fix Lintian
+    source warning "space-in-std-shortname-in-dep5-copyright".
+  * Add missing Copyright line to debian/copyright to fix Lintian source
+    warning "missing-field-in-dep5-copyright".
+
+  [ John Paul Adrian Glaubitz ]
+  * [m68k] Enable CONFIG_PATA_GAYLE as module.
+
+  [ Ben Hutchings ]
+  * Fix building only versioned tools packages
+  * Reclassify lockdep packages as unversioned tools
+  * [hppa/parisc64-smp] IB: Fix RDMA_RXE and INFINIBAND_RDMAVT dependencies for
+    DMA_VIRT_OPS
+  * rtl8192se: Fix warning introduced by "firmware: Remove redundant log
+    messages from drivers"
+  * SCSI: Enable SCSI_MQ_DEFAULT. This can be reverted using the kernel
+    parameter: scsi_mod.use_blk_mq=n
+  * dm: Enable DM_MQ_DEFAULT. This can be reverted using the kernel parameter:
+    dm_mod.use_blk_mq=n
+
+  [ Jason Duerstock ]
+  * [ia64] udeb: Add compress-modules package (fixes FTBFS)
+
+  [ YunQiang Su ]
+  * [mips{,64}el/loongson-3] enable NUMA, CPU_PM, CPU_IDLE, RS780_HPET,
+    REGULATOR. (Closes: #898521).
+  * [mips{,64}r6{,el}] use boston as the target, and enable MIPS_CPS.
+    Add a patch to disable uImage generation to avoid depend on u-boot-tools.
+    Fix typo the EL's flavor names in installer: not same within defines
+    Malta is never used for r6. (Closes: #898523)
+    Boston also requires relocation table size >= 0x00121000.
+
+  [ Vagrant Cascadian ]
+  * [armhf] Update mtd-modules: Replace pxa3xx_nand with marvell_nand.
+
+  [ Hideki Yamane ]
+  * Improve battery life on laptops (Closes: #898629)
+    Thanks to Hans de Goede <hdegoede@redhat.com>
+    - ATA: A new SATA link-powermanagement-policy will be the default on all
+      Intel mobile chipsets. This can be reverted by passing 
+      "ahci.mobile_lpm_policy=0" on the kernel commandline.
+    - sound: Enable Intel HDA codec power-saving by default with a 1 second
+      timeout. This can be overridden by passing "snd_hda_intel.power_save=0"
+      on the kernel commandline (0 is previously default).
+    - BlueTooth: Enable USB autosuspend for Bluetooth USB devices by default.
+      This can be disabled by passing "btusb.enable_autosuspend=n" on the
+      kernel commandline. 
+
+  [ Bastian Blank ]
+  * [cloud-amd64] Disable some filesystems.
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Tue, 29 May 2018 09:54:12 +0100
+
+linux (4.17~rc3-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Ben Hutchings ]
+  * [amd64] Drop our patch "Don't WARN about expected W+X pages on Xen"; the
+    problem appears to have been fixed upstream
+  * Drop our patch "Kbuild: kconfig: Verbose version of --listnewconfig";
+    listnewconfig now shows symbol values by default
+  * debian/rules.real: Stop enabling verbose output for listnewconfig target
+  * Documentation: typec.rst: Use literal-block element with ascii art
+  * Documentation: Update references to drivers/base/firmware_class.c
+  * [armhf] Enable MTD_NAND_MARVELL as module, replacing MTD_NAND_PXA3xx
+  * linux-kbuild: Update genksyms makefile to run flex and bison
+  * Add support for building only versioned tools packages
+  * Change generation of linux-doc, linux-source, linux-support package names
+
+  [ Luca Boccassi ]
+  * Build-Dep on libelf-dev even for nopython/notools builds to fix FTBFS,
+    needed when CONFIG_STACK_VALIDATION and CONFIG_UNWINDER_ORC are enabled.
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 30 Apr 2018 00:13:06 +0100
+
 linux (4.16.16-2) unstable; urgency=medium
 
   * [powerpc*] Ignore further ABI changes in cxl.
