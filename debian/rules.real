@@ -80,10 +80,13 @@ binary-indep: install-support
 ifneq ($(DO_TOOLS_VERSIONED),False)
   build-arch-arch: $(STAMPS_DIR)/build-tools
   binary-arch-arch: install-kbuild
-  ifneq ($(filter alpha amd64 arm64 armel armhf hppa i386 mips mips64 mips64el mipsel powerpc powerpcspe ppc64 ppc64el s390 s390x sh4 sparc sparc64,$(DEB_HOST_ARCH)),)
+  ifneq ($(filter alpha amd64 arm64 armel armhf hppa i386 mips mips64 mips64el mipsel powerpc ppc64 ppc64el s390 s390x sh4 sparc sparc64,$(DEB_HOST_ARCH)),)
     ifeq ($(filter nopython,$(DEB_BUILD_PROFILES)),)
       binary-arch-arch: install-perf
     endif
+  endif
+  ifneq ($(filter powerpc powerpcspe ppc64,$(DEB_HOST_ARCH)),)
+    binary-arch-arch: install-bootwrapper
   endif
 endif
 ifneq ($(DO_TOOLS_UNVERSIONED),False)
@@ -169,6 +172,8 @@ $(STAMPS_DIR)/setup_$(ARCH)_$(FEATURESET)_$(FLAVOUR): $(STAMPS_DIR)/source_$(FEA
 	rm -rf '$(DIR)'
 	mkdir '$(DIR)'
 	cp '$(CONFIG)' '$(DIR)/.config'
+# Add "salt" to fix #872263
+	echo 'CONFIG_BUILD_SALT="$(ABINAME)$(LOCALVERSION_IMAGE)"' >> '$(DIR)/.config'
 	echo 'override ARCH = $(KERNEL_ARCH)' >> '$(DIR)/.kernelvariables'
 	echo 'override KERNELRELEASE = $(ABINAME)$(LOCALVERSION_IMAGE)' >> '$(DIR)/.kernelvariables'
 	echo 'CCACHE = ccache' >> '$(DIR)/.kernelvariables'
@@ -455,10 +460,20 @@ ifneq ($(filter arm64 armel armhf,$(ARCH)),)
 	+$(MAKE_CLEAN) -C $(DIR) dtbs_install INSTALL_DTBS_PATH=$(CURDIR)/$(DT_INSTALL_DIR)
 endif
 ifneq ($(filter powerpc powerpcspe ppc64,$(ARCH)),)
+# Install wrapper code and DT source, but not the wrapper script or
+# the executables it calls.  Kbuild will always build these executable
+# as native code, which is wrong for a cross-built package.  Install
+# symlinks to the versions in the linux-bootwrapper package instead.
+	rm -rf '$(DIR)_bootwrapper'
 	+$(MAKE_CLEAN) -C '$(DIR)' bootwrapper_install \
-	  WRAPPER_OBJDIR='$(CURDIR)/$(DT_INSTALL_DIR)' \
-	  WRAPPER_DTSDIR='$(CURDIR)/$(DT_INSTALL_DIR)'/dts \
-	  WRAPPER_BINDIR='$(CURDIR)/$(DT_INSTALL_DIR)'
+		WRAPPER_OBJDIR='$(CURDIR)/$(DT_INSTALL_DIR)' \
+		WRAPPER_DTSDIR='$(CURDIR)/$(DT_INSTALL_DIR)/dts' \
+		WRAPPER_BINDIR='$(CURDIR)/$(DIR)_bootwrapper'
+	for prog in '$(DIR)_bootwrapper'/*; do \
+		prog="$$(basename $$prog)"; \
+		ln -s ../linux-bootwrapper-$(ABINAME)/$$prog \
+			'$(DT_INSTALL_DIR)'/$$prog; \
+	done
 endif
 
 install-image_$(ARCH)_$(FEATURESET)_$(FLAVOUR)_bug:
@@ -557,9 +572,10 @@ install-source: $(BUILD_DIR)/$(SOURCE_BASENAME)-source-$(UPSTREAMVERSION).tar.xz
 	dh_installdirs /usr/src/linux-config-$(UPSTREAMVERSION)
 	dh_install $^ /usr/src
 # Include our kernel config files, but with the module signing
-# configuration fixed to work for custom kernels.
+# configuration fixed to work for custom kernels.  Also delete
+# CONFIG_BUILD_SALT which makes no sense for custom kernels.
 	for triplet in $(ALL_TRIPLETS); do \
-	  sed '/CONFIG_\(MODULE_SIG_\(ALL\|KEY\)\|SYSTEM_TRUSTED_KEYS\)[ =]/d' $(BUILD_DIR)/build_$$triplet/.config | xz -c >debian/$(PACKAGE_NAME)/usr/src/linux-config-$(UPSTREAMVERSION)/config.$$triplet.xz; \
+	  sed '/CONFIG_\(MODULE_SIG_\(ALL\|KEY\)\|SYSTEM_TRUSTED_KEYS\|BUILD_SALT\)[ =]/d' $(BUILD_DIR)/build_$$triplet/.config | xz -c >debian/$(PACKAGE_NAME)/usr/src/linux-config-$(UPSTREAMVERSION)/config.$$triplet.xz; \
 	done
 # We don't want to recompress, but -Znone is not compatible with older
 # tools and is currently rejected by dak.  -Zgzip -z0 (uncompressed
@@ -568,7 +584,7 @@ install-source: $(BUILD_DIR)/$(SOURCE_BASENAME)-source-$(UPSTREAMVERSION).tar.xz
 	+$(MAKE_SELF) install-base BUILDDEB_ARGS='-Zgzip -z1'
 
 define make-tools
-+mkdir -p $(BUILD_DIR)/build-tools/$(1) && $(MAKE_CLEAN) -C $(BUILD_DIR)/build-tools/$(1) -f $(CURDIR)/debian/rules.d/$(1)/Makefile top_srcdir=$(CURDIR) top_rulesdir=$(CURDIR)/debian/rules.d OUTDIR=$(1) VERSION=$(VERSION)
++mkdir -p $(BUILD_DIR)/build-tools/$(1) && $(MAKE_CLEAN) -C $(BUILD_DIR)/build-tools/$(1) -f $(CURDIR)/debian/rules.d/$(1)/Makefile top_srcdir=$(CURDIR) top_rulesdir=$(CURDIR)/debian/rules.d OUTDIR=$(1) VERSION=$(VERSION) KERNEL_ARCH=$(KERNEL_ARCH)
 endef
 
 $(STAMPS_DIR)/build-tools:
@@ -761,6 +777,24 @@ endif
 	dh_compress
 	dh_fixperms
 	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+install-bootwrapper: PACKAGE_NAME = linux-bootwrapper-$(ABINAME)
+install-bootwrapper: DH_OPTIONS = -p$(PACKAGE_NAME)
+install-bootwrapper: DIR = $(CURDIR)/debian/$(PACKAGE_NAME)
+install-bootwrapper: $(STAMPS_DIR)/build-tools
+	dh_testdir
+	dh_testroot
+	dh_prep
+	$(call make-tools,arch/powerpc/boot) install DESTDIR=$(DIR) installdir=/usr/lib/$(PACKAGE_NAME)
+	dh_installchangelogs
+	dh_strip
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
