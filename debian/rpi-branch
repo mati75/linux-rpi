@@ -1,66 +1,64 @@
-commit 5ed2c275f7672ed307f61f1ef8c43c3817de5af8
-Author: Phil Elwell <phil@raspberrypi.org>
-Date:   Thu Jun 14 11:21:04 2018 +0100
+commit 9f54ddcdcdb5eeb990b62183b4a505f85909155b
+Author: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Date:   Thu Jun 21 12:47:10 2018 -0400
 
-    irqchip: irq-bcm2835: Calc. FIQ_START at boot-time
+    ARM: ftrace: Only set kernel memory back to read-only after boot
     
-    ad83c7cb2f37 ("irqchip/irq-bcm2836: Add support for DT interrupt polarity")
-    changed the way that the BCM2836/7 local interrupts are mapped; instead
-    of being pre-mapped they are now mapped on-demand. A side effect of this
-    change is that the call to irq_of_parse_and_map from armctrl_of_init
-    creates a new mapping, forming a gap between the IRQs and the FIQs. This
-     gap breaks the FIQ<->IRQ mapping which up to now has been done by assuming:
+    Dynamic ftrace requires modifying the code segments that are usually
+    set to read-only. To do this, a per arch function is called both before
+    and after the ftrace modifications are performed. The "before" function
+    will set kernel code text to read-write to allow for ftrace to make the
+    modifications, and the "after" function will set the kernel code text
+    back to "read-only" to keep the kernel code text protected.
     
-    1) that the value of FIQ_START is the same as the number of normal IRQs
-    that will be mapped (still true), and
+    The issue happens when dynamic ftrace is tested at boot up. The test is
+    done before the kernel code text has been set to read-only. But the
+    "before" and "after" calls are still performed. The "after" call will
+    change the kernel code text to read-only prematurely, and other boot
+    code that expects this code to be read-write will fail.
     
-    2) that this value is also the offset between an IRQ and its equivalent
-    FIQ (which is no longer the case).
+    The solution is to add a variable that is set when the kernel code text
+    is expected to be converted to read-only, and make the ftrace "before"
+    and "after" calls do nothing if that variable is not yet set. This is
+    similar to the x86 solution from commit 162396309745 ("ftrace, x86:
+    make kernel text writable only for conversions").
     
-    Remove both assumptions by measuring the interval between the last IRQ
-    and the last FIQ, passing it as the parameter to init_FIQ().
-    
-    Fixes: https://github.com/raspberrypi/linux/issues/2432
-    
-    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+    Reported-by: Stefan Agner <stefan@agner.ch>
+    Tested-by: Stefan Agner <stefan@agner.ch>
+    Link: http://lkml.kernel.org/r/20180620212906.24b7b66e@vmware.local.home
+    Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 
-diff --git a/drivers/irqchip/irq-bcm2835.c b/drivers/irqchip/irq-bcm2835.c
-index ecb014728974..72abca2bac3a 100644
---- a/drivers/irqchip/irq-bcm2835.c
-+++ b/drivers/irqchip/irq-bcm2835.c
-@@ -82,8 +82,6 @@
- #define NR_BANKS		3
- #define IRQS_PER_BANK		32
- #define NUMBER_IRQS		MAKE_HWIRQ(NR_BANKS, 0)
--#undef FIQ_START
--#define FIQ_START		(NR_IRQS_BANK0 + MAKE_HWIRQ(NR_BANKS - 1, 0))
- 
- static const int reg_pending[] __initconst = { 0x00, 0x04, 0x08 };
- static const int reg_enable[] __initconst = { 0x18, 0x10, 0x14 };
-@@ -211,7 +209,7 @@ static int __init armctrl_of_init(struct device_node *node,
- 				  bool is_2836)
- {
- 	void __iomem *base;
--	int irq, b, i;
-+	int irq = 0, last_irq, b, i;
- 
- 	base = of_iomap(node, 0);
- 	if (!base)
-@@ -237,6 +235,8 @@ static int __init armctrl_of_init(struct device_node *node,
- 		}
- 	}
- 
-+	last_irq = irq;
-+
- 	if (is_2836) {
- 		int parent_irq = irq_of_parse_and_map(node, 0);
- 
-@@ -267,7 +267,7 @@ static int __init armctrl_of_init(struct device_node *node,
- 		}
- 	}
- #ifndef CONFIG_ARM64
--	init_FIQ(FIQ_START);
-+	init_FIQ(irq - last_irq);
- #endif
- 
+diff --git a/arch/arm/mm/init.c b/arch/arm/mm/init.c
+index c186474422f3..0cc8e04295a4 100644
+--- a/arch/arm/mm/init.c
++++ b/arch/arm/mm/init.c
+@@ -736,20 +736,29 @@ static int __mark_rodata_ro(void *unused)
  	return 0;
+ }
+ 
++static int kernel_set_to_readonly __read_mostly;
++
+ void mark_rodata_ro(void)
+ {
++	kernel_set_to_readonly = 1;
+ 	stop_machine(__mark_rodata_ro, NULL, NULL);
+ 	debug_checkwx();
+ }
+ 
+ void set_kernel_text_rw(void)
+ {
++	if (!kernel_set_to_readonly)
++		return;
++
+ 	set_section_perms(ro_perms, ARRAY_SIZE(ro_perms), false,
+ 				current->active_mm);
+ }
+ 
+ void set_kernel_text_ro(void)
+ {
++	if (!kernel_set_to_readonly)
++		return;
++
+ 	set_section_perms(ro_perms, ARRAY_SIZE(ro_perms), true,
+ 				current->active_mm);
+ }

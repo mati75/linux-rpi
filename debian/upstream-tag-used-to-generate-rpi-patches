@@ -1,41 +1,41 @@
-tag v4.16.16
+tag v4.17.3
 Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Sat Jun 16 09:43:48 2018 +0200
+Date:   Tue Jun 26 07:51:34 2018 +0800
 
-This is the 4.16.16 stable release
+This is the 4.17.3 stable release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlskv7QACgkQONu9yGCS
-aT6VCA/+MF/L9E/BS++E0z5qOLZ4NRMTWvYian0b0d3uA9Xcg14awBIUmHhJxlIx
-T3wMghtI9VR6AyRvOmQvPRdoCzOeLgjVAllfWPc6Oqk5oqr+K4IAePVQkXramLa7
-b1Tg48Iro+/jtGc9L1TvIpRQk9/ANTTE/gUvu60+/5/RX2e7C8U1cyEMe0HAlEoJ
-cmhE/Pxsu0CTCpNxLX9coz2GAi0Y1DWwyG0Pm7T9v9E5qI/AKGH1myIL+mGkEAqz
-jHmMgNujUt+tySW+xEX+ATEtb04rARE//eL/gx3iykunOV2CmhhoO4OdUujxpjjU
-dea9dKjFKYhiCvXUKKeOi8YJC2Ps1N3g7vZXgBJnjNi+xOPgfwxl7V7yl/EBq6gc
-IHdjYp1tX1/t1Ua/+QHkiX65A7X9s1UGdErkBoX6rJqSxNuz4Ti8u5DXXG8PHOPz
-C/UHZG9uvB2LL3AId7uDprg9sv4VVzyXiFZM75XQTyIdSEbbzLL1D+wMgdufyYA2
-wriDfchhT+ecgqLYeGpGa05bb6s3/x91Tu+oei3Wjd/tHJibsk6EZJOl137qCpCl
-7Dz+X+TWBlouNsqrf9hfs80MPltZC+D8wKqsE5GsdgFv1dcuLe8VAu6OKxTZvc8x
-isjmQES3mM+FJxHSw1wn1bnsiS8+dNzMVHM93w+xxJx3pNJ3iqA=
-=BEbn
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlsxgAYACgkQONu9yGCS
+aT5FEA//ZT8Ko+JKIg+tsXbk4wUb0d9B6+YaIMjjYXbs3TDlwX6/M8BQtd6gV65c
+lRXOt+oBGgbeUwnefLF+sa5jiQfd+CAF+Pl+NCFAYKVwKdZTza7B0EDgb3HBstQj
+q8vjdosSCSEgzgFBGPc07K9/yZiNPXLiQPIkpQrpSoS0r20lM6h8j+66F+yPlzDE
+GuRUhwJfjV3CIqPB5raQalUVjVvHvneCR1S7SF/lF6JkTMGAapLPwkJai16XrVNx
+vWARsSBn2mElw4zCLndmXLxOXNd9pts15qmkyuWrdwPTfDBr4DHRde6U0izhr1Z9
+kFRjC95/6o4PxybeBGikBuQnB4LkwSyFX51FPo3axWJacQBgSSNzHqbpR5da2TOX
+jzTmlyNj7j+cDRsgE0x5lWUolZWQPO+yPPyZf2dNbx6BtWxlqdYgF4IjyYIs2p9Y
+7/ORvt5tCbuekss/1nQdBlbvEnk7Mq/4V23On2SvHdKiJ1Ul3iTUXchxX1McE1UJ
+zxZYYZKrKiGZhgcdigdDZ5ZcgHaT2tmUiZy+gI7fnlyH41YQc+DPmXDo18N4Q9BT
+bsaem5VccxQUP0fNDoGRvARsIEOn9T2kEZp6RSk5vo1/pIxhdHPX6mVdCsAGZq+A
+bfOAuz2pXxvFMbDMDNMr4gcs/yX3lLAyKHqLruTxtY3Oks5vYHk=
+=1qT8
 -----END PGP SIGNATURE-----
 
-commit f77427a94b30b1f0b31f2364f4203f2ca94d335d
+commit 83e05c58300605f3ab87819c19d1822f54eff81e
 Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Sat Jun 16 09:43:46 2018 +0200
+Date:   Tue Jun 26 07:51:32 2018 +0800
 
-    Linux 4.16.16
+    Linux 4.17.3
 
 diff --git a/Makefile b/Makefile
-index e45c66b27241..55554f392115 100644
+index f43cd522b175..31dc3a08295a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
- PATCHLEVEL = 16
--SUBLEVEL = 15
-+SUBLEVEL = 16
+ PATCHLEVEL = 17
+-SUBLEVEL = 2
++SUBLEVEL = 3
  EXTRAVERSION =
- NAME = Fearless Coyote
+ NAME = Merciless Moray
  
