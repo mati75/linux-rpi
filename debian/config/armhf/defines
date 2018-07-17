@@ -1,6 +1,6 @@
 [base]
 flavours:
- rpi
+# rpi
 kernel-arch: arm
 
 [build]
