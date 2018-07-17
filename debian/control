@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Debian Kernel Team <debian-kernel@lists.debian.org>
 Uploaders: Bastian Blank <waldi@debian.org>, Frederik Schüler <fs@debian.org>, maximilian attems <maks@debian.org>, Ben Hutchings <ben@decadent.org.uk>
 Standards-Version: 3.9.5
-Build-Depends: debhelper, cpio, kmod, python, python-six, lzma [armel], kernel-wedge, quilt, patchutils, bc, gcc-4.8 [alpha arm64 armel armhf hppa m68k mips mipsel mips64 mips64el powerpcspe ppc64el s390 s390x sh4 sparc sparc64], gcc-4.9 (>= 4.9.2-10+deb7u1) [amd64 i386], gcc-4.9 (<< 4.9.2-11) [amd64 i386], binutils-hppa64 [hppa], gcc-4.8-hppa64 [hppa], gcc-4.6 [ia64], gcc-4.8 (>= 4.8.2-21) [powerpc ppc64]
+Build-Depends: debhelper, cpio, kmod, python, python-six, lzma [armel], kernel-wedge, quilt, patchutils, bc, gcc-4.8 [alpha arm64 armel hppa m68k mips mipsel mips64 mips64el powerpcspe ppc64el s390 s390x sh4 sparc sparc64], gcc-4.9 (>= 4.9.2-10+deb7u1) [amd64 i386], gcc-4.9 (<< 4.9.2-11) [amd64 i386], binutils-hppa64 [hppa], gcc-4.8-hppa64 [hppa], gcc-4.6 [ia64], gcc-4.8 (>= 4.8.2-21) [powerpc ppc64]
 Build-Depends-Indep: xz-utils, xmlto
 Vcs-Git: https://anonscm.debian.org/git/kernel/linux.git
 Vcs-Browser: https://anonscm.debian.org/cgit/kernel/linux.git
@@ -79,7 +79,7 @@ Description: Linux support headers for userspace development
 Multi-Arch: same
 
 Package: linux-headers-3.16.0-6-all
-Architecture: alpha amd64 arm64 armel armhf hppa i386 ia64 m68k mips mips64 mips64el mipsel powerpc powerpcspe ppc64 ppc64el s390 s390x sh4 sparc sparc64
+Architecture: alpha amd64 arm64 armel hppa i386 ia64 m68k mips mips64 mips64el mipsel powerpc powerpcspe ppc64 ppc64el s390 s390x sh4 sparc sparc64
 Depends: linux-headers-3.16.0-6-all-${kernel:Arch} (= ${binary:Version}), ${misc:Depends}
 Description: All header files for Linux 3.16 (meta-package)
  This package depends against all architecture-specific kernel header files
@@ -578,7 +578,7 @@ Kernel-Version: 3.16.0-6-alpha-generic
 Package-Type: udeb
 
 Package: linux-headers-3.16.0-6-common
-Architecture: alpha amd64 arm64 armel armhf hppa i386 ia64 m68k mips mips64 mips64el mipsel powerpc powerpcspe ppc64 ppc64el s390 s390x sh4 sparc sparc64
+Architecture: alpha amd64 arm64 armel hppa i386 ia64 m68k mips mips64 mips64el mipsel powerpc powerpcspe ppc64 ppc64el s390 s390x sh4 sparc sparc64
 Depends: ${misc:Depends}
 Description: Common header files for Linux 3.16.0-6
  This package provides the architecture-specific common kernel header files
@@ -2906,14 +2906,6 @@ Description: Header files for Linux 3.16.0-6-versatile
  modules that load into the kernel provided by the
  linux-image-3.16.0-6-versatile package.
 
-Package: linux-headers-3.16.0-6-all-armhf
-Architecture: armhf
-Depends: ${misc:Depends}, linux-headers-3.16.0-6-rpi (= ${binary:Version})
-Description: All header files for Linux 3.16 (meta-package)
- This package depends against all architecture-specific kernel header files
- for Linux kernel version 3.16, generally used for building out-of-tree
- kernel modules.
-
 Package: kernel-image-3.16.0-6-rpi-di
 Architecture: armhf
 Section: debian-installer
@@ -3135,28 +3127,6 @@ Description: FUSE modules
  This package contains the Filesystem in Userspace (FUSE) module.
 Kernel-Version: 3.16.0-6-rpi
 Package-Type: udeb
-
-Package: linux-image-3.16.0-6-rpi
-Architecture: armhf
-Provides: linux-modules-3.16.0-6-rpi
-Pre-Depends: debconf | debconf-2.0
-Depends: kmod | module-init-tools, linux-base (>= 3~), ${misc:Depends}, initramfs-tools (>= 0.110~) [armhf] | linux-initramfs-tool [armhf]
-Recommends: firmware-linux-free (>= 3~), ${kernel:Recommends}
-Suggests: linux-doc-3.16, debian-kernel-handbook, fdutils [armhf]
-Breaks: at (<< 3.1.12-1+squeeze1), initramfs-tools (<< 0.110~)
-Description: Linux 3.16 for RaspberryPI
- The Linux kernel 3.16 and modules for use on Raspberry PI.
-
-Package: linux-headers-3.16.0-6-rpi
-Architecture: armhf
-Depends: linux-headers-3.16.0-6-common (= ${binary:Version}), linux-kbuild-3.16, ${misc:Depends}, linux-compiler-gcc-4.8-arm
-Description: Header files for Linux 3.16.0-6-rpi
- This package provides the architecture-specific kernel header files for
- Linux kernel 3.16.0-6-rpi, generally used for building out-of-tree kernel
- modules.  These files are going to be installed into
- /usr/src/linux-headers-3.16.0-6-rpi, and can be used for building modules
- that load into the kernel provided by the linux-image-3.16.0-6-rpi
- package.
 
 Package: linux-headers-3.16.0-6-all-hppa
 Architecture: hppa
