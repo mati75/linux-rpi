@@ -1,41 +1,41 @@
-tag v4.17.14
+tag v4.17.17
 Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Thu Aug 9 12:15:20 2018 +0200
+Date:   Sat Aug 18 10:48:41 2018 +0200
 
-This is the 4.17.14 stable release
+This is the 4.17.17 stable release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAltsFDgACgkQONu9yGCS
-aT66tQ//eY66DOgfAZxIlSfPJyCGGY3EvXMNNZyqqaDhpb2VU4QwwoF7iNocciAs
-VmcTOyzMQ3wPTXYjihozBm0qXIIGZJ25sH9+Nf+4Ng5RV/MdMAwHEo/b4M8aeOd0
-PIUvIOODsfy+YJEemoipT00l3WBRY2V4G8YmEj4ytQvpM9CQ5Lw7JSSbwwa0iDbN
-Fi/RKYOrbHa7AwFRpjIomq6y1MoV9rB7oVg1n7eRTbquob9m3KFmyUuCbpNG8i1N
-hE5/US1jBQN+uuvH306oRu8c0nsT7onAf/vXKxdIiLU7k2ss6OQkvOtv3MExJGg3
-N/tLICYmASIozYC6sfNRffo503nK7C/4ynP3MNTbs9SWQZzo+8udoKUL8Ldi9bhR
-p/SCGSHAqjVZ6B3Y110wi7DoMK7e60vgjItFK9/lO5gvI443klr7d/rXXNIw9x42
-lu84Z5GBJzp1rxmR1XfOUGHOiZGHxW5fsETUbU58LJ8D24pKmmWyWGgJRueZdGXB
-+L7MZYgOf7EQrwcPswjAyvYsDLvyJFFXKAFlfMZvP1jMqmn4ggr6lnvzp8E32UcL
-ctC1GRYSyZJ2ExAyhsuCQaXYvie77GUwU3ODRb62d/P13MF+/0yrNb6C9drbMabd
-rqCkilHPGtq4RLl2rVY6IRoRUHnYsMpnHEGKJlO3XLYQ/tiwMj0=
-=683V
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlt33WkACgkQONu9yGCS
+aT7JsxAA1QTqj6zizXfTZVoXLJkEQiqxZ3duJ36s1OHG1R5Lhb+0yeeZE3l+IHR5
+BvtfNRgGk9WJQAokDPEOLFYzE9NAKGuvSn+A9si7LtiHQkn34ERXuj1Na7KN+Wa5
+ZP6KRWK2vox2bCbZfPjCrfjQfs4AxsceZMe5qjNJL2D26ciNs1Hvn8fRsoZ+KI8M
+GXvHyJkBbN5Oh1dRXLA3rhf579ROev6WE6AoIfdW6XPPJ13UgLK0sLiSb+ewhgXE
+sUrQwmvwqxSLp2lt+9dwNF45JeR745xsxi/7asA8Odmv5FNiVLcE8rpVUEs8TBnV
+xje++0i89OIZyYBJiEbT2e9t5A/cDzRuTdCOTuetq3TVSST7Qm2M2L42SnPErcQ0
+l/BetDlnEESUPVsvmf6OQl6D5IYYd3a0HlSNMMx+9EbXHlEcABIFr7FKRmm8ybi3
+ge7rFfJVCp96IWeqwoXNnEF9Vxey9jpsnH8fK4GSwQnh7sxstsDHzM25GRbv6z7S
+03Zr6WrkFJmwNKy7ZN5ZXzwEbzTVZbaJbt4w9uNnMH8pY/RNhTDK/6A6cJISEj+8
+ZODbgkVBAVfxN7gNwGtw1MUqfRnVrgBWUj/abvDdL3w7V963bbRJv2rajs5hSCxu
+Gg7E7MTRstyocK0esJ7oz20+3OHdPYeY054LC9PTJ4N0+R0R45A=
+=Mjm4
 -----END PGP SIGNATURE-----
 
-commit d0b1397a9aac7a77c95fed5ea02ef35c29279915
+commit fa535b8a37597c80c0ac7d3669edccda9d91195b
 Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Thu Aug 9 12:15:13 2018 +0200
+Date:   Sat Aug 18 10:48:41 2018 +0200
 
-    Linux 4.17.14
+    Linux 4.17.17
 
 diff --git a/Makefile b/Makefile
-index 2534e51de1db..ce4248f558d1 100644
+index 8ca595f045c4..5ff2040cf3ee 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
  PATCHLEVEL = 17
--SUBLEVEL = 13
-+SUBLEVEL = 14
+-SUBLEVEL = 16
++SUBLEVEL = 17
  EXTRAVERSION =
  NAME = Merciless Moray
  
