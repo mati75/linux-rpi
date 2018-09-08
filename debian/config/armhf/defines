@@ -2,6 +2,7 @@
 flavours:
  rpi
  rpi2
+
 kernel-arch: arm
 
 [build]
