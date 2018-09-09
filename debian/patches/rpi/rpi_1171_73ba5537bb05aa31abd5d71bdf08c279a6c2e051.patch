@@ -1,0 +1,23 @@
+commit 73ba5537bb05aa31abd5d71bdf08c279a6c2e051
+Author: derpeter <derpeter@users.noreply.github.com>
+Date:   Sun Mar 25 23:27:30 2018 +0200
+
+    This commit adds support for RP3-B-Plus in in arch arm64 (#2464)
+
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index e2ecf8f6e234..e3eee7542e24 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -466,6 +466,7 @@ CONFIG_USB_NET_SR9700=m
+ CONFIG_USB_NET_SR9800=m
+ CONFIG_USB_NET_SMSC75XX=m
+ CONFIG_USB_NET_SMSC95XX=y
++CONFIG_USB_LAN78XX=y
+ CONFIG_USB_NET_GL620A=m
+ CONFIG_USB_NET_NET1080=m
+ CONFIG_USB_NET_PLUSB=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1171_73ba5537bb05aa31abd5d71bdf08c279a6c2e051.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1171_73ba5537bb05aa31abd5d71bdf08c279a6c2e051.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
