@@ -1,0 +1,40 @@
+commit 6cf7be0267f7f5943fc038f47d314e66407a60f5
+Author: Viresh Kumar <viresh.kumar@linaro.org>
+Date:   Fri May 25 16:01:48 2018 +0530
+
+    ARM: dts: ls1021a: Add missing cooling device properties for CPUs
+    
+    [ Upstream commit 47768f372eae030db6fab5225f9504a820d2c07f ]
+    
+    The cooling device properties, like "#cooling-cells" and
+    "dynamic-power-coefficient", should either be present for all the CPUs
+    of a cluster or none. If these are present only for a subset of CPUs of
+    a cluster then things will start falling apart as soon as the CPUs are
+    brought online in a different order. For example, this will happen
+    because the operating system looks for such properties in the CPU node
+    it is trying to bring up, so that it can register a cooling device.
+    
+    Add such missing properties.
+    
+    Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+    Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/arm/boot/dts/ls1021a.dtsi b/arch/arm/boot/dts/ls1021a.dtsi
+index c55d479971cc..f18490548c78 100644
+--- a/arch/arm/boot/dts/ls1021a.dtsi
++++ b/arch/arm/boot/dts/ls1021a.dtsi
+@@ -84,6 +84,7 @@
+ 			device_type = "cpu";
+ 			reg = <0xf01>;
+ 			clocks = <&clockgen 1 0>;
++			#cooling-cells = <2>;
+ 		};
+ 	};
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1132_6cf7be0267f7f5943fc038f47d314e66407a60f5.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1132_6cf7be0267f7f5943fc038f47d314e66407a60f5.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

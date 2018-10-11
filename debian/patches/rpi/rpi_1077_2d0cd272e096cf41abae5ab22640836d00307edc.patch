@@ -1,0 +1,63 @@
+commit 2d0cd272e096cf41abae5ab22640836d00307edc
+Author: Theodore Ts'o <tytso@mit.edu>
+Date:   Sat Sep 1 14:42:14 2018 -0400
+
+    ext4: recalucate superblock checksum after updating free blocks/inodes
+    
+    commit 4274f516d4bc50648a4d97e4f67ecbd7b65cde4a upstream.
+    
+    When mounting the superblock, ext4_fill_super() calculates the free
+    blocks and free inodes and stores them in the superblock.  It's not
+    strictly necessary, since we don't use them any more, but it's nice to
+    keep them roughly aligned to reality.
+    
+    Since it's not critical for file system correctness, the code doesn't
+    call ext4_commit_super().  The problem is that it's in
+    ext4_commit_super() that we recalculate the superblock checksum.  So
+    if we're not going to call ext4_commit_super(), we need to call
+    ext4_superblock_csum_set() to make sure the superblock checksum is
+    consistent.
+    
+    Most of the time, this doesn't matter, since we end up calling
+    ext4_commit_super() very soon thereafter, and definitely by the time
+    the file system is unmounted.  However, it doesn't work in this
+    sequence:
+    
+    mke2fs -Fq -t ext4 /dev/vdc 128M
+    mount /dev/vdc /vdc
+    cp xfstests/git-versions /vdc
+    godown /vdc
+    umount /vdc
+    mount /dev/vdc
+    tune2fs -l /dev/vdc
+    
+    With this commit, the "tune2fs -l" no longer fails.
+    
+    Reported-by: Chengguang Xu <cgxu519@gmx.com>
+    Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+    Cc: stable@vger.kernel.org
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/ext4/super.c b/fs/ext4/super.c
+index 130c12974e28..34daec5a750e 100644
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -4357,11 +4357,13 @@ static int ext4_fill_super(struct super_block *sb, void *data, int silent)
+ 	block = ext4_count_free_clusters(sb);
+ 	ext4_free_blocks_count_set(sbi->s_es, 
+ 				   EXT4_C2B(sbi, block));
++	ext4_superblock_csum_set(sb);
+ 	err = percpu_counter_init(&sbi->s_freeclusters_counter, block,
+ 				  GFP_KERNEL);
+ 	if (!err) {
+ 		unsigned long freei = ext4_count_free_inodes(sb);
+ 		sbi->s_es->s_free_inodes_count = cpu_to_le32(freei);
++		ext4_superblock_csum_set(sb);
+ 		err = percpu_counter_init(&sbi->s_freeinodes_counter, freei,
+ 					  GFP_KERNEL);
+ 	}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1077_2d0cd272e096cf41abae5ab22640836d00307edc.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1077_2d0cd272e096cf41abae5ab22640836d00307edc.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

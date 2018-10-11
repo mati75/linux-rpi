@@ -1,0 +1,41 @@
+commit 98ecfdf49ff73c87a5ab8fa7ba1f22db67da6f29
+Author: Stefan Agner <stefan@agner.ch>
+Date:   Tue Aug 28 12:44:24 2018 +0200
+
+    tty: serial: lpuart: avoid leaking struct tty_struct
+    
+    commit 3216c622a24b0ebb9c159a8d1daf7f17a106b3f5 upstream.
+    
+    The function tty_port_tty_get() gets a reference to the tty. Since
+    the code is not using tty_port_tty_set(), the reference is kept
+    even after closing the tty.
+    
+    Avoid using tty_port_tty_get() by directly access the tty instance.
+    Since lpuart_start_rx_dma() is called from the .startup() and
+    .set_termios() callback, it is safe to assume the tty instance is
+    valid.
+    
+    Cc: stable@vger.kernel.org # v4.9+
+    Fixes: 5887ad43ee02 ("tty: serial: fsl_lpuart: Use cyclic DMA for Rx")
+    Signed-off-by: Stefan Agner <stefan@agner.ch>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index 51e47a63d61a..3f8d1274fc85 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -979,7 +979,8 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
+ 	struct circ_buf *ring = &sport->rx_ring;
+ 	int ret, nent;
+ 	int bits, baud;
+-	struct tty_struct *tty = tty_port_tty_get(&sport->port.state->port);
++	struct tty_port *port = &sport->port.state->port;
++	struct tty_struct *tty = port->tty;
+ 	struct ktermios *termios = &tty->termios;
+ 
+ 	baud = tty_get_baud_rate(tty);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1223_98ecfdf49ff73c87a5ab8fa7ba1f22db67da6f29.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1223_98ecfdf49ff73c87a5ab8fa7ba1f22db67da6f29.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

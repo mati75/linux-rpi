@@ -1,0 +1,43 @@
+commit 705bcb551648b0f93e6bd196888972df8a043040
+Author: Theodore Ts'o <tytso@mit.edu>
+Date:   Mon Sep 3 22:25:01 2018 -0400
+
+    ext4: fix online resizing for bigalloc file systems with a 1k block size
+    
+    commit 5f8c10936fab2b69a487400f2872902e597dd320 upstream.
+    
+    An online resize of a file system with the bigalloc feature enabled
+    and a 1k block size would be refused since ext4_resize_begin() did not
+    understand s_first_data_block is 0 for all bigalloc file systems, even
+    when the block size is 1k.
+    
+    Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+    Cc: stable@vger.kernel.org
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/ext4/resize.c b/fs/ext4/resize.c
+index 33655a6eff4d..ebbc663d0798 100644
+--- a/fs/ext4/resize.c
++++ b/fs/ext4/resize.c
+@@ -19,6 +19,7 @@
+ 
+ int ext4_resize_begin(struct super_block *sb)
+ {
++	struct ext4_sb_info *sbi = EXT4_SB(sb);
+ 	int ret = 0;
+ 
+ 	if (!capable(CAP_SYS_RESOURCE))
+@@ -29,7 +30,7 @@ int ext4_resize_begin(struct super_block *sb)
+          * because the user tools have no way of handling this.  Probably a
+          * bad time to do it anyways.
+          */
+-	if (EXT4_SB(sb)->s_sbh->b_blocknr !=
++	if (EXT4_B2C(sbi, sbi->s_sbh->b_blocknr) !=
+ 	    le32_to_cpu(EXT4_SB(sb)->s_es->s_first_data_block)) {
+ 		ext4_warning(sb, "won't resize using backup superblock at %llu",
+ 			(unsigned long long)EXT4_SB(sb)->s_sbh->b_blocknr);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1079_705bcb551648b0f93e6bd196888972df8a043040.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1079_705bcb551648b0f93e6bd196888972df8a043040.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

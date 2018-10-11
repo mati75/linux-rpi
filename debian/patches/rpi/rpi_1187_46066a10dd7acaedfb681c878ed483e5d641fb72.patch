@@ -1,0 +1,36 @@
+commit 46066a10dd7acaedfb681c878ed483e5d641fb72
+Author: Zhouyang Jia <jiazhouyang09@gmail.com>
+Date:   Thu Jun 14 21:37:17 2018 +0800
+
+    HID: hid-ntrig: add error handling for sysfs_create_group
+    
+    [ Upstream commit 44d4d51de9a3534a2b63d69efda02a10e66541e4 ]
+    
+    When sysfs_create_group fails, the lack of error-handling code may
+    cause unexpected results.
+    
+    This patch adds error-handling code after calling sysfs_create_group.
+    
+    Signed-off-by: Zhouyang Jia <jiazhouyang09@gmail.com>
+    Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/hid/hid-ntrig.c b/drivers/hid/hid-ntrig.c
+index 43b1c7234316..9bc6f4867cb3 100644
+--- a/drivers/hid/hid-ntrig.c
++++ b/drivers/hid/hid-ntrig.c
+@@ -955,6 +955,8 @@ static int ntrig_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 
+ 	ret = sysfs_create_group(&hdev->dev.kobj,
+ 			&ntrig_attribute_group);
++	if (ret)
++		hid_err(hdev, "cannot create sysfs group\n");
+ 
+ 	return 0;
+ err_free:
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1187_46066a10dd7acaedfb681c878ed483e5d641fb72.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1187_46066a10dd7acaedfb681c878ed483e5d641fb72.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

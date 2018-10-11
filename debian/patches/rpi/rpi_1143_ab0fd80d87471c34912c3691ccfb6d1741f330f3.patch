@@ -1,0 +1,80 @@
+commit ab0fd80d87471c34912c3691ccfb6d1741f330f3
+Author: Ravi Chandra Sadineni <ravisadineni@chromium.org>
+Date:   Wed Jun 27 10:55:02 2018 -0700
+
+    ACPI / button: increment wakeup count only when notified
+    
+    [ Upstream commit 7c058c7c74b3dbeb7d157c273959f87faf710350 ]
+    
+    Because acpi_lid_initialize_state() is called on every system
+    resume and it triggers acpi_lid_notify_state() which invokes
+    acpi_pm_wakeup_event() for the lid device, the lid's wakeup count is
+    incremented even if the lid was not the source of the event that woke up
+    the system. That behavior confuses user space deamons using
+    wakeup_count to identify the potential system wakeup source. To avoid
+    the confusion, only trigger acpi_pm_wakeup_event() in the
+    acpi_button_notify() path and don't do that in the
+    acpi_lid_initialize_state() path.
+    
+    Signed-off-by: Ravi Chandra Sadineni <ravisadineni@chromium.org>
+    Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/acpi/button.c b/drivers/acpi/button.c
+index 2345a5ee2dbb..40ed3ec9fc94 100644
+--- a/drivers/acpi/button.c
++++ b/drivers/acpi/button.c
+@@ -235,9 +235,6 @@ static int acpi_lid_notify_state(struct acpi_device *device, int state)
+ 		button->last_time = ktime_get();
+ 	}
+ 
+-	if (state)
+-		acpi_pm_wakeup_event(&device->dev);
+-
+ 	ret = blocking_notifier_call_chain(&acpi_lid_notifier, state, device);
+ 	if (ret == NOTIFY_DONE)
+ 		ret = blocking_notifier_call_chain(&acpi_lid_notifier, state,
+@@ -366,7 +363,8 @@ int acpi_lid_open(void)
+ }
+ EXPORT_SYMBOL(acpi_lid_open);
+ 
+-static int acpi_lid_update_state(struct acpi_device *device)
++static int acpi_lid_update_state(struct acpi_device *device,
++				 bool signal_wakeup)
+ {
+ 	int state;
+ 
+@@ -374,6 +372,9 @@ static int acpi_lid_update_state(struct acpi_device *device)
+ 	if (state < 0)
+ 		return state;
+ 
++	if (state && signal_wakeup)
++		acpi_pm_wakeup_event(&device->dev);
++
+ 	return acpi_lid_notify_state(device, state);
+ }
+ 
+@@ -384,7 +385,7 @@ static void acpi_lid_initialize_state(struct acpi_device *device)
+ 		(void)acpi_lid_notify_state(device, 1);
+ 		break;
+ 	case ACPI_BUTTON_LID_INIT_METHOD:
+-		(void)acpi_lid_update_state(device);
++		(void)acpi_lid_update_state(device, false);
+ 		break;
+ 	case ACPI_BUTTON_LID_INIT_IGNORE:
+ 	default:
+@@ -409,7 +410,7 @@ static void acpi_button_notify(struct acpi_device *device, u32 event)
+ 			users = button->input->users;
+ 			mutex_unlock(&button->input->mutex);
+ 			if (users)
+-				acpi_lid_update_state(device);
++				acpi_lid_update_state(device, true);
+ 		} else {
+ 			int keycode;
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1143_ab0fd80d87471c34912c3691ccfb6d1741f330f3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1143_ab0fd80d87471c34912c3691ccfb6d1741f330f3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

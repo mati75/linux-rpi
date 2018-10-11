@@ -1,0 +1,51 @@
+commit 9f81b08ad8eaa4dad0a9ea70d13e60d5c04853cc
+Author: Jernej Skrabec <jernej.skrabec@siol.net>
+Date:   Mon Jun 25 14:02:46 2018 +0200
+
+    drm/sun4i: Fix releasing node when enumerating enpoints
+    
+    [ Upstream commit 367c359aa8637b15ee8df6335c5a29b7623966ec ]
+    
+    sun4i_drv_add_endpoints() has a memory leak since it uses of_node_put()
+    when remote is equal to NULL and does nothing when remote has a valid
+    pointer.
+    
+    Invert the logic to fix memory leak.
+    
+    Signed-off-by: Jernej Skrabec <jernej.skrabec@siol.net>
+    Signed-off-by: Maxime Ripard <maxime.ripard@bootlin.com>
+    Link: https://patchwork.freedesktop.org/patch/msgid/20180625120304.7543-7-jernej.skrabec@siol.net
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/gpu/drm/sun4i/sun4i_drv.c b/drivers/gpu/drm/sun4i/sun4i_drv.c
+index 50d19605c38f..e15fa2389e3f 100644
+--- a/drivers/gpu/drm/sun4i/sun4i_drv.c
++++ b/drivers/gpu/drm/sun4i/sun4i_drv.c
+@@ -283,7 +283,6 @@ static int sun4i_drv_add_endpoints(struct device *dev,
+ 		remote = of_graph_get_remote_port_parent(ep);
+ 		if (!remote) {
+ 			DRM_DEBUG_DRIVER("Error retrieving the output node\n");
+-			of_node_put(remote);
+ 			continue;
+ 		}
+ 
+@@ -297,11 +296,13 @@ static int sun4i_drv_add_endpoints(struct device *dev,
+ 
+ 			if (of_graph_parse_endpoint(ep, &endpoint)) {
+ 				DRM_DEBUG_DRIVER("Couldn't parse endpoint\n");
++				of_node_put(remote);
+ 				continue;
+ 			}
+ 
+ 			if (!endpoint.id) {
+ 				DRM_DEBUG_DRIVER("Endpoint is our panel... skipping\n");
++				of_node_put(remote);
+ 				continue;
+ 			}
+ 		}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1174_9f81b08ad8eaa4dad0a9ea70d13e60d5c04853cc.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1174_9f81b08ad8eaa4dad0a9ea70d13e60d5c04853cc.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

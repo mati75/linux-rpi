@@ -1,0 +1,50 @@
+commit 98e1a83c338e4f3377c842ee7d60a5c36a30f0b3
+Author: Christophe Leroy <christophe.leroy@c-s.fr>
+Date:   Fri Sep 14 10:32:50 2018 +0000
+
+    serial: cpm_uart: return immediately from console poll
+    
+    commit be28c1e3ca29887e207f0cbcd294cefe5074bab6 upstream.
+    
+    kgdb expects poll function to return immediately and
+    returning NO_POLL_CHAR when no character is available.
+    
+    Fixes: f5316b4aea024 ("kgdb,8250,pl011: Return immediately from console poll")
+    Cc: Jason Wessel <jason.wessel@windriver.com>
+    Cc: <stable@vger.kernel.org>
+    Signed-off-by: Christophe Leroy <christophe.leroy@c-s.fr>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/tty/serial/cpm_uart/cpm_uart_core.c b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+index 24a5f05e769b..e5389591bb4f 100644
+--- a/drivers/tty/serial/cpm_uart/cpm_uart_core.c
++++ b/drivers/tty/serial/cpm_uart/cpm_uart_core.c
+@@ -1054,8 +1054,8 @@ static int poll_wait_key(char *obuf, struct uart_cpm_port *pinfo)
+ 	/* Get the address of the host memory buffer.
+ 	 */
+ 	bdp = pinfo->rx_cur;
+-	while (bdp->cbd_sc & BD_SC_EMPTY)
+-		;
++	if (bdp->cbd_sc & BD_SC_EMPTY)
++		return NO_POLL_CHAR;
+ 
+ 	/* If the buffer address is in the CPM DPRAM, don't
+ 	 * convert it.
+@@ -1090,7 +1090,11 @@ static int cpm_get_poll_char(struct uart_port *port)
+ 		poll_chars = 0;
+ 	}
+ 	if (poll_chars <= 0) {
+-		poll_chars = poll_wait_key(poll_buf, pinfo);
++		int ret = poll_wait_key(poll_buf, pinfo);
++
++		if (ret == NO_POLL_CHAR)
++			return ret;
++		poll_chars = ret;
+ 		pollp = poll_buf;
+ 	}
+ 	poll_chars--;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1226_98e1a83c338e4f3377c842ee7d60a5c36a30f0b3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1226_98e1a83c338e4f3377c842ee7d60a5c36a30f0b3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,55 @@
+commit 8824ceb2580c20ac16bc235f0efe0bd461c36864
+Author: Christian König <christian.koenig@amd.com>
+Date:   Tue Aug 21 15:09:39 2018 +0200
+
+    drm/amdgpu: fix preamble handling
+    
+    [ Upstream commit d98ff24e8e9be3329eea7c84d5e244d0c1cd0ab3 ]
+    
+    At this point the command submission can still be interrupted.
+    
+    Signed-off-by: Christian König <christian.koenig@amd.com>
+    Acked-by: Alex Deucher <alexander.deucher@amd.com>
+    Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+index 5a196ec49be8..7200eea4f918 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+@@ -975,13 +975,9 @@ static int amdgpu_cs_ib_fill(struct amdgpu_device *adev,
+ 		if (r)
+ 			return r;
+ 
+-		if (chunk_ib->flags & AMDGPU_IB_FLAG_PREAMBLE) {
+-			parser->job->preamble_status |= AMDGPU_PREAMBLE_IB_PRESENT;
+-			if (!parser->ctx->preamble_presented) {
+-				parser->job->preamble_status |= AMDGPU_PREAMBLE_IB_PRESENT_FIRST;
+-				parser->ctx->preamble_presented = true;
+-			}
+-		}
++		if (chunk_ib->flags & AMDGPU_IB_FLAG_PREAMBLE)
++			parser->job->preamble_status |=
++				AMDGPU_PREAMBLE_IB_PRESENT;
+ 
+ 		if (parser->job->ring && parser->job->ring != ring)
+ 			return -EINVAL;
+@@ -1206,6 +1202,12 @@ static int amdgpu_cs_submit(struct amdgpu_cs_parser *p,
+ 
+ 	amdgpu_cs_post_dependencies(p);
+ 
++	if ((job->preamble_status & AMDGPU_PREAMBLE_IB_PRESENT) &&
++	    !p->ctx->preamble_presented) {
++		job->preamble_status |= AMDGPU_PREAMBLE_IB_PRESENT_FIRST;
++		p->ctx->preamble_presented = true;
++	}
++
+ 	cs->out.handle = seq;
+ 	job->uf_sequence = seq;
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1275_8824ceb2580c20ac16bc235f0efe0bd461c36864.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1275_8824ceb2580c20ac16bc235f0efe0bd461c36864.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

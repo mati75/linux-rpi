@@ -1,0 +1,36 @@
+commit bc35488686c34703e5f0909c7a6cb0b942bfcf58
+Author: Alexei Starovoitov <ast@kernel.org>
+Date:   Wed Sep 12 14:06:10 2018 -0700
+
+    bpf/verifier: disallow pointer subtraction
+    
+    commit dd066823db2ac4e22f721ec85190817b58059a54 upstream.
+    
+    Subtraction of pointers was accidentally allowed for unpriv programs
+    by commit 82abbf8d2fc4. Revert that part of commit.
+    
+    Fixes: 82abbf8d2fc4 ("bpf: do not allow root to mangle valid pointers")
+    Reported-by: Jann Horn <jannh@google.com>
+    Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+    Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+    Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 63aaac52a265..adbe21c8876e 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -3132,7 +3132,7 @@ static int adjust_reg_min_max_vals(struct bpf_verifier_env *env,
+ 				 * an arbitrary scalar. Disallow all math except
+ 				 * pointer subtraction
+ 				 */
+-				if (opcode == BPF_SUB){
++				if (opcode == BPF_SUB && env->allow_ptr_leaks) {
+ 					mark_reg_unknown(env, regs, insn->dst_reg);
+ 					return 0;
+ 				}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1053_bc35488686c34703e5f0909c7a6cb0b942bfcf58.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1053_bc35488686c34703e5f0909c7a6cb0b942bfcf58.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,24 @@
+commit 2f411a0873a9daa20ae16cf5879d11bbea267582
+Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date:   Sat Sep 29 02:56:03 2018 -0700
+
+    Linux 4.18.11
+
+diff --git a/Makefile b/Makefile
+index ffab15235ff0..de0ecace693a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ VERSION = 4
+ PATCHLEVEL = 18
+-SUBLEVEL = 10
++SUBLEVEL = 11
+ EXTRAVERSION =
+ NAME = Merciless Moray
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1088_2f411a0873a9daa20ae16cf5879d11bbea267582.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1088_2f411a0873a9daa20ae16cf5879d11bbea267582.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

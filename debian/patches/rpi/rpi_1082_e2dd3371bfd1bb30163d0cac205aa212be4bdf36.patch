@@ -1,0 +1,40 @@
+commit e2dd3371bfd1bb30163d0cac205aa212be4bdf36
+Author: Toshi Kani <toshi.kani@hpe.com>
+Date:   Sat Sep 15 21:23:41 2018 -0400
+
+    ext4, dax: add ext4_bmap to ext4_dax_aops
+    
+    commit 94dbb63117e82253c9592816aa4465f0a9c94850 upstream.
+    
+    Ext4 mount path calls .bmap to the journal inode. This currently
+    works for the DAX mount case because ext4_iget() always set
+    'ext4_da_aops' to any regular files.
+    
+    In preparation to fix ext4_iget() to set 'ext4_dax_aops' for ext4
+    DAX files, add ext4_bmap() to 'ext4_dax_aops', since bmap works for
+    DAX inodes.
+    
+    Fixes: 5f0663bb4a64 ("ext4, dax: introduce ext4_dax_aops")
+    Signed-off-by: Toshi Kani <toshi.kani@hpe.com>
+    Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+    Suggested-by: Jan Kara <jack@suse.cz>
+    Cc: stable@vger.kernel.org
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/fs/ext4/inode.c b/fs/ext4/inode.c
+index 0f730a5eda67..6042c019ea54 100644
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -3951,6 +3951,7 @@ static const struct address_space_operations ext4_dax_aops = {
+ 	.writepages		= ext4_dax_writepages,
+ 	.direct_IO		= noop_direct_IO,
+ 	.set_page_dirty		= noop_set_page_dirty,
++	.bmap			= ext4_bmap,
+ 	.invalidatepage		= noop_invalidatepage,
+ };
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1082_e2dd3371bfd1bb30163d0cac205aa212be4bdf36.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1082_e2dd3371bfd1bb30163d0cac205aa212be4bdf36.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

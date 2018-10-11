@@ -1,0 +1,42 @@
+commit 374eb417162b5f8f36b15ac854cd8faf60fa5aa5
+Author: Huazhong Tan <tanhuazhong@huawei.com>
+Date:   Thu Aug 23 11:10:12 2018 +0800
+
+    net: hns: fix skb->truesize underestimation
+    
+    [ Upstream commit b1ccd4c0ab6ef499f47dd84ed4920502a7147bba ]
+    
+    skb->truesize is not meant to be tracking amount of used bytes in a skb,
+    but amount of reserved/consumed bytes in memory.
+    
+    For instance, if we use a single byte in last page fragment, we have to
+    account the full size of the fragment.
+    
+    So skb_add_rx_frag needs to calculate the length of the entire buffer into
+    turesize.
+    
+    Fixes: 9cbe9fd5214e ("net: hns: optimize XGE capability by reducing cpu usage")
+    Signed-off-by: Huazhong tan <tanhuazhong@huawei.com>
+    Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index ef9ef703d13a..ef994a715f93 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -530,7 +530,7 @@ static void hns_nic_reuse_page(struct sk_buff *skb, int i,
+ 	}
+ 
+ 	skb_add_rx_frag(skb, i, desc_cb->priv, desc_cb->page_offset + pull_len,
+-			size - pull_len, truesize - pull_len);
++			size - pull_len, truesize);
+ 
+ 	 /* avoid re-using remote pages,flag default unreuse */
+ 	if (unlikely(page_to_nid(desc_cb->priv) != numa_node_id()))
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1281_374eb417162b5f8f36b15ac854cd8faf60fa5aa5.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1281_374eb417162b5f8f36b15ac854cd8faf60fa5aa5.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

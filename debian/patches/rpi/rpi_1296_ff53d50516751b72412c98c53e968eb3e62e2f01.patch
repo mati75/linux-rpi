@@ -1,0 +1,42 @@
+commit ff53d50516751b72412c98c53e968eb3e62e2f01
+Author: Jacob Keller <jacob.e.keller@intel.com>
+Date:   Mon Aug 20 08:12:27 2018 -0700
+
+    i40e: fix condition of WARN_ONCE for stat strings
+    
+    [ Upstream commit 07f3701387dcab3a4fb0166098fb2754a1b927e1 ]
+    
+    Commit 9b10df596bd4 ("i40e: use WARN_ONCE to replace the commented
+    BUG_ON size check") introduced a warning check to make sure
+    that the size of the stat strings was always the expected value. This
+    code accidentally inverted the check of the data pointer. Fix this so
+    that we accurately count the size of the stats we copied in.
+    
+    This fixes an erroneous WARN kernel splat that occurs when requesting
+    ethtool statistics.
+    
+    Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+    Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+    Tested-by: Mauro S M Rodrigues <maurosr@linux.vnet.ibm.com>
+    Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+index 6947a2a571cb..5d670f4ce5ac 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+@@ -1903,7 +1903,7 @@ static void i40e_get_stat_strings(struct net_device *netdev, u8 *data)
+ 		data += ETH_GSTRING_LEN;
+ 	}
+ 
+-	WARN_ONCE(p - data != i40e_get_stats_count(netdev) * ETH_GSTRING_LEN,
++	WARN_ONCE(data - p != i40e_get_stats_count(netdev) * ETH_GSTRING_LEN,
+ 		  "stat strings count mismatch!");
+ }
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1296_ff53d50516751b72412c98c53e968eb3e62e2f01.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1296_ff53d50516751b72412c98c53e968eb3e62e2f01.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,38 @@
+commit cb39b07bf5f961eb1c5d29bf5d392b9f3461f7e2
+Author: Geert Uytterhoeven <geert+renesas@glider.be>
+Date:   Fri Jul 6 11:08:36 2018 +0200
+
+    serial: sh-sci: Stop RX FIFO timer during port shutdown
+    
+    [ Upstream commit c5a9262fa8bfed0dddc7466ef10fcd292e2af61b ]
+    
+    The RX FIFO timer may be armed when the port is shut down, hence the
+    timer function may still be called afterwards.
+    
+    Fix this race condition by deleting the timer during port shutdown.
+    
+    Fixes: 039403765e5da3c6 ("serial: sh-sci: SCIFA/B RX FIFO software timeout")
+    Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+    Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index c181eb37f985..3c55600a8236 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -2099,6 +2099,8 @@ static void sci_shutdown(struct uart_port *port)
+ 	}
+ #endif
+ 
++	if (s->rx_trigger > 1 && s->rx_fifo_timeout > 0)
++		del_timer_sync(&s->rx_fifo_timer);
+ 	sci_free_irq(s);
+ 	sci_free_dma(port);
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1103_cb39b07bf5f961eb1c5d29bf5d392b9f3461f7e2.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1103_cb39b07bf5f961eb1c5d29bf5d392b9f3461f7e2.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

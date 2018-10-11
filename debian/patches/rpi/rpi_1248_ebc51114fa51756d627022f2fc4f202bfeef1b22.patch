@@ -1,0 +1,33 @@
+commit ebc51114fa51756d627022f2fc4f202bfeef1b22
+Author: Aaron Ma <aaron.ma@canonical.com>
+Date:   Tue Sep 18 09:32:22 2018 -0700
+
+    Input: elantech - enable middle button of touchpad on ThinkPad P72
+    
+    commit 91a97507323e1ad4bfc10f4a5922e67cdaf8b3cd upstream.
+    
+    Adding 2 new touchpad IDs to support middle button support.
+    
+    Cc: stable@vger.kernel.org
+    Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+    Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/input/mouse/elantech.c b/drivers/input/mouse/elantech.c
+index dd85b16dc6f8..88564f729e93 100644
+--- a/drivers/input/mouse/elantech.c
++++ b/drivers/input/mouse/elantech.c
+@@ -1178,6 +1178,8 @@ static const struct dmi_system_id elantech_dmi_has_middle_button[] = {
+ static const char * const middle_button_pnp_ids[] = {
+ 	"LEN2131", /* ThinkPad P52 w/ NFC */
+ 	"LEN2132", /* ThinkPad P52 */
++	"LEN2133", /* ThinkPad P72 w/ NFC */
++	"LEN2134", /* ThinkPad P72 */
+ 	NULL
+ };
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1248_ebc51114fa51756d627022f2fc4f202bfeef1b22.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1248_ebc51114fa51756d627022f2fc4f202bfeef1b22.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

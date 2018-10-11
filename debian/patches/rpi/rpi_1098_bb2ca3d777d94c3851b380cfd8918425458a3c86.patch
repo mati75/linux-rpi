@@ -1,0 +1,51 @@
+commit bb2ca3d777d94c3851b380cfd8918425458a3c86
+Author: Yunsheng Lin <linyunsheng@huawei.com>
+Date:   Fri Jul 6 11:28:02 2018 +0100
+
+    net: hns3: Fix get_vector ops in hclgevf_main module
+    
+    [ Upstream commit 03718db97bfb57535f3aa8110f0cbe0c616a67c0 ]
+    
+    The hclgevf_free_vector function expects the caller to pass
+    the vector_id to it, and hclgevf_put_vector pass vector to
+    it now, which will cause vector allocation problem.
+    
+    This patch fixes it by converting vector into vector_id before
+    calling hclgevf_free_vector.
+    
+    Fixes: e2cb1dec9779 ("net: hns3: Add HNS3 VF HCL(Hardware Compatibility Layer) Support")
+    Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+    Signed-off-by: Peng Li <lipeng321@huawei.com>
+    Signed-off-by: Salil Mehta <salil.mehta@huawei.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index a17872aab168..12aa1f1b99ef 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -648,8 +648,17 @@ static int hclgevf_unmap_ring_from_vector(
+ static int hclgevf_put_vector(struct hnae3_handle *handle, int vector)
+ {
+ 	struct hclgevf_dev *hdev = hclgevf_ae_get_hdev(handle);
++	int vector_id;
+ 
+-	hclgevf_free_vector(hdev, vector);
++	vector_id = hclgevf_get_vector_index(hdev, vector);
++	if (vector_id < 0) {
++		dev_err(&handle->pdev->dev,
++			"hclgevf_put_vector get vector index fail. ret =%d\n",
++			vector_id);
++		return vector_id;
++	}
++
++	hclgevf_free_vector(hdev, vector_id);
+ 
+ 	return 0;
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1098_bb2ca3d777d94c3851b380cfd8918425458a3c86.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1098_bb2ca3d777d94c3851b380cfd8918425458a3c86.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

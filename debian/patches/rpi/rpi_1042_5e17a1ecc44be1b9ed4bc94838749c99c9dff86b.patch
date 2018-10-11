@@ -1,0 +1,32 @@
+commit 5e17a1ecc44be1b9ed4bc94838749c99c9dff86b
+Author: Mario Limonciello <mario.limonciello@dell.com>
+Date:   Mon Sep 10 13:01:53 2018 -0500
+
+    platform/x86: alienware-wmi: Correct a memory leak
+    
+    commit ff0e9f26288d2daee4950f42b37a3d3d30d36ec1 upstream.
+    
+    An ACPI buffer that was allocated was not being freed after use.
+    
+    Signed-off-by: Mario Limonciello <mario.limonciello@dell.com>
+    Cc: stable@vger.kernel.org
+    Signed-off-by: Darren Hart (VMware) <dvhart@infradead.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/platform/x86/alienware-wmi.c b/drivers/platform/x86/alienware-wmi.c
+index d975462a4c57..f10af5c383c5 100644
+--- a/drivers/platform/x86/alienware-wmi.c
++++ b/drivers/platform/x86/alienware-wmi.c
+@@ -536,6 +536,7 @@ static acpi_status alienware_wmax_command(struct wmax_basic_args *in_args,
+ 		if (obj && obj->type == ACPI_TYPE_INTEGER)
+ 			*out_data = (u32) obj->integer.value;
+ 	}
++	kfree(output.pointer);
+ 	return status;
+ 
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1042_5e17a1ecc44be1b9ed4bc94838749c99c9dff86b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1042_5e17a1ecc44be1b9ed4bc94838749c99c9dff86b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

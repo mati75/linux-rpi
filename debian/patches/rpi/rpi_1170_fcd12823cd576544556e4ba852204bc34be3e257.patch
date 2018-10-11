@@ -1,0 +1,39 @@
+commit fcd12823cd576544556e4ba852204bc34be3e257
+Author: Brandon Maier <brandon.maier@rockwellcollins.com>
+Date:   Tue Jun 26 12:50:50 2018 -0500
+
+    net: phy: xgmiitorgmii: Check read_status results
+    
+    [ Upstream commit 8d0752d11312be830c33e84dfd1016e6a47c2938 ]
+    
+    We're ignoring the result of the attached phy device's read_status().
+    Return it so we can detect errors.
+    
+    Signed-off-by: Brandon Maier <brandon.maier@rockwellcollins.com>
+    Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/phy/xilinx_gmii2rgmii.c b/drivers/net/phy/xilinx_gmii2rgmii.c
+index 2e5150b0b8d5..449b31319010 100644
+--- a/drivers/net/phy/xilinx_gmii2rgmii.c
++++ b/drivers/net/phy/xilinx_gmii2rgmii.c
+@@ -40,8 +40,11 @@ static int xgmiitorgmii_read_status(struct phy_device *phydev)
+ {
+ 	struct gmii2rgmii *priv = phydev->priv;
+ 	u16 val = 0;
++	int err;
+ 
+-	priv->phy_drv->read_status(phydev);
++	err = priv->phy_drv->read_status(phydev);
++	if (err < 0)
++		return err;
+ 
+ 	val = mdiobus_read(phydev->mdio.bus, priv->addr, XILINX_GMII2RGMII_REG);
+ 	val &= ~XILINX_GMII2RGMII_SPEED_MASK;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1170_fcd12823cd576544556e4ba852204bc34be3e257.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1170_fcd12823cd576544556e4ba852204bc34be3e257.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

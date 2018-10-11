@@ -1,0 +1,68 @@
+commit 9289b179fc4e20d663ffb6ce24721b6973d139c7
+Author: Preethi Banala <preethi.banala@intel.com>
+Date:   Thu Aug 9 06:28:55 2018 -0700
+
+    ice: Clean control queues only when they are initialized
+    
+    [ Upstream commit b29bc220e2c7bd494a4605defcd93b18d5a8cf86 ]
+    
+    Clean control queues only when they are initialized. One of the ways to
+    validate if the basic initialization is done is by checking value of
+    cq->sq.head and cq->rq.head variables that specify the register address.
+    This patch adds a check to avoid NULL pointer dereference crash when tried
+    to shutdown uninitialized control queue.
+    
+    Signed-off-by: Preethi Banala <preethi.banala@intel.com>
+    Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+    Tested-by: Tony Brelinski <tonyx.brelinski@intel.com>
+    Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/ethernet/intel/ice/ice_controlq.c b/drivers/net/ethernet/intel/ice/ice_controlq.c
+index 7c511f144ed6..c064416080e7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_controlq.c
++++ b/drivers/net/ethernet/intel/ice/ice_controlq.c
+@@ -597,10 +597,14 @@ static enum ice_status ice_init_check_adminq(struct ice_hw *hw)
+ 	return 0;
+ 
+ init_ctrlq_free_rq:
+-	ice_shutdown_rq(hw, cq);
+-	ice_shutdown_sq(hw, cq);
+-	mutex_destroy(&cq->sq_lock);
+-	mutex_destroy(&cq->rq_lock);
++	if (cq->rq.head) {
++		ice_shutdown_rq(hw, cq);
++		mutex_destroy(&cq->rq_lock);
++	}
++	if (cq->sq.head) {
++		ice_shutdown_sq(hw, cq);
++		mutex_destroy(&cq->sq_lock);
++	}
+ 	return status;
+ }
+ 
+@@ -706,10 +710,14 @@ static void ice_shutdown_ctrlq(struct ice_hw *hw, enum ice_ctl_q q_type)
+ 		return;
+ 	}
+ 
+-	ice_shutdown_sq(hw, cq);
+-	ice_shutdown_rq(hw, cq);
+-	mutex_destroy(&cq->sq_lock);
+-	mutex_destroy(&cq->rq_lock);
++	if (cq->sq.head) {
++		ice_shutdown_sq(hw, cq);
++		mutex_destroy(&cq->sq_lock);
++	}
++	if (cq->rq.head) {
++		ice_shutdown_rq(hw, cq);
++		mutex_destroy(&cq->rq_lock);
++	}
+ }
+ 
+ /**
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1285_9289b179fc4e20d663ffb6ce24721b6973d139c7.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1285_9289b179fc4e20d663ffb6ce24721b6973d139c7.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

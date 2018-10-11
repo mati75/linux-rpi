@@ -1,0 +1,46 @@
+commit 2da832f43da5f4b5c0ffc1d2a3f180130795730d
+Author: Anson Huang <Anson.Huang@nxp.com>
+Date:   Tue Jul 31 00:56:49 2018 +0800
+
+    thermal: of-thermal: disable passive polling when thermal zone is disabled
+    
+    [ Upstream commit 152395fd03d4ce1e535a75cdbf58105e50587611 ]
+    
+    When thermal zone is in passive mode, disabling its mode from
+    sysfs is NOT taking effect at all, it is still polling the
+    temperature of the disabled thermal zone and handling all thermal
+    trips, it makes user confused. The disabling operation should
+    disable the thermal zone behavior completely, for both active and
+    passive mode, this patch clears the passive_delay when thermal
+    zone is disabled and restores it when it is enabled.
+    
+    Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+    Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/thermal/of-thermal.c b/drivers/thermal/of-thermal.c
+index 977a8307fbb1..4f2816559205 100644
+--- a/drivers/thermal/of-thermal.c
++++ b/drivers/thermal/of-thermal.c
+@@ -260,10 +260,13 @@ static int of_thermal_set_mode(struct thermal_zone_device *tz,
+ 
+ 	mutex_lock(&tz->lock);
+ 
+-	if (mode == THERMAL_DEVICE_ENABLED)
++	if (mode == THERMAL_DEVICE_ENABLED) {
+ 		tz->polling_delay = data->polling_delay;
+-	else
++		tz->passive_delay = data->passive_delay;
++	} else {
+ 		tz->polling_delay = 0;
++		tz->passive_delay = 0;
++	}
+ 
+ 	mutex_unlock(&tz->lock);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1264_2da832f43da5f4b5c0ffc1d2a3f180130795730d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1264_2da832f43da5f4b5c0ffc1d2a3f180130795730d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

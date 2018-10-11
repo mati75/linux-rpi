@@ -1,0 +1,42 @@
+commit 163ac07ff0b29ba45e1e0dd39fe520adee472118
+Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
+Date:   Thu Jun 14 20:26:42 2018 +0100
+
+    ASoC: dapm: Fix potential DAI widget pointer deref when linking DAIs
+    
+    [ Upstream commit e01b4f624278d5efe5fb5da585ca371947b16680 ]
+    
+    Sometime a component or topology may configure a DAI widget with no
+    private data leading to a dev_dbg() dereferencne of this data.
+    
+    Fix this to check for non NULL private data and let users know if widget
+    is missing DAI.
+    
+    Signed-off-by: Liam Girdwood <liam.r.girdwood@linux.intel.com>
+    Signed-off-by: Mark Brown <broonie@kernel.org>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
+index 229c12349803..a099c3e45504 100644
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -4073,6 +4073,13 @@ int snd_soc_dapm_link_dai_widgets(struct snd_soc_card *card)
+ 			continue;
+ 		}
+ 
++		/* let users know there is no DAI to link */
++		if (!dai_w->priv) {
++			dev_dbg(card->dev, "dai widget %s has no DAI\n",
++				dai_w->name);
++			continue;
++		}
++
+ 		dai = dai_w->priv;
+ 
+ 		/* ...find all widgets with the same stream and link them */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1202_163ac07ff0b29ba45e1e0dd39fe520adee472118.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1202_163ac07ff0b29ba45e1e0dd39fe520adee472118.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

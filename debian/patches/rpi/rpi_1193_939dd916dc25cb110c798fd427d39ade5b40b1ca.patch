@@ -1,0 +1,38 @@
+commit 939dd916dc25cb110c798fd427d39ade5b40b1ca
+Author: Zhouyang Jia <jiazhouyang09@gmail.com>
+Date:   Tue Jun 12 11:13:00 2018 +0800
+
+    scsi: bnx2i: add error handling for ioremap_nocache
+    
+    [ Upstream commit aa154ea885eb0c2407457ce9c1538d78c95456fa ]
+    
+    When ioremap_nocache fails, the lack of error-handling code may cause
+    unexpected results.
+    
+    This patch adds error-handling code after calling ioremap_nocache.
+    
+    Signed-off-by: Zhouyang Jia <jiazhouyang09@gmail.com>
+    Reviewed-by: Johannes Thumshirn <jthumshirn@suse.de>
+    Acked-by: Manish Rangankar <Manish.Rangankar@cavium.com>
+    Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/scsi/bnx2i/bnx2i_hwi.c b/drivers/scsi/bnx2i/bnx2i_hwi.c
+index 8f03a869ac98..e9e669a6c2bc 100644
+--- a/drivers/scsi/bnx2i/bnx2i_hwi.c
++++ b/drivers/scsi/bnx2i/bnx2i_hwi.c
+@@ -2727,6 +2727,8 @@ int bnx2i_map_ep_dbell_regs(struct bnx2i_endpoint *ep)
+ 					      BNX2X_DOORBELL_PCI_BAR);
+ 		reg_off = (1 << BNX2X_DB_SHIFT) * (cid_num & 0x1FFFF);
+ 		ep->qp.ctx_base = ioremap_nocache(reg_base + reg_off, 4);
++		if (!ep->qp.ctx_base)
++			return -ENOMEM;
+ 		goto arm_cq;
+ 	}
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1193_939dd916dc25cb110c798fd427d39ade5b40b1ca.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1193_939dd916dc25cb110c798fd427d39ade5b40b1ca.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,46 @@
+commit 0639ddca2c8cfdfe9b443712914de9a824908d19
+Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+Date:   Thu Sep 13 14:58:49 2018 +0900
+
+    mtd: rawnand: denali: fix a race condition when DMA is kicked
+    
+    commit cf51e4b9c34407bf0c3d9b582b7837e047e1df47 upstream.
+    
+    I thought the read-back of the DMA_ENABLE register was unnecessary
+    (at least it is working on my boards), then deleted it in commit
+    586a2c52909d ("mtd: nand: denali: squash denali_enable_dma() helper
+    into caller").  Sorry, I was wrong - it caused a timing issue on
+    Cyclone5 SoCFPGAs.
+    
+    Revive the register read-back, commenting why this is necessary.
+    
+    Fixes: 586a2c52909d ("mtd: nand: denali: squash denali_enable_dma() helper into caller")
+    Cc: <stable@vger.kernel.org>
+    Reported-by: Steffen Trumtrar <s.trumtrar@pengutronix.de>
+    Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+    Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
+    Signed-off-by: Boris Brezillon <boris.brezillon@bootlin.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/mtd/nand/raw/denali.c b/drivers/mtd/nand/raw/denali.c
+index 2a302a1d1430..c502075e5721 100644
+--- a/drivers/mtd/nand/raw/denali.c
++++ b/drivers/mtd/nand/raw/denali.c
+@@ -604,6 +604,12 @@ static int denali_dma_xfer(struct denali_nand_info *denali, void *buf,
+ 	}
+ 
+ 	iowrite32(DMA_ENABLE__FLAG, denali->reg + DMA_ENABLE);
++	/*
++	 * The ->setup_dma() hook kicks DMA by using the data/command
++	 * interface, which belongs to a different AXI port from the
++	 * register interface.  Read back the register to avoid a race.
++	 */
++	ioread32(denali->reg + DMA_ENABLE);
+ 
+ 	denali_reset_irq(denali);
+ 	denali->setup_dma(denali, dma_addr, page, write);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1040_0639ddca2c8cfdfe9b443712914de9a824908d19.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1040_0639ddca2c8cfdfe9b443712914de9a824908d19.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,67 @@
+commit d08aa810ddd189e2e8e84b1a0ce09621dfd35cd1
+Author: Stafford Horne <shorne@gmail.com>
+Date:   Mon Jun 25 21:45:37 2018 +0900
+
+    crypto: skcipher - Fix -Wstringop-truncation warnings
+    
+    [ Upstream commit cefd769fd0192c84d638f66da202459ed8ad63ba ]
+    
+    As of GCC 9.0.0 the build is reporting warnings like:
+    
+        crypto/ablkcipher.c: In function ‘crypto_ablkcipher_report’:
+        crypto/ablkcipher.c:374:2: warning: ‘strncpy’ specified bound 64 equals destination size [-Wstringop-truncation]
+          strncpy(rblkcipher.geniv, alg->cra_ablkcipher.geniv ?: "<default>",
+          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           sizeof(rblkcipher.geniv));
+           ~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    This means the strnycpy might create a non null terminated string.  Fix this by
+    explicitly performing '\0' termination.
+    
+    Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Cc: Arnd Bergmann <arnd@arndb.de>
+    Cc: Max Filippov <jcmvbkbc@gmail.com>
+    Cc: Eric Biggers <ebiggers3@gmail.com>
+    Cc: Nick Desaulniers <nick.desaulniers@gmail.com>
+    Signed-off-by: Stafford Horne <shorne@gmail.com>
+    Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/crypto/ablkcipher.c b/crypto/ablkcipher.c
+index 4ee7c041bb82..8882e90e868e 100644
+--- a/crypto/ablkcipher.c
++++ b/crypto/ablkcipher.c
+@@ -368,6 +368,7 @@ static int crypto_ablkcipher_report(struct sk_buff *skb, struct crypto_alg *alg)
+ 	strncpy(rblkcipher.type, "ablkcipher", sizeof(rblkcipher.type));
+ 	strncpy(rblkcipher.geniv, alg->cra_ablkcipher.geniv ?: "<default>",
+ 		sizeof(rblkcipher.geniv));
++	rblkcipher.geniv[sizeof(rblkcipher.geniv) - 1] = '\0';
+ 
+ 	rblkcipher.blocksize = alg->cra_blocksize;
+ 	rblkcipher.min_keysize = alg->cra_ablkcipher.min_keysize;
+@@ -442,6 +443,7 @@ static int crypto_givcipher_report(struct sk_buff *skb, struct crypto_alg *alg)
+ 	strncpy(rblkcipher.type, "givcipher", sizeof(rblkcipher.type));
+ 	strncpy(rblkcipher.geniv, alg->cra_ablkcipher.geniv ?: "<built-in>",
+ 		sizeof(rblkcipher.geniv));
++	rblkcipher.geniv[sizeof(rblkcipher.geniv) - 1] = '\0';
+ 
+ 	rblkcipher.blocksize = alg->cra_blocksize;
+ 	rblkcipher.min_keysize = alg->cra_ablkcipher.min_keysize;
+diff --git a/crypto/blkcipher.c b/crypto/blkcipher.c
+index 77b5fa293f66..f93abf13b5d4 100644
+--- a/crypto/blkcipher.c
++++ b/crypto/blkcipher.c
+@@ -510,6 +510,7 @@ static int crypto_blkcipher_report(struct sk_buff *skb, struct crypto_alg *alg)
+ 	strncpy(rblkcipher.type, "blkcipher", sizeof(rblkcipher.type));
+ 	strncpy(rblkcipher.geniv, alg->cra_blkcipher.geniv ?: "<default>",
+ 		sizeof(rblkcipher.geniv));
++	rblkcipher.geniv[sizeof(rblkcipher.geniv) - 1] = '\0';
+ 
+ 	rblkcipher.blocksize = alg->cra_blocksize;
+ 	rblkcipher.min_keysize = alg->cra_blkcipher.min_keysize;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1089_d08aa810ddd189e2e8e84b1a0ce09621dfd35cd1.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1089_d08aa810ddd189e2e8e84b1a0ce09621dfd35cd1.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

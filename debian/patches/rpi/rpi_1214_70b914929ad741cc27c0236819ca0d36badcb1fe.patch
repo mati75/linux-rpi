@@ -1,0 +1,35 @@
+commit 70b914929ad741cc27c0236819ca0d36badcb1fe
+Author: William Breathitt Gray <vilhelm.gray@gmail.com>
+Date:   Thu May 24 16:37:46 2018 -0400
+
+    iio: 104-quad-8: Fix off-by-one error in register selection
+    
+    [ Upstream commit 2873c3f0e2bd12a7612e905c920c058855f4072a ]
+    
+    The reset flags operation is selected by bit 2 in the "Reset and Load
+    Signals Decoders" register, not bit 1.
+    
+    Fixes: 28e5d3bb0325 ("iio: 104-quad-8: Add IIO support for the ACCES 104-QUAD-8")
+    Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+    Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
+index b56985078d8c..4be85ec54af4 100644
+--- a/drivers/iio/counter/104-quad-8.c
++++ b/drivers/iio/counter/104-quad-8.c
+@@ -138,7 +138,7 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
+ 			outb(val >> (8 * i), base_offset);
+ 
+ 		/* Reset Borrow, Carry, Compare, and Sign flags */
+-		outb(0x02, base_offset + 1);
++		outb(0x04, base_offset + 1);
+ 		/* Reset Error flag */
+ 		outb(0x06, base_offset + 1);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1214_70b914929ad741cc27c0236819ca0d36badcb1fe.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1214_70b914929ad741cc27c0236819ca0d36badcb1fe.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

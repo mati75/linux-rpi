@@ -1,0 +1,60 @@
+commit f3a6a40b3793168f1f342aa7f2d97c82c97f24b6
+Author: Alan Stern <stern@rowland.harvard.edu>
+Date:   Mon Sep 10 13:59:59 2018 -0400
+
+    USB: fix error handling in usb_driver_claim_interface()
+    
+    commit bd729f9d67aa9a303d8925bb8c4f06af25f407d1 upstream.
+    
+    The syzbot fuzzing project found a use-after-free bug in the USB
+    core.  The bug was caused by usbfs not unbinding from an interface
+    when the USB device file was closed, which led another process to
+    attempt the unbind later on, after the private data structure had been
+    deallocated.
+    
+    The reason usbfs did not unbind the interface at the appropriate time
+    was because it thought the interface had never been claimed in the
+    first place.  This was caused by the fact that
+    usb_driver_claim_interface() does not clean up properly when
+    device_bind_driver() returns an error.  Although the error code gets
+    passed back to the caller, the iface->dev.driver pointer remains set
+    and iface->condition remains equal to USB_INTERFACE_BOUND.
+    
+    This patch adds proper error handling to usb_driver_claim_interface().
+    
+    Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+    Reported-by: syzbot+f84aa7209ccec829536f@syzkaller.appspotmail.com
+    CC: <stable@vger.kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/usb/core/driver.c b/drivers/usb/core/driver.c
+index e76e95f62f76..a5395498adda 100644
+--- a/drivers/usb/core/driver.c
++++ b/drivers/usb/core/driver.c
+@@ -565,6 +565,21 @@ int usb_driver_claim_interface(struct usb_driver *driver,
+ 	if (!lpm_disable_error)
+ 		usb_unlocked_enable_lpm(udev);
+ 
++	if (retval) {
++		dev->driver = NULL;
++		usb_set_intfdata(iface, NULL);
++		iface->needs_remote_wakeup = 0;
++		iface->condition = USB_INTERFACE_UNBOUND;
++
++		/*
++		 * Unbound interfaces are always runtime-PM-disabled
++		 * and runtime-PM-suspended
++		 */
++		if (driver->supports_autosuspend)
++			pm_runtime_disable(dev);
++		pm_runtime_set_suspended(dev);
++	}
++
+ 	return retval;
+ }
+ EXPORT_SYMBOL_GPL(usb_driver_claim_interface);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1236_f3a6a40b3793168f1f342aa7f2d97c82c97f24b6.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1236_f3a6a40b3793168f1f342aa7f2d97c82c97f24b6.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

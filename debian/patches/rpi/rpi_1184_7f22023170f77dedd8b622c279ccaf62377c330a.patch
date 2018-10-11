@@ -1,0 +1,40 @@
+commit 7f22023170f77dedd8b622c279ccaf62377c330a
+Author: Randy Dunlap <rdunlap@infradead.org>
+Date:   Sat Jun 16 19:02:03 2018 -0700
+
+    Documentation/process: fix reST table border error
+    
+    [ Upstream commit cccd289f12d0e827070c847b1ff96ba02eb20eaf ]
+    
+    Fix reST error in Documentation/process/:
+    
+    Documentation/process/2.Process.rst:131: ERROR: Malformed table.
+    Bottom/header table border does not match top border.
+    
+    Fixes: 8962e40c1993 ("docs: update kernel versions and dates in tables")
+    
+    Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+    Cc: Jonathan Corbet <corbet@lwn.net>
+    Cc: Tim Bird <tbird20d@gmail.com>
+    Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/Documentation/process/2.Process.rst b/Documentation/process/2.Process.rst
+index a9c46dd0706b..51d0349c7809 100644
+--- a/Documentation/process/2.Process.rst
++++ b/Documentation/process/2.Process.rst
+@@ -134,7 +134,7 @@ and their maintainers are:
+ 	4.4	Greg Kroah-Hartman	(very long-term stable kernel)
+ 	4.9	Greg Kroah-Hartman
+ 	4.14	Greg Kroah-Hartman
+-	======  ======================  ===========================
++	======  ======================  ==============================
+ 
+ The selection of a kernel for long-term support is purely a matter of a
+ maintainer having the need and the time to maintain that release.  There
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1184_7f22023170f77dedd8b622c279ccaf62377c330a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1184_7f22023170f77dedd8b622c279ccaf62377c330a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

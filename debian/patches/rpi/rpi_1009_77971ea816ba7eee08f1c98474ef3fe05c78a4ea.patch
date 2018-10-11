@@ -1,0 +1,32 @@
+commit 77971ea816ba7eee08f1c98474ef3fe05c78a4ea
+Author: Sabrina Dubroca <sd@queasysnail.net>
+Date:   Wed Sep 12 17:44:43 2018 +0200
+
+    tls: clear key material from kernel memory when do_tls_setsockopt_conf fails
+    
+    [ Upstream commit c844eb46b7d43c2cf760169df5ae1d5b033af338 ]
+    
+    Fixes: 3c4d7559159b ("tls: kernel TLS support")
+    Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+    Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 4e28210e0343..2ccf194c3ebb 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -502,7 +502,7 @@ static int do_tls_setsockopt_conf(struct sock *sk, char __user *optval,
+ 	goto out;
+ 
+ err_crypto_info:
+-	memset(crypto_info, 0, sizeof(*crypto_info));
++	memzero_explicit(crypto_info, sizeof(union tls_crypto_context));
+ out:
+ 	return rc;
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1009_77971ea816ba7eee08f1c98474ef3fe05c78a4ea.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1009_77971ea816ba7eee08f1c98474ef3fe05c78a4ea.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

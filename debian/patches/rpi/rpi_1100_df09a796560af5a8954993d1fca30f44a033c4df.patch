@@ -1,0 +1,38 @@
+commit df09a796560af5a8954993d1fca30f44a033c4df
+Author: Colin Ian King <colin.king@canonical.com>
+Date:   Mon Jul 2 14:27:35 2018 +0100
+
+    staging: rts5208: fix missing error check on call to rtsx_write_register
+    
+    [ Upstream commit c5fae4f4fd28189b1062fb8ef7b21fec37cb8b17 ]
+    
+    Currently the check on error return from the call to rtsx_write_register
+    is checking the error status from the previous call. Fix this by adding
+    in the missing assignment of retval.
+    
+    Detected by CoverityScan, CID#709877
+    
+    Fixes: fa590c222fba ("staging: rts5208: add support for rts5208 and rts5288")
+    Signed-off-by: Colin Ian King <colin.king@canonical.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/rts5208/sd.c b/drivers/staging/rts5208/sd.c
+index d548bc695f9e..0421dd9277a8 100644
+--- a/drivers/staging/rts5208/sd.c
++++ b/drivers/staging/rts5208/sd.c
+@@ -4996,7 +4996,7 @@ int sd_execute_write_data(struct scsi_cmnd *srb, struct rtsx_chip *chip)
+ 			goto sd_execute_write_cmd_failed;
+ 		}
+ 
+-		rtsx_write_register(chip, SD_BYTE_CNT_L, 0xFF, 0x00);
++		retval = rtsx_write_register(chip, SD_BYTE_CNT_L, 0xFF, 0x00);
+ 		if (retval != STATUS_SUCCESS) {
+ 			rtsx_trace(chip);
+ 			goto sd_execute_write_cmd_failed;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1100_df09a796560af5a8954993d1fca30f44a033c4df.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1100_df09a796560af5a8954993d1fca30f44a033c4df.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

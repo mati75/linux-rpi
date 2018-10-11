@@ -1,0 +1,36 @@
+commit ee1df10ae020bfa35589722ace79cc565991919a
+Author: Alagu Sankar <alagusankar@silex-india.com>
+Date:   Fri Jun 29 16:28:00 2018 +0300
+
+    ath10k: sdio: set skb len for all rx packets
+    
+    [ Upstream commit 8530b4e7b22bc3bd8240579f3844c73947cd5f71 ]
+    
+    Without this, packets larger than 1500 will silently be dropped.
+    Easily reproduced by sending a ping packet with a size larger
+    than 1500.
+    
+    Co-Developed-by: Niklas Cassel <niklas.cassel@linaro.org>
+    Signed-off-by: Alagu Sankar <alagusankar@silex-india.com>
+    Signed-off-by: Niklas Cassel <niklas.cassel@linaro.org>
+    Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
+index d46523b0472c..aebdf99068e7 100644
+--- a/drivers/net/wireless/ath/ath10k/sdio.c
++++ b/drivers/net/wireless/ath/ath10k/sdio.c
+@@ -396,6 +396,7 @@ static int ath10k_sdio_mbox_rx_process_packet(struct ath10k *ar,
+ 	int ret;
+ 
+ 	payload_len = le16_to_cpu(htc_hdr->len);
++	skb->len = payload_len + sizeof(struct ath10k_htc_hdr);
+ 
+ 	if (trailer_present) {
+ 		trailer = skb->data + sizeof(*htc_hdr) +
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1140_ee1df10ae020bfa35589722ace79cc565991919a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1140_ee1df10ae020bfa35589722ace79cc565991919a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

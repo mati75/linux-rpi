@@ -1,0 +1,45 @@
+commit e83bd606a14e2e423db7b161907eae6fb4b80976
+Author: Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Wed Jul 4 12:33:34 2018 +0300
+
+    vmci: type promotion bug in qp_host_get_user_memory()
+    
+    [ Upstream commit 7fb2fd4e25fc1fb10dcb30b5519de257cfeae84c ]
+    
+    The problem is that if get_user_pages_fast() fails and returns a
+    negative error code, it gets type promoted to a high positive value and
+    treated as a success.
+    
+    Fixes: 06164d2b72aa ("VMCI: queue pairs implementation.")
+    Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Signed-off-by: Sasha Levin <alexander.levin@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/misc/vmw_vmci/vmci_queue_pair.c b/drivers/misc/vmw_vmci/vmci_queue_pair.c
+index b4d7774cfe07..d95e8648e7b3 100644
+--- a/drivers/misc/vmw_vmci/vmci_queue_pair.c
++++ b/drivers/misc/vmw_vmci/vmci_queue_pair.c
+@@ -668,7 +668,7 @@ static int qp_host_get_user_memory(u64 produce_uva,
+ 	retval = get_user_pages_fast((uintptr_t) produce_uva,
+ 				     produce_q->kernel_if->num_pages, 1,
+ 				     produce_q->kernel_if->u.h.header_page);
+-	if (retval < produce_q->kernel_if->num_pages) {
++	if (retval < (int)produce_q->kernel_if->num_pages) {
+ 		pr_debug("get_user_pages_fast(produce) failed (retval=%d)",
+ 			retval);
+ 		qp_release_pages(produce_q->kernel_if->u.h.header_page,
+@@ -680,7 +680,7 @@ static int qp_host_get_user_memory(u64 produce_uva,
+ 	retval = get_user_pages_fast((uintptr_t) consume_uva,
+ 				     consume_q->kernel_if->num_pages, 1,
+ 				     consume_q->kernel_if->u.h.header_page);
+-	if (retval < consume_q->kernel_if->num_pages) {
++	if (retval < (int)consume_q->kernel_if->num_pages) {
+ 		pr_debug("get_user_pages_fast(consume) failed (retval=%d)",
+ 			retval);
+ 		qp_release_pages(consume_q->kernel_if->u.h.header_page,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1093_e83bd606a14e2e423db7b161907eae6fb4b80976.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1093_e83bd606a14e2e423db7b161907eae6fb4b80976.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
