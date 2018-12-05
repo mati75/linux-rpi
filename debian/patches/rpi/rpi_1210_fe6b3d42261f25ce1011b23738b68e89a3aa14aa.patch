@@ -1,0 +1,63 @@
+commit fe6b3d42261f25ce1011b23738b68e89a3aa14aa
+Author: Peter Huewe <peterhuewe@gmx.de>
+Date:   Thu Jun 14 22:42:18 2018 +0200
+
+    Enable TPM TIS SPI support for TPM1.2 and TPM2.0 chips
+    
+    This patch enables the support for SPI TPMs which follow the TCG TIS
+    FIFO/PTP specification like the SLB9670.
+    In order to decrease ram usage the weak dependency on CONFIG_SECURITFS
+    is explictly set to 'n'.
+    
+    Signed-off-by: Peter Huewe <peterhuewe@gmx.de>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 2cc064bf1f70..c8d7f56259de 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -606,6 +606,10 @@ CONFIG_SERIAL_DEV_BUS=m
+ CONFIG_TTY_PRINTK=y
+ CONFIG_HW_RANDOM=y
+ CONFIG_RAW_DRIVER=y
++CONFIG_TCG_TPM=m
++CONFIG_TCG_TIS_CORE=m
++CONFIG_TCG_TIS_SPI=m
++# CONFIG_SECURITYFS is not set
+ CONFIG_I2C=y
+ CONFIG_I2C_CHARDEV=m
+ CONFIG_I2C_MUX=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 360d7a2d0c21..5e114304c5c4 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -601,6 +601,10 @@ CONFIG_SERIAL_DEV_BUS=m
+ CONFIG_TTY_PRINTK=y
+ CONFIG_HW_RANDOM=y
+ CONFIG_RAW_DRIVER=y
++CONFIG_TCG_TPM=m
++CONFIG_TCG_TIS_CORE=m
++CONFIG_TCG_TIS_SPI=m
++# CONFIG_SECURITYFS is not set
+ CONFIG_I2C=y
+ CONFIG_I2C_CHARDEV=m
+ CONFIG_I2C_MUX=m
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 68c7656ab89e..863b00362b27 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -589,6 +589,10 @@ CONFIG_SERIAL_DEV_BUS=m
+ CONFIG_TTY_PRINTK=y
+ CONFIG_HW_RANDOM=y
+ CONFIG_RAW_DRIVER=y
++CONFIG_TCG_TPM=m
++CONFIG_TCG_TIS_CORE=m
++CONFIG_TCG_TIS_SPI=m
++# CONFIG_SECURITYFS is not set
+ CONFIG_I2C=y
+ CONFIG_I2C_CHARDEV=m
+ CONFIG_I2C_MUX_PCA954x=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1210_fe6b3d42261f25ce1011b23738b68e89a3aa14aa.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1210_fe6b3d42261f25ce1011b23738b68e89a3aa14aa.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

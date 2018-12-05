@@ -1,0 +1,28 @@
+commit 6841d1a24132b73bdaad4bcc51db457b0c0c376c
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Sun Jun 17 13:23:32 2018 +0100
+
+    ASoC: pcm512x: change codec to component
+    
+    Signed-off-by: popcornmix <popcornmix@gmail.com>
+
+diff --git a/sound/soc/codecs/pcm512x.c b/sound/soc/codecs/pcm512x.c
+index ce6084ff85b3..9a6a6e3a0eb9 100644
+--- a/sound/soc/codecs/pcm512x.c
++++ b/sound/soc/codecs/pcm512x.c
+@@ -1327,8 +1327,8 @@ static int pcm512x_set_tdm_slot(struct snd_soc_dai *dai,
+ 	unsigned int tx_mask, unsigned int rx_mask,
+ 	int slots, int width)
+ {
+-	struct snd_soc_codec *codec = dai->codec;
+-	struct pcm512x_priv *pcm512x = snd_soc_codec_get_drvdata(codec);
++	struct snd_soc_component *component = dai->component;
++	struct pcm512x_priv *pcm512x = snd_soc_component_get_drvdata(component);
+ 
+ 	switch (slots) {
+ 	case 0:
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1162_6841d1a24132b73bdaad4bcc51db457b0c0c376c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1162_6841d1a24132b73bdaad4bcc51db457b0c0c376c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

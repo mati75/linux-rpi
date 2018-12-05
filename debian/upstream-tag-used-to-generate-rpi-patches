@@ -1,41 +1,41 @@
-tag v4.18.10
+tag v4.18.20
 Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Wed Sep 26 08:40:16 2018 +0200
+Date:   Wed Nov 21 09:22:14 2018 +0100
 
-This is the 4.18.10 stable release
+This is the 4.18.20 stable release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlurKdAACgkQONu9yGCS
-aT6v7BAAxwKMslaJ8MFPCzD8mkWKXpp83BTw6YHj/SzLJmojgMgDms61vzbMUxc4
-Q7pP9zvTI4uherXxQFL2n+dlqBdS8captKuDEOEd8qRkc4JltDZsm1Yog7yWoLHx
-HuaBuKLCKVJQ4kPdiBmhzStTGfniSUBZvuPzAjEfhoEiWrNKBHM/PqR9vBORsMCb
-mUPpcTWljxp5A8C8AWNpBjBpy9bzv58/OAXI1LAdN3+c2ygQXQE5QrHV2Ucv6BMi
-ExtEv7arvRW/IqlQr+mGGzYNnGv0oPZNcA1Mew6Ik6lpLLXKE0a38drfJMzy1/EE
-UWxSREEtXFGwL6Rpxi390T5Y36zAVpQjpIOLBqw1ulr9kNXwqibIDaps3GJOMg7g
-65iHr6MZ9wWNUUGVQ2AWVGp0rqalnXlT5JVpTccWboTZIze8zr/eaDAH7Qa9FHT7
-MuvjyzfQDPFzRuTlEZriWePSccMUrCwxh+INAB4yC7FybgA23Ux5nqC+v4xCVNdz
-0zfBLv/Gma2lRqS9yxr3BrDw55mmjkq0VdD+mEa/byZu7xs+bx3l9DP2tWXibXMV
-CAP7PyQM7lJKMSu4KTos7L4xOH8PxA/kiuMzUYaT03LU3ZCkuczAgITBM2vvd+g/
-RhjAZ2U1nhfHiML4ggtOaFlveNCx2BE4Y3ktJo3V6vgML4yyRJM=
-=VuSr
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlv1FbYACgkQONu9yGCS
+aT6THBAAlk37RINKYtJB+n1//FoLWNdZqFbojK1slk1oEg68bjbKQi5+nMlwBMqj
+KpNeUvC9MqKqarhn/DpUhKzueOeqjk/U9JTJl+9vJU66BLkaN/IopKsq2zYvj43/
+c8OojjFYs8jCUVsxHPFQFPM9t94TaMKskWgJt+vCHnsXywK+2Dhzh2EnGMeURxkd
+w4lja1JIDpvpp9IPsccK1Z9tZN7PNBmXK9sGdhOzBG36hqAUg1p9h/utheQUML3p
+wFGCpXoeG1rWi01ut9yDF4FtSFNbz//dJdtv0PHnjfE87iwcIEHqBt/b6o0gcayc
+hpPNJRM6EwDywd3y+l83FZa4uX4RcMwt3hUgoG+SbVohCFTZqE7noSpsX+NS2iCt
+6bCII0JMya64aZx4q9FDUz93El6fivv+aisA/yjaB4TkQRIhxQBao+dn0V9DYltE
+BI/rNp+T9eNWaDY+ZWnK5t0rNDnjsxSBK496QGuc+CtPZWYgP5Pj0XR9PDD2x+3+
+xxtlZhLeSJOVkYZry4GMPJRuAZB1+FbsZ5u3t03Q+Fg4pDEiwlORKrx+jxi7zqAS
+cqQkfxGHU6w9gIAjoAxjCBiCG8jUYsZvw73Flk/0RgB6E/c+OExm00JJdPRH21eX
+bxELoN1Mlxs3HebMWioCZxZOQsXSJkyz9ZA2HpLvjDmgKR6O6GE=
+=1zFN
 -----END PGP SIGNATURE-----
 
-commit 183348489d36bbe1ace1364830425009e98bcc25
+commit a9da8725b7a744be3ff0ff44cab2547e4d1e6675
 Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Wed Sep 26 08:39:43 2018 +0200
+Date:   Wed Nov 21 09:22:14 2018 +0100
 
-    Linux 4.18.10
+    Linux 4.18.20
 
 diff --git a/Makefile b/Makefile
-index af5507fb1b82..ffab15235ff0 100644
+index 71642133ba22..5f6697c4dbbc 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
  PATCHLEVEL = 18
--SUBLEVEL = 9
-+SUBLEVEL = 10
+-SUBLEVEL = 19
++SUBLEVEL = 20
  EXTRAVERSION =
  NAME = Merciless Moray
  
