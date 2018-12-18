@@ -1,4 +1,4 @@
-linux (4.18.20-2+rpi1) buster-staging; urgency=medium
+linux (4.19.9-1+rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -118,6 +118,249 @@ linux (4.18.20-2+rpi1) buster-staging; urgency=medium
   * Remove ext3 modules from d-i package list.
 
  -- Mateusz Łukasik <mati75@linuxmint.pl>  Sat, 24 Nov 2018 22:53:46 +0100
+
+linux (4.19.9-1) unstable; urgency=medium
+
+  * New upstream stable update:
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.6
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.7
+    - [x86] KVM: LAPIC: Fix pv ipis use-before-initialization (CVE-2018-19406)
+    - mm: cleancache: fix corruption on missed inode invalidation
+      (CVE-2018-16862)
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.8
+    - blk-mq: fix corruption with direct issue (Closes: #915666)
+    - userfaultfd: use ENOENT instead of EFAULT if the atomic copy user fails
+      (CVE-2018-18397)
+    - userfaultfd: shmem: allocate anonymous memory for MAP_PRIVATE shmem
+      (CVE-2018-18397)
+    - userfaultfd: shmem: add i_size checks (CVE-2018-18397)
+    - userfaultfd: shmem: UFFDIO_COPY: set the page dirty if VM_WRITE is not
+      set (CVE-2018-18397)
+    - blk-mq: punt failed direct issue to dispatch list
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.9
+    - ALSA: usb-audio: Fix UAF decrement if card has no live interfaces in
+      card.c (CVE-2018-19824)
+    - vhost/vsock: fix use-after-free in network stack callers
+      (CVE-2018-14625)
+
+  [ Marcin Juszkiewicz ]
+  * [arm64] Enable ACPI IMPI
+  * [arm64] Enable IPMI watchdog and power off support
+  * [arm64] Enable PCI Express hotplug
+  * [arm64] Enable PMU for several server cpus
+  * [arm64] Enable HiSilicon LPC for serial/ipmi access
+
+  [ Romain Perier ]
+  * [x86] Enable support for error detection and correction on the Intel
+    Pondicherry2 Integrated Memory Controller (Closes: #914946)
+  * [rt] Update to 4.19.8-rt6
+
+  [ Uwe Kleine-König ]
+  * Enable usb support for ATH10K (Closes: #915083)
+
+  [ Luca Boccassi ]
+  * debian/rules.real: Split the rules so that the [un]versioned_tools
+    knobs can be used to avoid building them. Fixes FTBFS with unversioned
+    tools disabled.
+  * perf: do not ship python2-only call-graph-from-sql script.
+  * Override Lintian warning dbg-package-missing-depends in source too.
+
+  [ Ben Hutchings ]
+  * debian/rules.real: Mark most targets as phony
+  * debian/rules: Mark more targets as phony
+  * libcpupower: Hide private function and drop it from .symbols file
+  * integrity: Disable INTEGRITY_TRUSTED_KEYRING (Closes: #865277)
+
+  [ Vagrant Cascadian ]
+  * debian/config/config: Enable Z3FOLD as a module.
+
+  [ Salvatore Bonaccorso ]
+  * Set ABI to 1
+
+  [ Nicolas Schier ]
+  * ovl: permit overlayfs mounts in user namespaces (Closes: #913880)
+
+  [ Hilko Bengen ]
+  * Add patches to build libbpf.so with SONAME, link against libelf
+  * Add versioned libbpf, libbpf-dev package (Closes: #914428)
+
+  [ Hans van Kranenburg ]
+  * [x86] Add patch to repair booting as Xen dom0 (Closes: #914951)
+  * [x86] Add patches to support booting a Xen PVH guest via Grub2
+
+  [ Christoph Anton Mitterer ]
+  * crypto: Enable MORUS and AEGIS AEAD ciphers (Closes: #914136)
+  * [amd64]: Enable AES-NI/SSE2/AVX2 optimised implementations of the MORUS
+    and AEGIS AEAD ciphers
+
+  [ Bastian Blank ]
+  * Enable NFT_CONNLIMIT, NFT_TUNNEL, NFT_SOCKET, NFT_OSF, NFT_TPROXY,
+    IP_VS_MH.
+  * Enable netfilter flow table support.
+  * [x86] Enable DRM_XEN_FRONTEND.
+  * Enable EFI_BOOTLOADER_CONTROL, EFI_CAPSULE_LOADER.
+
+ -- Bastian Blank <waldi@debian.org>  Sun, 16 Dec 2018 19:45:54 +0100
+
+linux (4.19.5-1~exp1) experimental; urgency=medium
+
+  * New upstream release: https://kernelnewbies.org/Linux_4.19
+  * New upstream stable update:
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.1
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.2
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.3
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.4
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.5
+
+  [ Ben Hutchings ]
+  * linux-perf: Enable verbose output for build-time feature detection
+  * udeb: Define mtd-core-modules package to contain MTD core if not built-in
+  * udeb: Move MTD core from nic-modules to mtd-core-modules
+  * debian/changelog: Move older entries to changelog.old
+  * debian/rules: Checksum only the source name and version from
+    debian/changelog
+  * Move generation of CONFIG_BUILD_SALT to gencontrol.py
+  * [x86] hyperv-daemons: Make all services conditional on device existence
+  * debian/rules.real: Fix build failure with pkg.linux.nosource profile
+  * debian/source/options: Delete redundant compression setting; satisfy
+    lintian
+  * Documentation/media: uapi: Explicitly say there are no Invariant Sections
+    (Closes: #698668)
+
+  [ Karsten Merker ]
+  * [riscv64] Build a kernel image and udebs for riscv64 (Closes: #908161)
+
+  [ Uwe Kleine-König ]
+  * [armhf,arm64] enable SND_BCM2835 as a module (Closes: #911121)
+  * Enable Orange filesystem (Closes: #911743)
+  * [arm64] Enable hns3 network driver as a module. (Closes: #914422)
+
+  [ Noah Meyerhans ]
+  * [cloud-amd64] Enable Amazon ENA ethernet driver (Closes: #910049)
+
+  [ Romain Perier ]
+  * [rt] Update to 4.19.1-rt3
+  * [rt] Update patch arm-disable-NEON-in-kernel-mode.patch, so it can be
+    applied onto 4.19.2
+  * [rt] Update patch
+    irq-allow-disabling-of-softirq-processing-in-irq-thread-context.patch, so
+    it can be applied onto 4.19.2
+  * [amd64] Enable AMD pinctrl driver (Closes: #908954)
+  * Enable Diffie-Hellman operations on retained keys (Closes: #911998)
+  * Update patch features/all/lockdown/enable-cold-boot-attack-mitigation.patch,
+    so it can be applied onto 4.19.2
+  * [x86] Enable DisplayPort CEC-Tunneling-over-AUX HDMI support
+    (Closes: #913199)
+
+ -- Bastian Blank <waldi@debian.org>  Tue, 27 Nov 2018 20:06:42 +0100
+
+linux (4.19~rc7-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Uwe Kleine-König ]
+  * [armhf] enable MVNETA_BM_ENABLE and CAN_FLEXCAN as a module
+  * enable NET_SCH_CAKE as a module (Closes: #908709)
+  * enable HID_NTI as a module (Closes: #910260)
+
+  [ Ben Hutchings ]
+  * linux-kbuild: Include scripts/subarch.include (Closes: #910348)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Sun, 07 Oct 2018 23:48:27 +0100
+
+linux (4.19~rc6-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Ben Hutchings ]
+  * [ppc64el] udeb: Fix relative #include filenames in kernel-image module
+    list (really fixes FTBFS?)
+  * debian/bin, debian/lib/python: Fix most errors reported by pycodestyle
+  * debian/bin, debian/rules.real: Add symlink to Python package directory
+    instead of editing path
+  * debian/bin, debian/lib/python: Clean up imports based on pyflakes report
+  * debian/bin, debian/lib/python: Delete write-only vars reported by pyflakes
+  * debian/lib/python/debian_linux/gencontrol.py: Delete broken methods
+  * debian/lib/python/debian_linux/config.py: Fix undefined exception type
+  * Add Python static checks and unit tests to autopkgtest tests
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Wed, 03 Oct 2018 18:57:08 +0100
+
+linux (4.19~rc4-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Ben Hutchings ]
+  * debian/control: Add arch-qualification to build-dependencies for linux-perf
+    (Closes: #908519)
+  * debian/control: Build-depend on libunwind-dev instead of libunwind8-dev
+  * [hppa,mips*,powerpc*,sh4] debian/control: Build-depend on libunwind-dev for
+    linux-perf
+  * debian/control: Build-depend on libnuma-dev for linux-perf on all arches
+  * debian/control: Remove "cross" from profiles for build-dep on libssl-dev
+  * [mips64*] debian/control: Build-depend on gcc-multilib for linux-perf
+  * debian/lib/python: Use raw strings for all regexes
+  * debian/control: Fix restrictions for build-deps on asciidoctor and
+    patchutils
+  * Add support for specifying build-dependencies in binary package templates
+  * debian/templates: Move various build-dependencies to binary package
+    templates
+  * linux-perf: Fix generation of Perl and Python interpreter dependencies
+    (Closes: #908547)
+  * lockdep, lib{cpupower,lockdep}-dev: Remove bogus deps on ${shlibs:Depends}
+  * debian/rules.d/tools/power/linux-cpupower: Add "+" to recursive make
+    commands
+  * tools: x86_energy_perf_policy: Fix "uninitialized variable" warnings at -O2
+  * tools: turbostat: Add checks for failure of fgets() and fscanf()
+  * debian/control: Build-depend on texlive-latex-{base,extra}, dvipng for
+    linux-doc
+  * debian/rules{,.real}: Use /usr/share/dpkg/architecture.mk
+  * debian/signing_templates/rules: Use /usr/share/dpkg/architecture.mk
+  * linux-image-*-signed-template: Add ${misc:Depends} to Depends
+  * linux-image-*-signed-template: Include changelog and copyright files
+  * linux-image-*-signed-template: Depend on dpkg-dev
+  * linux-image-*-signed-template: Override lintian warnings about non-
+    executable scripts
+  * [ia64] udeb: Fix priority of sn-modules
+  * Revert "Revert "net: increase fragment memory usage limits"", as 4.19
+    includes a better fix for CVE-2018-5391
+  * debian/patches: Add Forwarded fields to several patches
+  * [ppc64el] udeb: Fix relative #include filenames in module lists (fixes
+    FTBFS)
+  * [ppc64] udeb: Revert accidental change to nic-pcmcia-modules dependencies
+    (fixes FTBFS)
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Tue, 18 Sep 2018 15:52:02 +0100
+
+linux (4.19~rc3-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Ben Hutchings ]
+  * [s390x] linux-image: Install compressed kernel image (fixes FTBFS)
+  * [powerpc*] boot: Fix missing crc32poly.h when building with KERNEL_XZ
+    (fixes FTBFS)
+  * [x86] boot: Fix EFI stub alignment
+  * wireless: Update "wireless: Disable regulatory.db direct loading" for
+    4.19-rc3
+  * aufs: Update support patchset to aufs4.x-rcN 20180910
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 10 Sep 2018 20:13:55 +0100
+
+linux (4.19~rc2-1~exp1) experimental; urgency=medium
+
+  * New upstream release candidate
+
+  [ Ben Hutchings ]
+  * aufs: Disable until it is updated for Linux 4.19
+  * debian/rules.d: Update for move of bin2c back up to scripts
+  * locking/lockdep: Delete unnecesary #include (fixes liblockdep build)
+  * [hppa] debian/control: Simplify build-dependencies for 64-bit toolchain
+  * Compile with gcc-8 on all architectures
+  * udeb: Merge configuration directories and files across architectures
+  * [alpha,hppa] udeb: Remove incorrect dependency overrides
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 03 Sep 2018 21:34:41 +0100
 
 linux (4.18.20-2) unstable; urgency=medium
 
@@ -9745,6 +9988,7 @@ linux (4.10~rc6-1~exp1) experimental; urgency=medium
 
  -- Ben Hutchings <ben@decadent.org.uk>  Tue, 31 Jan 2017 15:33:20 +0000
 
+<<<<<<< HEAD
 linux (4.9.30-2) unstable; urgency=high
 
   * [x86] Enable SERIAL_8250_MID as built-in (Closes: #864368)
@@ -36543,3 +36787,5 @@ linux-2.6 (2.6.12-1) unstable; urgency=low
 
  -- Andres Salomon <dilinger@debian.org>  Wed, 20 Jul 2005 17:16:04 -0400
 
+=======
+>>>>>>> debian/4.19.9-1
