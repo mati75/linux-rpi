@@ -1,4 +1,4 @@
-linux (4.19.9-1+rpi1) buster-staging; urgency=medium
+linux (4.19.12-1+rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -118,6 +118,221 @@ linux (4.19.9-1+rpi1) buster-staging; urgency=medium
   * Remove ext3 modules from d-i package list.
 
  -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 18 Dec 2018 14:05:22 +0100
+
+linux (4.19.12-1) unstable; urgency=medium
+
+  * New upstream stable update:
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.10
+    - ipv4: ipv6: netfilter: Adjust the frag mem limit when truesize changes
+    - ipv6: Check available headroom in ip6_xmit() even without options
+    - ipv6: sr: properly initialize flowi6 prior passing to ip6_route_output
+    - [arm64, hppa, powerpc, x86, alpha, armhf, mips*] net: 8139cp: fix a BUG
+      triggered by changing mtu with network traffic
+    - net: phy: don't allow __set_phy_supported to add unsupported modes
+    - net: Prevent invalid access to skb->prev in __qdisc_drop_all
+    - net: use skb_list_del_init() to remove from RX sublists
+    - Revert "net/ibm/emac: wrong bit is used for STA control"
+    - rtnetlink: ndo_dflt_fdb_dump() only work for ARPHRD_ETHER devices
+    - sctp: kfree_rcu asoc
+    - tcp: Do not underestimate rwnd_limited
+    - tcp: fix NULL ref in tail loss probe
+    - tun: forbid iface creation with rtnl ops
+    - virtio-net: keep vnet header zeroed after processing XDP
+    - net: phy: sfp: correct store of detected link modes
+    - sctp: update frag_point when stream_interleave is set
+    - net: restore call to netdev_queue_numa_node_write when resetting XPS
+    - net: fix XPS static_key accounting
+    - [armhf] OMAP2+: prm44xx: Fix section annotation on
+      omap44xx_prm_enable_io_wakeup
+    - [arm64, x86] staging: rtl8723bs: Fix the return value in case of error in
+      'rtw_wx_read32()'
+    - [armhf] dts: am3517: Fix pinmuxing for CD on MMC1
+    - [armhf] dts: LogicPD Torpedo: Fix mmc3_dat1 interrupt
+    - [armhf] dts: logicpd-somlv: Fix interrupt on mmc3_dat1
+    - [armhf] dts: am3517-som: Fix WL127x Wifi interrupt
+    - tools: bpftool: prevent infinite loop in get_fdinfo()
+    - [arm64] dts: sdm845-mtp: Reserve reserved gpios
+    - sysv: return 'err' instead of 0 in __sysv_write_inode
+    - netfilter: nf_tables: don't skip inactive chains during update
+    - perf tools: Fix crash on synthesizing the unit
+    - netfilter: xt_RATEEST: remove netns exit routine
+    - netfilter: nf_tables: fix use-after-free when deleting compat expressions
+    - [armhf] ASoC: rockchip: add missing slave_config setting for I2S
+    - s390/cpum_cf: Reject request for sampling in event initialization
+    - [arm64, armel, x86, armhf] ASoC: dapm: Recalculate audio map forcely when
+      card instantiated
+    - [armhf] spi: omap2-mcspi: Add missing suspend and resume calls
+    - bpf: allocate local storage buffers using GFP_ATOMIC
+    - aio: fix failure to put the file pointer
+    - netfilter: xt_hashlimit: fix a possible memory leak in htable_create()
+    - hwmon: (w83795) temp4_type has writable permission
+    - perf tools: Restore proper cwd on return from mnt namespace
+    - [armhf] PCI: imx6: Fix link training status detection in link up check
+    - objtool: Fix double-free in .cold detection error path
+    - objtool: Fix segfault in .cold detection with -ffunction-sections
+    - [arm64] phy: qcom-qusb2: Use HSTX_TRIM fused value as is
+    - [arm64] phy: qcom-qusb2: Fix HSTX_TRIM tuning with fused value for SDM845
+    - Btrfs: send, fix infinite loop due to directory rename dependencies
+    - RDMA/mlx5: Fix fence type for IB_WR_LOCAL_INV WR
+    - RDMA/core: Add GIDs while changing MAC addr only for registered ndev
+    - RDMA/rdmavt: Fix rvt_create_ah function signature
+    - tools: bpftool: fix potential NULL pointer dereference in do_load
+    - ipvs: call ip_vs_dst_notifier earlier than ipv6_dev_notf
+    - [x86] thunderbolt: Prevent root port runtime suspend during NVM upgrade
+    - [arm64] drm/meson: add support for 1080p25 mode
+    - netfilter: ipv6: Preserve link scope traffic original oif
+    - IB/mlx5: Fix page fault handling for MW
+    - netfilter: add missing error handling code for register functions
+    - [x86] KVM: VMX: Update shared MSRs to be saved/restored on MSR_EFER.LMA
+      changes
+    - [x86] kvm/vmx: fix old-style function declaration
+    - [arm64] net: thunderx: fix NULL pointer dereference in nic_remove
+    - netfilter: nf_tables: deactivate expressions in rule replecement routine
+    - ALSA: usb-audio: Add vendor and product name for Dell WD19 Dock
+    - cachefiles: Fix an assertion failure when trying to update a failed object
+    - fscache: Fix race in fscache_op_complete() due to split atomic_sub & read
+    - cachefiles: Fix page leak in cachefiles_read_backing_file while vmscan is
+      active
+    - igb: fix uninitialized variables
+    - ixgbe: recognize 1000BaseLX SFP modules as 1Gbps
+    - [arm64] net: hisilicon: remove unexpected free_netdev
+    - drm/amdgpu: Add delay after enable RLC ucode
+    - [arm64, powerpc, x86] drm/ast: fixed reading monitor EDID not stable issue
+    - Revert "xen/balloon: Mark unallocated host memory as UNUSABLE"
+    - afs: Fix validation/callback interaction
+    - fscache: fix race between enablement and dropping of object
+    - cachefiles: Explicitly cast enumerated type in put_object
+    - fscache, cachefiles: remove redundant variable 'cache'
+    - nvme: warn when finding multi-port subsystems without multipathing enabled
+    - ocfs2: fix deadlock caused by ocfs2_defrag_extent()
+    - mm/page_alloc.c: fix calculation of pgdat->nr_zones
+    - hfs: do not free node before using
+    - hfsplus: do not free node before using
+    - initramfs: clean old path before creating a hardlink
+    - ocfs2: fix potential use after free
+    - dax: Check page->mapping isn't NULL
+    - ALSA: hda/realtek - Fixed headphone issue for ALC700
+    - ALSA: hda/realtek: ALC294 mic and headset-mode fixups for ASUS X542UN
+    - ALSA: hda/realtek: Enable audio jacks of ASUS UX533FD with ALC294
+    - ALSA: hda/realtek: Enable audio jacks of ASUS UX433FN/UX333FA with ALC294
+    - ALSA: hda/realtek - Fix the mute LED regresion on Lenovo X1 Carbon
+    - IB/hfi1: Fix an out-of-bounds access in get_hw_stats
+    - bpf: fix off-by-one error in adjust_subprog_starts
+    - tcp: lack of available data can also cause TSO defer
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.11
+    - sched/pelt: Fix warning and clean up IRQ PELT config
+    - scsi: raid_attrs: fix unused variable warning
+    - [i386] staging: olpc_dcon: add a missing dependency
+    - [arm64] dts: qcom-apq8064-arrow-sd-600eval fix graph_endpoint warning
+    - [arm64] drm/msm: fix address space warning
+    - aio: fix spectre gadget in lookup_ioctx
+    - fs/iomap.c: get/put the page in iomap_page_create/release()
+    - userfaultfd: check VM_MAYWRITE was set after verifying the uffd is
+      registered
+    - [arm64] dma-mapping: Fix FORCE_CONTIGUOUS buffer clearing
+    - block/bio: Do not zero user pages
+    - ovl: fix decode of dir file handle with multi lower layers
+    - ovl: fix missing override creds in link of a metacopy upper
+    - [armhf] MMC: OMAP: fix broken MMC on OMAP15XX/OMAP5910/OMAP310
+    - mmc: core: use mrq->sbc when sending CMD23 for RPMB
+    - mmc: sdhci: fix the timeout check window for clock and reset
+    - fuse: continue to send FUSE_RELEASEDIR when FUSE_OPEN returns ENOSYS
+    - [arm] mmp/mmp2: fix cpu_is_mmp2() on mmp2-dt
+    - [arm] dts: bcm2837: Fix polarity of wifi reset GPIOs (Closes: #911443)
+    - dm thin: send event about thin-pool state change _after_ making it
+    - dm cache metadata: verify cache has blocks in
+      blocks_are_clean_separate_dirty()
+    - dm: call blk_queue_split() to impose device limits on bios
+    - tracing: Fix memory leak of instance function hash filters
+    - [powerpc*] msi: Fix NULL pointer access in teardown code
+    - drm/nouveau/kms: Fix memory leak in nv50_mstm_del()
+    - drm/nouveau/kms/nv50-: also flush fb writes when rewinding push buffer
+    - Revert "drm/rockchip: Allow driver to be shutdown on reboot/kexec"
+    - [x86] drm/i915/execlists: Apply a full mb before execution for Braswell
+    - [amd64] drm/amdkfd: add new vega10 pci ids
+    - drm/amdgpu: add some additional vega10 pci ids
+    - drm/amdgpu: update smu firmware images for VI variants (v2)
+    - drm/amdgpu: update SMC firmware image for polaris10 variants
+    - [x86] build: Fix compiler support check for CONFIG_RETPOLINE
+    https://www.kernel.org/pub/linux/kernel/v4.x/ChangeLog-4.19.12
+    - locking/qspinlock: Re-order code
+    - [x86] locking/qspinlock, x86: Provide liveness guarantee
+    - [amd64] IB/hfi1: Remove race conditions in user_sdma send path
+    - mac80211_hwsim: fix module init error paths for netlink
+    - [x86] Input: hyper-v - fix wakeup from suspend-to-idle
+    - scsi: libiscsi: Fix NULL pointer dereference in iscsi_eh_session_reset
+    - [x86] scsi: vmw_pscsi: Rearrange code to avoid multiple calls to
+      free_irq during unload
+    - [x86] earlyprintk/efi: Fix infinite loop on some screen widths
+    - [arm64] drm/msm: Fix task dump in gpu recovery
+    - [arm64] drm/msm/gpu: Fix a couple memory leaks in debugfs
+    - [arm64] drm/msm: fix handling of cmdstream offset
+    - [arm64] drm/msm/dsi: configure VCO rate for 10nm PLL driver
+    - [arm64] drm/msm: Grab a vblank reference when waiting for commit_done
+    - drm/ttm: fix LRU handling in ttm_buffer_object_transfer
+    - drm/amdgpu: wait for IB test on first device open
+    - [arm64,armhf] net: stmmac: Move debugfs init/exit to
+      ->probe()/->remove()
+    - [amd64] net: aquantia: fix rx checksum offload bits
+    - bonding: fix 802.3ad state sent to partner when unbinding slave
+    - liquidio: read sc->iq_no before release sc
+    - nfs: don't dirty kernel pages read by direct-io
+    - SUNRPC: Fix a potential race in xprt_connect()
+    - [sparc64] sbus: char: add of_node_put()
+    - [sparc64] drivers/sbus/char: add of_node_put()
+    - [sparc64] drivers/tty: add missing of_node_put()
+    - [arm64] drm/msm/hdmi: Enable HPD after HDMI IRQ is set up
+    - [amr64] drm/msm: dpu: Don't set legacy plane->crtc pointer
+    - [arm64] drm/msm: dpu: Fix "WARNING: invalid free of devm_ allocated
+      data"
+    - [arm64] drm/msm: Fix error return checking
+    - [arm64] clk: mvebu: Off by one bugs in cp110_of_clk_get()
+    - Input: synaptics - enable SMBus for HP 15-ay000
+    - [armhf] Input: omap-keypad - fix keyboard debounce configuration
+    - libata: whitelist all SAMSUNG MZ7KM* solid-state disks
+    - macvlan: return correct error value
+    - [arm64,armhf] mv88e6060: disable hardware level MAC learning
+    - net/mlx4_en: Fix build break when CONFIG_INET is off
+    - bpf: check pending signals while verifying programs
+    - [arm*] 8814/1: mm: improve/fix ARM v7_dma_inv_range() unaligned address
+      handling
+    - [arm*] 8815/1: V7M: align v7m_dma_inv_range() with v7 counterpart
+    - [arm*] 8816/1: dma-mapping: fix potential uninitialized return
+    - [arm64,armhf] thermal: armada: fix legacy validity test sense
+    - [arm64,armhf] net: mvpp2: fix detection of 10G SFP modules
+    - [arm64,armhf] net: mvpp2: fix phylink handling of invalid PHY modes
+    - drm/amdgpu/vcn: Update vcn.cur_state during suspend
+    - [amd64,arm64] acpi/nfit: Fix user-initiated ARS to be "ARS-long" rather
+      than "ARS-short"
+    - drm/ast: Fix connector leak during driver unload
+    - cifs: In Kconfig CONFIG_CIFS_POSIX needs depends on legacy (insecure
+      cifs)
+    - vhost/vsock: fix reset orphans race with close timeout
+    - [x86] i2c: scmi: Fix probe error on devices with an empty SMB0001 ACPI
+      device node
+    - nvme: validate controller state before rescheduling keep alive
+    - nvmet-rdma: fix response use after free
+    - Btrfs: fix missing delayed iputs on unmount
+
+  [ Uwe Kleine-König ]
+  * [arm] Fix probing of 3rd gpio device on Armada 370.
+
+  [ Ben Hutchings ]
+  * linux-perf: Fix build-time check for unversioned files
+  * linux-perf: Fix installation directories for BPF headers and examples
+    (Closes: #916774)
+
+  [ Noah Meyerhans ]
+  * drivers/net/ethernet/amazon: Backport v2.0.2 from Linux 4.20
+
+  [ Bastian Blank ]
+  * Ignore various ABI changes.
+
+  [ Salvatore Bonaccorso ]
+  * iomap: Revert "fs/iomap.c: get/put the page in
+    iomap_page_create/release()"
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Sat, 22 Dec 2018 09:06:45 +0100
 
 linux (4.19.9-1) unstable; urgency=medium
 
