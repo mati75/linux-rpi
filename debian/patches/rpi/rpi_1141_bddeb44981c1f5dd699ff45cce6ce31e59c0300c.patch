@@ -1,0 +1,68 @@
+commit bddeb44981c1f5dd699ff45cce6ce31e59c0300c
+Author: Edward Cree <ecree@solarflare.com>
+Date:   Fri Nov 16 12:00:07 2018 +0000
+
+    bpf: fix off-by-one error in adjust_subprog_starts
+    
+    commit afd594240806acc138cf696c09f2f4829d55d02f upstream.
+    
+    When patching in a new sequence for the first insn of a subprog, the start
+     of that subprog does not change (it's the first insn of the sequence), so
+     adjust_subprog_starts should check start <= off (rather than < off).
+    Also added a test to test_verifier.c (it's essentially the syz reproducer).
+    
+    Fixes: cc8b0b92a169 ("bpf: introduce function calls (function boundaries)")
+    Reported-by: syzbot+4fc427c7af994b0948be@syzkaller.appspotmail.com
+    Signed-off-by: Edward Cree <ecree@solarflare.com>
+    Acked-by: Yonghong Song <yhs@fb.com>
+    Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 5780876ac81a..56acfbb80104 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5283,7 +5283,7 @@ static void adjust_subprog_starts(struct bpf_verifier_env *env, u32 off, u32 len
+ 		return;
+ 	/* NOTE: fake 'exit' subprog should be updated as well. */
+ 	for (i = 0; i <= env->subprog_cnt; i++) {
+-		if (env->subprog_info[i].start < off)
++		if (env->subprog_info[i].start <= off)
+ 			continue;
+ 		env->subprog_info[i].start += len - 1;
+ 	}
+diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+index 67c412d19c09..2bde9ee04db7 100644
+--- a/tools/testing/selftests/bpf/test_verifier.c
++++ b/tools/testing/selftests/bpf/test_verifier.c
+@@ -12511,6 +12511,25 @@ static struct bpf_test tests[] = {
+ 		.prog_type = BPF_PROG_TYPE_SCHED_CLS,
+ 		.result = ACCEPT,
+ 	},
++	{
++		"calls: ctx read at start of subprog",
++		.insns = {
++			BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
++			BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 5),
++			BPF_JMP_REG(BPF_JSGT, BPF_REG_0, BPF_REG_0, 0),
++			BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
++			BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 2),
++			BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
++			BPF_EXIT_INSN(),
++			BPF_LDX_MEM(BPF_B, BPF_REG_9, BPF_REG_1, 0),
++			BPF_MOV64_IMM(BPF_REG_0, 0),
++			BPF_EXIT_INSN(),
++		},
++		.prog_type = BPF_PROG_TYPE_SOCKET_FILTER,
++		.errstr_unpriv = "function calls to other bpf functions are allowed for root only",
++		.result_unpriv = REJECT,
++		.result = ACCEPT,
++	},
+ };
+ 
+ static int probe_filter_length(const struct bpf_insn *fp)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1141_bddeb44981c1f5dd699ff45cce6ce31e59c0300c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1141_bddeb44981c1f5dd699ff45cce6ce31e59c0300c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

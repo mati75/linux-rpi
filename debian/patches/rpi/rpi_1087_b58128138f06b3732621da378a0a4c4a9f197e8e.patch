@@ -1,0 +1,32 @@
+commit b58128138f06b3732621da378a0a4c4a9f197e8e
+Author: Aaro Koskinen <aaro.koskinen@iki.fi>
+Date:   Sun Nov 25 00:17:07 2018 +0200
+
+    USB: omap_udc: fix USB gadget functionality on Palm Tungsten E
+    
+    [ Upstream commit 2c2322fbcab8102b8cadc09d66714700a2da42c2 ]
+    
+    On Palm TE nothing happens when you try to use gadget drivers and plug
+    the USB cable. Fix by adding the board to the vbus sense quirk list.
+    
+    Signed-off-by: Aaro Koskinen <aaro.koskinen@iki.fi>
+    Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/usb/gadget/udc/omap_udc.c b/drivers/usb/gadget/udc/omap_udc.c
+index 33250e569af8..9b23e04c8f02 100644
+--- a/drivers/usb/gadget/udc/omap_udc.c
++++ b/drivers/usb/gadget/udc/omap_udc.c
+@@ -2033,6 +2033,7 @@ static inline int machine_without_vbus_sense(void)
+ {
+ 	return machine_is_omap_innovator()
+ 		|| machine_is_omap_osk()
++		|| machine_is_omap_palmte()
+ 		|| machine_is_sx1()
+ 		/* No known omap7xx boards with vbus sense */
+ 		|| cpu_is_omap7xx();
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1087_b58128138f06b3732621da378a0a4c4a9f197e8e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1087_b58128138f06b3732621da378a0a4c4a9f197e8e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

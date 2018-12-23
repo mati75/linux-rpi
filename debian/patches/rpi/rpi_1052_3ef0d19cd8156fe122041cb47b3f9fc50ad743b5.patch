@@ -1,0 +1,39 @@
+commit 3ef0d19cd8156fe122041cb47b3f9fc50ad743b5
+Author: Nicolin Chen <nicoleotsuka@gmail.com>
+Date:   Tue Nov 13 19:48:54 2018 -0800
+
+    hwmon: (ina2xx) Fix current value calculation
+    
+    [ Upstream commit 38cd989ee38c16388cde89db5b734f9d55b905f9 ]
+    
+    The current register (04h) has a sign bit at MSB. The comments
+    for this calculation also mention that it's a signed register.
+    
+    However, the regval is unsigned type so result of calculation
+    turns out to be an incorrect value when current is negative.
+    
+    This patch simply fixes this by adding a casting to s16.
+    
+    Fixes: 5d389b125186c ("hwmon: (ina2xx) Make calibration register value fixed")
+    Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+    Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/hwmon/ina2xx.c b/drivers/hwmon/ina2xx.c
+index c2252cf452f5..07ee19573b3f 100644
+--- a/drivers/hwmon/ina2xx.c
++++ b/drivers/hwmon/ina2xx.c
+@@ -274,7 +274,7 @@ static int ina2xx_get_value(struct ina2xx_data *data, u8 reg,
+ 		break;
+ 	case INA2XX_CURRENT:
+ 		/* signed register, result in mA */
+-		val = regval * data->current_lsb_uA;
++		val = (s16)regval * data->current_lsb_uA;
+ 		val = DIV_ROUND_CLOSEST(val, 1000);
+ 		break;
+ 	case INA2XX_CALIBRATION:
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1052_3ef0d19cd8156fe122041cb47b3f9fc50ad743b5.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1052_3ef0d19cd8156fe122041cb47b3f9fc50ad743b5.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

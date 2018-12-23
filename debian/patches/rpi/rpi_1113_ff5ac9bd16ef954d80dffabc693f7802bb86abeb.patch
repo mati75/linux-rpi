@@ -1,0 +1,37 @@
+commit ff5ac9bd16ef954d80dffabc693f7802bb86abeb
+Author: Pan Bian <bianpan2016@163.com>
+Date:   Thu Nov 22 10:07:12 2018 +0800
+
+    pvcalls-front: fixes incorrect error handling
+    
+    [ Upstream commit 975ef94a0284648fb0137bd5e949b18cef604e33 ]
+    
+    kfree() is incorrectly used to release the pages allocated by
+    __get_free_page() and __get_free_pages(). Use the matching deallocators
+    i.e., free_page() and free_pages(), respectively.
+    
+    Signed-off-by: Pan Bian <bianpan2016@163.com>
+    Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
+    Signed-off-by: Juergen Gross <jgross@suse.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/xen/pvcalls-front.c b/drivers/xen/pvcalls-front.c
+index 2f11ca72a281..77224d8f3e6f 100644
+--- a/drivers/xen/pvcalls-front.c
++++ b/drivers/xen/pvcalls-front.c
+@@ -385,8 +385,8 @@ static int create_active(struct sock_mapping *map, int *evtchn)
+ out_error:
+ 	if (*evtchn >= 0)
+ 		xenbus_free_evtchn(pvcalls_front_dev, *evtchn);
+-	kfree(map->active.data.in);
+-	kfree(map->active.ring);
++	free_pages((unsigned long)map->active.data.in, PVCALLS_RING_ORDER);
++	free_page((unsigned long)map->active.ring);
+ 	return ret;
+ }
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1113_ff5ac9bd16ef954d80dffabc693f7802bb86abeb.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1113_ff5ac9bd16ef954d80dffabc693f7802bb86abeb.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,59 @@
+commit ac1fb97e9136e6260812e39b867f7ae6e72e075a
+Author: Heiner Kallweit <hkallweit1@gmail.com>
+Date:   Mon Dec 3 08:19:33 2018 +0100
+
+    net: phy: don't allow __set_phy_supported to add unsupported modes
+    
+    [ Upstream commit d2a36971ef595069b7a600d1144c2e0881a930a1 ]
+    
+    Currently __set_phy_supported allows to add modes w/o checking whether
+    the PHY supports them. This is wrong, it should never add modes but
+    only remove modes we don't want to support.
+    
+    The commit marked as fixed didn't do anything wrong, it just copied
+    existing functionality to the helper which is being fixed now.
+    
+    Fixes: f3a6bd393c2c ("phylib: Add phy_set_max_speed helper")
+    Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+    Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 733e35b7c4bb..20d1be2b070b 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1738,20 +1738,17 @@ EXPORT_SYMBOL(genphy_loopback);
+ 
+ static int __set_phy_supported(struct phy_device *phydev, u32 max_speed)
+ {
+-	phydev->supported &= ~(PHY_1000BT_FEATURES | PHY_100BT_FEATURES |
+-			       PHY_10BT_FEATURES);
+-
+ 	switch (max_speed) {
+-	default:
+-		return -ENOTSUPP;
+-	case SPEED_1000:
+-		phydev->supported |= PHY_1000BT_FEATURES;
++	case SPEED_10:
++		phydev->supported &= ~PHY_100BT_FEATURES;
+ 		/* fall through */
+ 	case SPEED_100:
+-		phydev->supported |= PHY_100BT_FEATURES;
+-		/* fall through */
+-	case SPEED_10:
+-		phydev->supported |= PHY_10BT_FEATURES;
++		phydev->supported &= ~PHY_1000BT_FEATURES;
++		break;
++	case SPEED_1000:
++		break;
++	default:
++		return -ENOTSUPP;
+ 	}
+ 
+ 	return 0;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1007_ac1fb97e9136e6260812e39b867f7ae6e72e075a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1007_ac1fb97e9136e6260812e39b867f7ae6e72e075a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

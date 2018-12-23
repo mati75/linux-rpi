@@ -1,0 +1,41 @@
+commit 815899cf26f6e42d528ac8b2b6e96800e44f9579
+Author: Hui Wang <hui.wang@canonical.com>
+Date:   Wed Nov 28 17:11:26 2018 +0800
+
+    ALSA: usb-audio: Add vendor and product name for Dell WD19 Dock
+    
+    [ Upstream commit 8159a6a4a7d2a092d5375f695ecfca22b4562b5f ]
+    
+    Like the Dell WD15 Dock, the WD19 Dock (0bda:402e) doens't provide
+    useful string for the vendor and product names too. In order to share
+    the UCM with WD15, here we keep the profile_name same as the WD15.
+    
+    Signed-off-by: Hui Wang <hui.wang@canonical.com>
+    Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/sound/usb/quirks-table.h b/sound/usb/quirks-table.h
+index 08aa78007020..1c73b9ed44a6 100644
+--- a/sound/usb/quirks-table.h
++++ b/sound/usb/quirks-table.h
+@@ -3387,5 +3387,15 @@ AU0828_DEVICE(0x2040, 0x7270, "Hauppauge", "HVR-950Q"),
+ 		.ifnum = QUIRK_NO_INTERFACE
+ 	}
+ },
++/* Dell WD19 Dock */
++{
++	USB_DEVICE(0x0bda, 0x402e),
++	.driver_info = (unsigned long) & (const struct snd_usb_audio_quirk) {
++		.vendor_name = "Dell",
++		.product_name = "WD19 Dock",
++		.profile_name = "Dell-WD15-Dock",
++		.ifnum = QUIRK_NO_INTERFACE
++	}
++},
+ 
+ #undef USB_DEVICE_VENDOR_SPEC
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1102_815899cf26f6e42d528ac8b2b6e96800e44f9579.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1102_815899cf26f6e42d528ac8b2b6e96800e44f9579.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

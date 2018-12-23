@@ -1,0 +1,49 @@
+commit 36206419989d9cd8a6dbb27ed61bae524e95f812
+Author: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Date:   Thu Nov 29 14:45:39 2018 +0100
+
+    tun: forbid iface creation with rtnl ops
+    
+    [ Upstream commit 35b827b6d06199841a83839e8bb69c0cd13a28be ]
+    
+    It's not supported right now (the goal of the initial patch was to support
+    'ip link del' only).
+    
+    Before the patch:
+    $ ip link add foo type tun
+    [  239.632660] BUG: unable to handle kernel NULL pointer dereference at 0000000000000000
+    [snip]
+    [  239.636410] RIP: 0010:register_netdevice+0x8e/0x3a0
+    
+    This panic occurs because dev->netdev_ops is not set by tun_setup(). But to
+    have something usable, it will require more than just setting
+    netdev_ops.
+    
+    Fixes: f019a7a594d9 ("tun: Implement ip link del tunXXX")
+    CC: Eric W. Biederman <ebiederm@xmission.com>
+    Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 573620771154..8c1abcba4cbd 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -2268,9 +2268,9 @@ static void tun_setup(struct net_device *dev)
+ static int tun_validate(struct nlattr *tb[], struct nlattr *data[],
+ 			struct netlink_ext_ack *extack)
+ {
+-	if (!data)
+-		return 0;
+-	return -EINVAL;
++	NL_SET_ERR_MSG(extack,
++		       "tun/tap creation via rtnetlink is not supported.");
++	return -EOPNOTSUPP;
+ }
+ 
+ static size_t tun_get_size(const struct net_device *dev)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1015_36206419989d9cd8a6dbb27ed61bae524e95f812.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1015_36206419989d9cd8a6dbb27ed61bae524e95f812.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

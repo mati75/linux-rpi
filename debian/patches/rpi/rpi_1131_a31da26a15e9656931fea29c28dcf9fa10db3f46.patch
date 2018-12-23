@@ -1,0 +1,47 @@
+commit a31da26a15e9656931fea29c28dcf9fa10db3f46
+Author: Pan Bian <bianpan2016@163.com>
+Date:   Fri Nov 30 14:10:54 2018 -0800
+
+    ocfs2: fix potential use after free
+    
+    [ Upstream commit 164f7e586739d07eb56af6f6d66acebb11f315c8 ]
+    
+    ocfs2_get_dentry() calls iput(inode) to drop the reference count of
+    inode, and if the reference count hits 0, inode is freed.  However, in
+    this function, it then reads inode->i_generation, which may result in a
+    use after free bug.  Move the put operation later.
+    
+    Link: http://lkml.kernel.org/r/1543109237-110227-1-git-send-email-bianpan2016@163.com
+    Fixes: 781f200cb7a("ocfs2: Remove masklog ML_EXPORT.")
+    Signed-off-by: Pan Bian <bianpan2016@163.com>
+    Reviewed-by: Andrew Morton <akpm@linux-foundation.org>
+    Cc: Mark Fasheh <mark@fasheh.com>
+    Cc: Joel Becker <jlbec@evilplan.org>
+    Cc: Junxiao Bi <junxiao.bi@oracle.com>
+    Cc: Joseph Qi <jiangqi903@gmail.com>
+    Cc: Changwei Ge <ge.changwei@h3c.com>
+    Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/fs/ocfs2/export.c b/fs/ocfs2/export.c
+index 9f88188060db..4bf8d5854b27 100644
+--- a/fs/ocfs2/export.c
++++ b/fs/ocfs2/export.c
+@@ -125,10 +125,10 @@ static struct dentry *ocfs2_get_dentry(struct super_block *sb,
+ 
+ check_gen:
+ 	if (handle->ih_generation != inode->i_generation) {
+-		iput(inode);
+ 		trace_ocfs2_get_dentry_generation((unsigned long long)blkno,
+ 						  handle->ih_generation,
+ 						  inode->i_generation);
++		iput(inode);
+ 		result = ERR_PTR(-ESTALE);
+ 		goto bail;
+ 	}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1131_a31da26a15e9656931fea29c28dcf9fa10db3f46.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1131_a31da26a15e9656931fea29c28dcf9fa10db3f46.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

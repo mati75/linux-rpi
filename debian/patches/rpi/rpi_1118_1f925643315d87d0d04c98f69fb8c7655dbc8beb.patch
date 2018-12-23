@@ -1,0 +1,39 @@
+commit 1f925643315d87d0d04c98f69fb8c7655dbc8beb
+Author: Colin Ian King <colin.king@canonical.com>
+Date:   Tue Jul 17 09:53:42 2018 +0100
+
+    fscache, cachefiles: remove redundant variable 'cache'
+    
+    [ Upstream commit 31ffa563833576bd49a8bf53120568312755e6e2 ]
+    
+    Variable 'cache' is being assigned but is never used hence it is
+    redundant and can be removed.
+    
+    Cleans up clang warning:
+    warning: variable 'cache' set but not used [-Wunused-but-set-variable]
+    
+    Signed-off-by: Colin Ian King <colin.king@canonical.com>
+    Signed-off-by: David Howells <dhowells@redhat.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/fs/cachefiles/rdwr.c b/fs/cachefiles/rdwr.c
+index db233588a69a..8a577409d030 100644
+--- a/fs/cachefiles/rdwr.c
++++ b/fs/cachefiles/rdwr.c
+@@ -968,11 +968,8 @@ void cachefiles_uncache_page(struct fscache_object *_object, struct page *page)
+ 	__releases(&object->fscache.cookie->lock)
+ {
+ 	struct cachefiles_object *object;
+-	struct cachefiles_cache *cache;
+ 
+ 	object = container_of(_object, struct cachefiles_object, fscache);
+-	cache = container_of(object->fscache.cache,
+-			     struct cachefiles_cache, cache);
+ 
+ 	_enter("%p,{%lu}", object, page->index);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1118_1f925643315d87d0d04c98f69fb8c7655dbc8beb.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1118_1f925643315d87d0d04c98f69fb8c7655dbc8beb.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

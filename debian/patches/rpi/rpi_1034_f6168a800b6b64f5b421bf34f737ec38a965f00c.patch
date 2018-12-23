@@ -1,0 +1,39 @@
+commit f6168a800b6b64f5b421bf34f737ec38a965f00c
+Author: YueHaibing <yuehaibing@huawei.com>
+Date:   Sat Nov 10 04:13:24 2018 +0000
+
+    sysv: return 'err' instead of 0 in __sysv_write_inode
+    
+    [ Upstream commit c4b7d1ba7d263b74bb72e9325262a67139605cde ]
+    
+    Fixes gcc '-Wunused-but-set-variable' warning:
+    
+    fs/sysv/inode.c: In function '__sysv_write_inode':
+    fs/sysv/inode.c:239:6: warning:
+     variable 'err' set but not used [-Wunused-but-set-variable]
+    
+    __sysv_write_inode should return 'err' instead of 0
+    
+    Fixes: 05459ca81ac3 ("repair sysv_write_inode(), switch sysv to simple_fsync()")
+    Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+    Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/fs/sysv/inode.c b/fs/sysv/inode.c
+index 499a20a5a010..273736f41be3 100644
+--- a/fs/sysv/inode.c
++++ b/fs/sysv/inode.c
+@@ -275,7 +275,7 @@ static int __sysv_write_inode(struct inode *inode, int wait)
+                 }
+         }
+ 	brelse(bh);
+-	return 0;
++	return err;
+ }
+ 
+ int sysv_write_inode(struct inode *inode, struct writeback_control *wbc)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1034_f6168a800b6b64f5b421bf34f737ec38a965f00c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1034_f6168a800b6b64f5b421bf34f737ec38a965f00c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,35 @@
+commit 9ca88f3c4cb5eb6983aaf7492f78e467c0e123e1
+Author: Aaro Koskinen <aaro.koskinen@iki.fi>
+Date:   Sun Nov 25 00:17:08 2018 +0200
+
+    USB: omap_udc: fix rejection of out transfers when DMA is used
+    
+    [ Upstream commit 069caf5950dfa75d0526cd89c439ff9d9d3136d8 ]
+    
+    Commit 387f869d2579 ("usb: gadget: u_ether: conditionally align
+    transfer size") started aligning transfer size only if requested,
+    breaking omap_udc DMA mode. Set quirk_ep_out_aligned_size to restore
+    the old behaviour.
+    
+    Fixes: 387f869d2579 ("usb: gadget: u_ether: conditionally align transfer size")
+    Signed-off-by: Aaro Koskinen <aaro.koskinen@iki.fi>
+    Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/usb/gadget/udc/omap_udc.c b/drivers/usb/gadget/udc/omap_udc.c
+index 9b23e04c8f02..fcf13ef33b31 100644
+--- a/drivers/usb/gadget/udc/omap_udc.c
++++ b/drivers/usb/gadget/udc/omap_udc.c
+@@ -2642,6 +2642,7 @@ omap_udc_setup(struct platform_device *odev, struct usb_phy *xceiv)
+ 	udc->gadget.speed = USB_SPEED_UNKNOWN;
+ 	udc->gadget.max_speed = USB_SPEED_FULL;
+ 	udc->gadget.name = driver_name;
++	udc->gadget.quirk_ep_out_aligned_size = 1;
+ 	udc->transceiver = xceiv;
+ 
+ 	/* ep0 is special; put it right after the SETUP buffer */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1088_9ca88f3c4cb5eb6983aaf7492f78e467c0e123e1.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1088_9ca88f3c4cb5eb6983aaf7492f78e467c0e123e1.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

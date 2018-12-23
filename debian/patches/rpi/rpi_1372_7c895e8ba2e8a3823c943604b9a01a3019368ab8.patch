@@ -1,0 +1,29 @@
+commit 7c895e8ba2e8a3823c943604b9a01a3019368ab8
+Author: Stefan Wahren <stefan.wahren@i2se.com>
+Date:   Sat Oct 20 19:26:18 2018 +0200
+
+    staging: bcm2835-camera: fix module autoloading
+    
+    In order to make the module bcm2835-camera load automatically, we need to
+    add a module alias.
+    
+    Fixes: 4bebb0312ea9 ("staging/bcm2835-camera: Set ourselves up as a platform driver.")
+    Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+index c04bdf070c87..10b55bc8881d 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
++++ b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+@@ -47,6 +47,7 @@ MODULE_DESCRIPTION("Broadcom 2835 MMAL video capture");
+ MODULE_AUTHOR("Vincent Sanders");
+ MODULE_LICENSE("GPL");
+ MODULE_VERSION(BM2835_MMAL_VERSION);
++MODULE_ALIAS("platform:bcm2835-camera");
+ 
+ int bcm2835_v4l2_debug;
+ module_param_named(debug, bcm2835_v4l2_debug, int, 0644);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1372_7c895e8ba2e8a3823c943604b9a01a3019368ab8.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1372_7c895e8ba2e8a3823c943604b9a01a3019368ab8.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

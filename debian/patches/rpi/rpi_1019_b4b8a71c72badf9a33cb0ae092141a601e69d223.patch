@@ -1,0 +1,55 @@
+commit b4b8a71c72badf9a33cb0ae092141a601e69d223
+Author: Sabrina Dubroca <sd@queasysnail.net>
+Date:   Thu Nov 29 14:14:48 2018 +0100
+
+    net: restore call to netdev_queue_numa_node_write when resetting XPS
+    
+    [ Upstream commit f28c020fb488e1a8b87469812017044bef88aa2b ]
+    
+    Before commit 80d19669ecd3 ("net: Refactor XPS for CPUs and Rx queues"),
+    netif_reset_xps_queues() did netdev_queue_numa_node_write() for all the
+    queues being reset. Now, this is only done when the "active" variable in
+    clean_xps_maps() is false, ie when on all the CPUs, there's no active
+    XPS mapping left.
+    
+    Fixes: 80d19669ecd3 ("net: Refactor XPS for CPUs and Rx queues")
+    Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1ec7f34f4c17..4275b46d2b3f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -2173,17 +2173,19 @@ static void clean_xps_maps(struct net_device *dev, const unsigned long *mask,
+ 		active |= remove_xps_queue_cpu(dev, dev_maps, j, offset,
+ 					       count);
+ 	if (!active) {
+-		if (is_rxqs_map) {
++		if (is_rxqs_map)
+ 			RCU_INIT_POINTER(dev->xps_rxqs_map, NULL);
+-		} else {
++		else
+ 			RCU_INIT_POINTER(dev->xps_cpus_map, NULL);
++		kfree_rcu(dev_maps, rcu);
++	}
+ 
+-			for (i = offset + (count - 1); count--; i--)
+-				netdev_queue_numa_node_write(
+-					netdev_get_tx_queue(dev, i),
+-							NUMA_NO_NODE);
++	if (!is_rxqs_map) {
++		for (i = offset + (count - 1); count--; i--) {
++			netdev_queue_numa_node_write(
++				netdev_get_tx_queue(dev, i),
++				NUMA_NO_NODE);
+ 		}
+-		kfree_rcu(dev_maps, rcu);
+ 	}
+ }
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1019_b4b8a71c72badf9a33cb0ae092141a601e69d223.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1019_b4b8a71c72badf9a33cb0ae092141a601e69d223.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

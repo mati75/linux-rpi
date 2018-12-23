@@ -1,0 +1,54 @@
+commit 2309636dc47438594358644f855d7cd9218c58e6
+Author: Rohit kumar <rohitkr@codeaurora.org>
+Date:   Thu Nov 8 19:11:40 2018 +0530
+
+    ASoC: qcom: Set dai_link id to each dai_link
+    
+    [ Upstream commit 67fd1437d11620de8768b22fe20942e752ed52e9 ]
+    
+    Frontend dai_link id is used for closing ADM sessions.
+    During concurrent usecase when one session is closed,
+    it closes other ADM session associated with other usecase
+    too. Dai_link->id should always point to Frontend dai id.
+    Set cpu_dai id as dai_link id to fix the issue.
+    
+    Signed-off-by: Rohit kumar <rohitkr@codeaurora.org>
+    Acked-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+    Signed-off-by: Mark Brown <broonie@kernel.org>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/sound/soc/qcom/common.c b/sound/soc/qcom/common.c
+index eb1b9da05dd4..4715527054e5 100644
+--- a/sound/soc/qcom/common.c
++++ b/sound/soc/qcom/common.c
+@@ -13,6 +13,7 @@ int qcom_snd_parse_of(struct snd_soc_card *card)
+ 	struct device_node *cpu = NULL;
+ 	struct device *dev = card->dev;
+ 	struct snd_soc_dai_link *link;
++	struct of_phandle_args args;
+ 	int ret, num_links;
+ 
+ 	ret = snd_soc_of_parse_card_name(card, "model");
+@@ -47,12 +48,14 @@ int qcom_snd_parse_of(struct snd_soc_card *card)
+ 			goto err;
+ 		}
+ 
+-		link->cpu_of_node = of_parse_phandle(cpu, "sound-dai", 0);
+-		if (!link->cpu_of_node) {
++		ret = of_parse_phandle_with_args(cpu, "sound-dai",
++					"#sound-dai-cells", 0, &args);
++		if (ret) {
+ 			dev_err(card->dev, "error getting cpu phandle\n");
+-			ret = -EINVAL;
+ 			goto err;
+ 		}
++		link->cpu_of_node = args.np;
++		link->id = args.args[0];
+ 
+ 		ret = snd_soc_of_get_dai_name(cpu, &link->cpu_dai_name);
+ 		if (ret) {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1050_2309636dc47438594358644f855d7cd9218c58e6.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1050_2309636dc47438594358644f855d7cd9218c58e6.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

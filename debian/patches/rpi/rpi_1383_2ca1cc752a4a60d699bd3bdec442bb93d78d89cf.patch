@@ -1,0 +1,49 @@
+commit 2ca1cc752a4a60d699bd3bdec442bb93d78d89cf
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Mon Dec 3 12:50:38 2018 +0000
+
+    staging: vchiq_arm: Improve error handling on loading drivers
+    
+    The handling of loading platform drivers requires checking IS_ERR
+    for the pointer on unload.
+    If the driver fails to load, NULL the pointer during probe as
+    platform_device_unregister already checks for NULL.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index b8f5d07a1b69..d3b5a00d2c53 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -3655,7 +3655,11 @@ static int vchiq_probe(struct platform_device *pdev)
+ 		MAJOR(vchiq_devid), MINOR(vchiq_devid));
+ 
+ 	bcm2835_camera = vchiq_register_child(pdev, "bcm2835-camera");
++	if (IS_ERR(bcm2835_camera))
++		bcm2835_camera = NULL;
+ 	bcm2835_audio = vchiq_register_child(pdev, "bcm2835_audio");
++	if (IS_ERR(bcm2835_audio))
++		bcm2835_audio = NULL;
+ 
+ 	return 0;
+ 
+@@ -3672,10 +3676,10 @@ static int vchiq_probe(struct platform_device *pdev)
+ 
+ static int vchiq_remove(struct platform_device *pdev)
+ {
+-	if (!IS_ERR(bcm2835_audio))
+-		platform_device_unregister(bcm2835_audio);
+-	if (!IS_ERR(bcm2835_camera))
+-		platform_device_unregister(bcm2835_camera);
++	platform_device_unregister(bcm2835_codec);
++	platform_device_unregister(bcm2835_audio);
++	platform_device_unregister(bcm2835_camera);
++	platform_device_unregister(vcsm_cma);
+ 	vchiq_debugfs_deinit();
+ 	device_destroy(vchiq_class, vchiq_devid);
+ 	class_destroy(vchiq_class);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1383_2ca1cc752a4a60d699bd3bdec442bb93d78d89cf.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1383_2ca1cc752a4a60d699bd3bdec442bb93d78d89cf.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

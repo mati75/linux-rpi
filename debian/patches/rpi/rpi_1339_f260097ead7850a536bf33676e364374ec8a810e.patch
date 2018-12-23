@@ -1,0 +1,50 @@
+commit f260097ead7850a536bf33676e364374ec8a810e
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Wed Oct 31 14:57:46 2018 +0000
+
+    media: adv7180: Default to the first valid input
+    
+    The hardware default is differential CVBS on AIN1 & 2, which
+    isn't very useful.
+    
+    Select the first input that is defined as valid for the
+    chip variant (typically CVBS_AIN1).
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/media/i2c/adv7180.c b/drivers/media/i2c/adv7180.c
+index de10367d550b..931c0408b046 100644
+--- a/drivers/media/i2c/adv7180.c
++++ b/drivers/media/i2c/adv7180.c
+@@ -1240,6 +1240,7 @@ static const struct adv7180_chip_info adv7282_m_info = {
+ static int init_device(struct adv7180_state *state)
+ {
+ 	int ret;
++	int i;
+ 
+ 	mutex_lock(&state->mutex);
+ 
+@@ -1286,6 +1287,18 @@ static int init_device(struct adv7180_state *state)
+ 			goto out_unlock;
+ 	}
+ 
++	/* Select first valid input */
++	for (i = 0; i < 32; i++) {
++		if (BIT(i) & state->chip_info->valid_input_mask) {
++			ret = state->chip_info->select_input(state, i);
++
++			if (ret == 0) {
++				state->input = i;
++				break;
++			}
++		}
++	}
++
+ out_unlock:
+ 	mutex_unlock(&state->mutex);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1339_f260097ead7850a536bf33676e364374ec8a810e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1339_f260097ead7850a536bf33676e364374ec8a810e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

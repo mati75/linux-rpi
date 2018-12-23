@@ -1,0 +1,35 @@
+commit a4f21114d83ec0abc311e71f11a0e05f670a0cac
+Author: Eric Farman <farman@linux.ibm.com>
+Date:   Fri Nov 9 03:39:28 2018 +0100
+
+    s390/cio: Fix cleanup of pfn_array alloc failure
+    
+    [ Upstream commit 806212f91c874b24cf9eb4a9f180323671b6c5ed ]
+    
+    If pfn_array_alloc fails somehow, we need to release the pfn_array_table
+    that was malloc'd earlier.
+    
+    Signed-off-by: Eric Farman <farman@linux.ibm.com>
+    Message-Id: <20181109023937.96105-2-farman@linux.ibm.com>
+    Acked-by: Halil Pasic <pasic@linux.ibm.com>
+    Signed-off-by: Cornelia Huck <cohuck@redhat.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/s390/cio/vfio_ccw_cp.c b/drivers/s390/cio/vfio_ccw_cp.c
+index fd77e46eb3b2..ef5ab45d94b3 100644
+--- a/drivers/s390/cio/vfio_ccw_cp.c
++++ b/drivers/s390/cio/vfio_ccw_cp.c
+@@ -528,7 +528,7 @@ static int ccwchain_fetch_direct(struct ccwchain *chain,
+ 
+ 	ret = pfn_array_alloc_pin(pat->pat_pa, cp->mdev, ccw->cda, ccw->count);
+ 	if (ret < 0)
+-		goto out_init;
++		goto out_unpin;
+ 
+ 	/* Translate this direct ccw to a idal ccw. */
+ 	idaws = kcalloc(ret, sizeof(*idaws), GFP_DMA | GFP_KERNEL);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1043_a4f21114d83ec0abc311e71f11a0e05f670a0cac.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1043_a4f21114d83ec0abc311e71f11a0e05f670a0cac.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

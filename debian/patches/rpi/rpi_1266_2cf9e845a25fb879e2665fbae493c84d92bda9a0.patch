@@ -1,0 +1,42 @@
+commit 2cf9e845a25fb879e2665fbae493c84d92bda9a0
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Sun Jun 17 13:22:07 2018 +0100
+
+    vc4_firmware_kms: fix build
+
+diff --git a/drivers/gpu/drm/vc4/vc4_firmware_kms.c b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+index 60e9d8fa5511..4f73f0650d66 100644
+--- a/drivers/gpu/drm/vc4/vc4_firmware_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+@@ -33,6 +33,8 @@
+ #define SMICS 0x0
+ #define SMICS_INTERRUPTS (BIT(9) | BIT(10) | BIT(11))
+ 
++#define vc4_crtc vc4_kms_crtc
++#define to_vc4_crtc to_vc4_kms_crtc
+ struct vc4_crtc {
+ 	struct drm_crtc base;
+ 	struct drm_encoder *encoder;
+@@ -273,7 +275,7 @@ static int vc4_plane_atomic_check(struct drm_plane *plane,
+ 
+ static void vc4_plane_destroy(struct drm_plane *plane)
+ {
+-	drm_plane_helper_disable(plane);
++	drm_plane_helper_disable(plane, NULL);
+ 	drm_plane_cleanup(plane);
+ }
+ 
+@@ -591,7 +593,7 @@ static struct drm_connector *vc4_fkms_connector_init(struct drm_device *dev,
+ 	connector->interlace_allowed = 0;
+ 	connector->doublescan_allowed = 0;
+ 
+-	drm_mode_connector_attach_encoder(connector, encoder);
++	drm_connector_attach_encoder(connector, encoder);
+ 
+ 	return connector;
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1266_2cf9e845a25fb879e2665fbae493c84d92bda9a0.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1266_2cf9e845a25fb879e2665fbae493c84d92bda9a0.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
