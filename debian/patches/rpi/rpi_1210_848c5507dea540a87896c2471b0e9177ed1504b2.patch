@@ -1,0 +1,70 @@
+commit 848c5507dea540a87896c2471b0e9177ed1504b2
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Nov 14 09:53:25 2018 +0000
+
+    overlays: Remove superfluous #address/size-cells
+    
+    Newer versions of dtc warn about unnecessary usage of #address-cells
+    and #size-cells, so remove them.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/adv7282m-overlay.dts b/arch/arm/boot/dts/overlays/adv7282m-overlay.dts
+index 112117122134..76a1d3c3a1da 100644
+--- a/arch/arm/boot/dts/overlays/adv7282m-overlay.dts
++++ b/arch/arm/boot/dts/overlays/adv7282m-overlay.dts
+@@ -35,13 +35,9 @@
+ 	fragment@1 {
+ 		target = <&csi1>;
+ 		__overlay__ {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+ 			status = "okay";
+ 
+ 			port {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+ 				csi1_ep: endpoint {
+ 					remote-endpoint = <&adv728x_0>;
+ 				};
+diff --git a/arch/arm/boot/dts/overlays/ov5647-overlay.dts b/arch/arm/boot/dts/overlays/ov5647-overlay.dts
+index ac34c94fa433..09867134e5e5 100644
+--- a/arch/arm/boot/dts/overlays/ov5647-overlay.dts
++++ b/arch/arm/boot/dts/overlays/ov5647-overlay.dts
+@@ -44,13 +44,9 @@
+ 	fragment@1 {
+ 		target = <&csi1>;
+ 		__overlay__ {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+ 			status = "okay";
+ 
+ 			port {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+ 				csi1_ep: endpoint {
+ 					remote-endpoint = <&ov5647_0>;
+ 				};
+diff --git a/arch/arm/boot/dts/overlays/tc358743-overlay.dts b/arch/arm/boot/dts/overlays/tc358743-overlay.dts
+index 95fec9ea2c79..69fdbf4897f6 100644
+--- a/arch/arm/boot/dts/overlays/tc358743-overlay.dts
++++ b/arch/arm/boot/dts/overlays/tc358743-overlay.dts
+@@ -43,13 +43,9 @@
+ 	fragment@1 {
+ 		target = <&csi1>;
+ 		__overlay__ {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+ 			status = "okay";
+ 
+ 			port {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+ 				csi1_ep: endpoint {
+ 					remote-endpoint = <&tc358743>;
+ 				};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1210_848c5507dea540a87896c2471b0e9177ed1504b2.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1210_848c5507dea540a87896c2471b0e9177ed1504b2.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

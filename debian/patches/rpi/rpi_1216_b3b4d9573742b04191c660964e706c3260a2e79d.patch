@@ -1,0 +1,32 @@
+commit b3b4d9573742b04191c660964e706c3260a2e79d
+Author: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date:   Wed Nov 28 10:36:01 2018 +0100
+
+    BCM2708_DT: update firmware node binding
+    
+    The upstreamed version of the firmware node has been updated to present
+    it as a "simple-bus". We need to get this in order to accomodate other
+    device bindings, namely RPi's firmware based gpio expander.
+    
+    Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+
+diff --git a/arch/arm/boot/dts/bcm2708-rpi.dtsi b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+index 1b5ab163cd6b..9e1492186728 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+@@ -50,7 +50,9 @@
+ 		};
+ 
+ 		firmware: firmware {
+-			compatible = "raspberrypi,bcm2835-firmware";
++			compatible = "raspberrypi,bcm2835-firmware", "simple-bus";
++			#address-cells = <0>;
++			#size-cells = <0>;
+ 			mboxes = <&mailbox>;
+ 		};
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1216_b3b4d9573742b04191c660964e706c3260a2e79d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1216_b3b4d9573742b04191c660964e706c3260a2e79d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

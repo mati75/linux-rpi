@@ -1,0 +1,99 @@
+commit 00f85996e9bd458918a16124f81338c5386e2f35
+Author: Peter Huewe <peterhuewe@gmx.de>
+Date:   Thu Jun 14 22:51:24 2018 +0200
+
+    Add overlay for SLB9760 Iridium /LetsTrust TPM
+    
+    Device Tree overlay for the Infineon SLB9670 Trusted Platform Module add-on
+    boards, which can be used as a secure key storage and hwrng.
+    available as "Iridium SLB9670" by Infineon and "LetsTrust TPM" by
+    pi3g.
+    
+    Signed-off-by: Peter Huewe <peterhuewe@gmx.de>
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index e31f8af7ce75..31f834d0459d 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -137,6 +137,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	tc358743.dtbo \
+ 	tc358743-audio.dtbo \
+ 	tinylcd35.dtbo \
++	tpm-slb9670.dtbo \
+ 	uart0.dtbo \
+ 	uart1.dtbo \
+ 	upstream.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index 1e89b61a4906..87e193e262aa 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -2012,6 +2012,14 @@ Params: speed                   Display SPI bus speed
+                 dtoverlay=tinylcd35,touch,touchgpio=3
+ 
+ 
++Name:   tpm-slb9670
++Info:   Enables support for Infineon SLB9670 Trusted Platform Module add-on
++        boards, which can be used as a secure key storage and hwrng,
++        available as "Iridium SLB9670" by Infineon and "LetsTrust TPM" by pi3g.
++Load:   dtoverlay=tpm-slb9670
++Params: <None>
++
++
+ Name:   uart0
+ Info:   Change the pin usage of uart0
+ Load:   dtoverlay=uart0,<param>=<val>
+diff --git a/arch/arm/boot/dts/overlays/tpm-slb9670-overlay.dts b/arch/arm/boot/dts/overlays/tpm-slb9670-overlay.dts
+new file mode 100644
+index 000000000000..eac4511050de
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/tpm-slb9670-overlay.dts
+@@ -0,0 +1,44 @@
++/*
++ * Device Tree overlay for the Infineon SLB9670 Trusted Platform Module add-on
++ * boards, which can be used as a secure key storage and hwrng.
++ * available as "Iridium SLB9670" by Infineon and "LetsTrust TPM" by pi3g.
++ */
++
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
++
++	fragment@0 {
++		target = <&spi0>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	fragment@1 {
++		target = <&spidev1>;
++		__overlay__ {
++			status = "disabled";
++		};
++	};
++
++	fragment@2 {
++		target = <&spi0>;
++		__overlay__ {
++			/* needed to avoid dtc warning */
++			#address-cells = <1>;
++			#size-cells = <0>;
++			slb9670: slb9670@1 {
++				compatible = "infineon,slb9670";
++				reg = <1>;	/* CE1 */
++				#address-cells = <1>;
++				#size-cells = <0>;
++				spi-max-frequency = <32000000>;
++				status = "okay";
++			};
++
++		};
++	};
++};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1289_00f85996e9bd458918a16124f81338c5386e2f35.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1289_00f85996e9bd458918a16124f81338c5386e2f35.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

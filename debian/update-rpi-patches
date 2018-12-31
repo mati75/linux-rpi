@@ -6,7 +6,7 @@
 set -x
 set -e
 debdir=`pwd`
-upstream_tag=v4.19.9
+upstream_tag=v4.19.12
 rpi_branch=rpi-4.19.y
 rpi_tree=rpi/${rpi_branch}
 #rpi_tree=d00322d695cfce3ce9ec15efebe411b34142ad41

@@ -1,0 +1,32 @@
+commit 5f59f220e47de517dcc0053765489eafc0e55127
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Wed Oct 31 14:58:08 2018 +0000
+
+    media: videodev2: Add helper defines for printing FOURCCs
+    
+    New helper defines that allow printing of a FOURCC using
+    printf(V4L2_FOURCC_CONV, V4L2_FOURCC_CONV_ARGS(fourcc));
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+index 1aae2e4b8f10..9a860b277217 100644
+--- a/include/uapi/linux/videodev2.h
++++ b/include/uapi/linux/videodev2.h
+@@ -82,6 +82,11 @@
+ 	((__u32)(a) | ((__u32)(b) << 8) | ((__u32)(c) << 16) | ((__u32)(d) << 24))
+ #define v4l2_fourcc_be(a, b, c, d)	(v4l2_fourcc(a, b, c, d) | (1 << 31))
+ 
++#define V4L2_FOURCC_CONV "%c%c%c%c%s"
++#define V4L2_FOURCC_CONV_ARGS(fourcc) \
++	(fourcc) & 0x7f, ((fourcc) >> 8) & 0x7f, ((fourcc) >> 16) & 0x7f, \
++	((fourcc) >> 24) & 0x7f, (fourcc) & BIT(31) ? "-BE" : ""
++
+ /*
+  *	E N U M S
+  */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1197_5f59f220e47de517dcc0053765489eafc0e55127.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1197_5f59f220e47de517dcc0053765489eafc0e55127.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
