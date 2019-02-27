@@ -1,0 +1,51 @@
+commit 7169f09a27f31f42c257a725b3934399654d91d4
+Author: b-ak <anur.bhargav@gmail.com>
+Date:   Fri Jan 4 00:12:51 2019 +0530
+
+    configs: Add CONFIG_SND_AUDIOSENSE_PI=m
+    
+    AudioSense-Pi add on soundcard configuration definitions
+    
+    Signed-off-by: b-ak <anur.bhargav@gmail.com>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 07cf0b16f8f4..18f2ae3a0dfc 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -918,6 +918,7 @@ CONFIG_SND_BCM2708_SOC_IQAUDIO_DIGI=m
+ CONFIG_SND_BCM2708_SOC_ADAU1977_ADC=m
+ CONFIG_SND_AUDIOINJECTOR_PI_SOUNDCARD=m
+ CONFIG_SND_AUDIOINJECTOR_OCTO_SOUNDCARD=m
++CONFIG_SND_AUDIOSENSE_PI=m
+ CONFIG_SND_DIGIDAC1_SOUNDCARD=m
+ CONFIG_SND_BCM2708_SOC_DIONAUDIO_LOCO=m
+ CONFIG_SND_BCM2708_SOC_DIONAUDIO_LOCO_V2=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index fca4d449e0e2..db077d958d11 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -911,6 +911,7 @@ CONFIG_SND_BCM2708_SOC_IQAUDIO_DIGI=m
+ CONFIG_SND_BCM2708_SOC_ADAU1977_ADC=m
+ CONFIG_SND_AUDIOINJECTOR_PI_SOUNDCARD=m
+ CONFIG_SND_AUDIOINJECTOR_OCTO_SOUNDCARD=m
++CONFIG_SND_AUDIOSENSE_PI=m
+ CONFIG_SND_DIGIDAC1_SOUNDCARD=m
+ CONFIG_SND_BCM2708_SOC_DIONAUDIO_LOCO=m
+ CONFIG_SND_BCM2708_SOC_DIONAUDIO_LOCO_V2=m
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 26e19b5f98ce..92ba6a7e4afe 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -800,6 +800,7 @@ CONFIG_SND_BCM2708_SOC_IQAUDIO_DAC=m
+ CONFIG_SND_BCM2708_SOC_IQAUDIO_DIGI=m
+ CONFIG_SND_BCM2708_SOC_ADAU1977_ADC=m
+ CONFIG_SND_AUDIOINJECTOR_PI_SOUNDCARD=m
++CONFIG_SND_AUDIOSENSE_PI=m
+ CONFIG_SND_DIGIDAC1_SOUNDCARD=m
+ CONFIG_SND_BCM2708_SOC_DIONAUDIO_LOCO=m
+ CONFIG_SND_BCM2708_SOC_ALLO_PIANO_DAC=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1407_7169f09a27f31f42c257a725b3934399654d91d4.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1407_7169f09a27f31f42c257a725b3934399654d91d4.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

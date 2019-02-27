@@ -1,0 +1,45 @@
+commit 328f3de2ef766cc27f9a85b20691493642a51417
+Author: Florian La Roche <florian.laroche@googlemail.com>
+Date:   Sat Jan 19 16:14:50 2019 +0100
+
+    fix int_sqrt64() for very large numbers
+    
+    commit fbfaf851902cd9293f392f3a1735e0543016d530 upstream.
+    
+    If an input number x for int_sqrt64() has the highest bit set, then
+    fls64(x) is 64.  (1UL << 64) is an overflow and breaks the algorithm.
+    
+    Subtracting 1 is a better guess for the initial value of m anyway and
+    that's what also done in int_sqrt() implicitly [*].
+    
+    [*] Note how int_sqrt() uses __fls() with two underscores, which already
+        returns the proper raw bit number.
+    
+        In contrast, int_sqrt64() used fls64(), and that returns bit numbers
+        illogically starting at 1, because of error handling for the "no
+        bits set" case. Will points out that he bug probably is due to a
+        copy-and-paste error from the regular int_sqrt() case.
+    
+    Signed-off-by: Florian La Roche <Florian.LaRoche@googlemail.com>
+    Acked-by: Will Deacon <will.deacon@arm.com>
+    Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/lib/int_sqrt.c b/lib/int_sqrt.c
+index 14436f4ca6bd..30e0f9770f88 100644
+--- a/lib/int_sqrt.c
++++ b/lib/int_sqrt.c
+@@ -52,7 +52,7 @@ u32 int_sqrt64(u64 x)
+ 	if (x <= ULONG_MAX)
+ 		return int_sqrt((unsigned long) x);
+ 
+-	m = 1ULL << (fls64(x) & ~1ULL);
++	m = 1ULL << ((fls64(x) - 1) & ~1ULL);
+ 	while (m != 0) {
+ 		b = y + m;
+ 		y >>= 1;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1059_328f3de2ef766cc27f9a85b20691493642a51417.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1059_328f3de2ef766cc27f9a85b20691493642a51417.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

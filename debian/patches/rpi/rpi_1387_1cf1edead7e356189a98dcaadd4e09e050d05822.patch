@@ -1,0 +1,57 @@
+commit 1cf1edead7e356189a98dcaadd4e09e050d05822
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Fri Nov 30 16:00:54 2018 +0000
+
+    staging: bcm2835-camera: Fix stride on RGB3/BGR3 formats
+    
+    RGB3/BGR3 end up being 3 bytes per pixel, which meant that
+    the alignment code ended up trying to align using bitmasking
+    with a mask of 96.
+    That doesn't work, so switch to an arithmetic alignment for
+    those formats.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+index 19880b6d3b6b..b8984dcfbfa7 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
++++ b/drivers/staging/vc04_services/bcm2835-camera/bcm2835-camera.c
+@@ -1008,13 +1008,27 @@ static int vidioc_try_fmt_vid_cap(struct file *file, void *priv,
+ 			      1, 0);
+ 	f->fmt.pix.bytesperline = f->fmt.pix.width * mfmt->ybbp;
+ 	if (!mfmt->remove_padding) {
+-		int align_mask = ((32 * mfmt->depth) >> 3) - 1;
+-		/* GPU isn't removing padding, so stride is aligned to 32 */
+-		f->fmt.pix.bytesperline =
+-			(f->fmt.pix.bytesperline + align_mask) & ~align_mask;
++		if (mfmt->depth == 24) {
++			/*
++			 * 24bpp is a pain as we can't use simple masking.
++			 * Min stride is width aligned to 16, times 24bpp.
++			 */
++			f->fmt.pix.bytesperline =
++				((f->fmt.pix.width + 15) & ~15) * 3;
++		} else {
++			/*
++			 * GPU isn't removing padding, so stride is aligned to
++			 * 32
++			 */
++			int align_mask = ((32 * mfmt->depth) >> 3) - 1;
++
++			f->fmt.pix.bytesperline =
++				(f->fmt.pix.bytesperline + align_mask) &
++							~align_mask;
++		}
+ 		v4l2_dbg(1, bcm2835_v4l2_debug, &dev->v4l2_dev,
+-			 "Not removing padding, so bytes/line = %d, (align_mask %d)\n",
+-			 f->fmt.pix.bytesperline, align_mask);
++			 "Not removing padding, so bytes/line = %d\n",
++			 f->fmt.pix.bytesperline);
+ 	}
+ 
+ 	/* Image buffer has to be padded to allow for alignment, even though
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1387_1cf1edead7e356189a98dcaadd4e09e050d05822.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1387_1cf1edead7e356189a98dcaadd4e09e050d05822.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

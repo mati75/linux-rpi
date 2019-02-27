@@ -1,0 +1,39 @@
+commit 34f1d42feb59c8d062e95e788e9405d0c8953d00
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Sep 24 14:56:58 2018 +0100
+
+    configs: Add CONFIG_HID_BIGBEN_FF=m
+    
+    See: https://github.com/raspberrypi/linux/issues/2690
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 4eaa666c8497..2f4d08ac6a05 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -938,6 +938,7 @@ CONFIG_HID_APPLE=m
+ CONFIG_HID_ASUS=m
+ CONFIG_HID_BELKIN=m
+ CONFIG_HID_BETOP_FF=m
++CONFIG_HID_BIGBEN_FF=m
+ CONFIG_HID_CHERRY=m
+ CONFIG_HID_CHICONY=m
+ CONFIG_HID_CYPRESS=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index cf4c81f975a8..ada667342bfb 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -931,6 +931,7 @@ CONFIG_HID_APPLE=m
+ CONFIG_HID_ASUS=m
+ CONFIG_HID_BELKIN=m
+ CONFIG_HID_BETOP_FF=m
++CONFIG_HID_BIGBEN_FF=m
+ CONFIG_HID_CHERRY=m
+ CONFIG_HID_CHICONY=m
+ CONFIG_HID_CYPRESS=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1271_34f1d42feb59c8d062e95e788e9405d0c8953d00.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1271_34f1d42feb59c8d062e95e788e9405d0c8953d00.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,56 @@
+commit 61f21a574764577a1408c2b4a654fc956b88aabd
+Author: Serge Schneider <serge@raspberrypi.org>
+Date:   Tue Oct 2 17:13:48 2018 +0100
+
+    overlays: add overrides for PoE HAT fan control
+    
+    Signed-off-by: Serge Schneider <serge@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index 018dc5dd8f1e..ab70c054ac15 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1565,9 +1565,16 @@ Params: touchscreen-size-x      Touchscreen X resolution (default 800)
+ 
+ 
+ Name:   rpi-poe
+-Info:   Raspberry Pi POE HAT
+-Load:   dtoverlay=rpi-poe
+-Params: <None>
++Info:   Raspberry Pi PoE HAT fan
++Load:   dtoverlay=rpi-poe,<param>[=<val>]
++Params: poe_fan_temp0           Temperature (in millicelcius) at which the fan
++                                turns on (default 50000)
++        poe_fan_temp0_hyst      Temperature delta (in millicelcius) at which
++                                the fan turns off (default 5000)
++        poe_fan_temp1           Temperature (in millicelcius) at which the fan
++                                speeds up (default 55000)
++        poe_fan_temp1_hyst      Temperature delta (in millicelcius) at which
++                                the fan slows down (default 5000)
+ 
+ 
+ Name:   rpi-proto
+diff --git a/arch/arm/boot/dts/overlays/rpi-poe-overlay.dts b/arch/arm/boot/dts/overlays/rpi-poe-overlay.dts
+index f24af60f1593..1dacd3b33085 100644
+--- a/arch/arm/boot/dts/overlays/rpi-poe-overlay.dts
++++ b/arch/arm/boot/dts/overlays/rpi-poe-overlay.dts
+@@ -50,4 +50,14 @@
+ 			};
+ 		};
+ 	};
++
++	fragment@2 {
++		target-path = "/__overrides__";
++		__overlay__ {
++			poe_fan_temp0 =		<&trip0>,"temperature:0";
++			poe_fan_temp0_hyst =	<&trip0>,"hysteresis:0";
++			poe_fan_temp1 =		<&trip1>,"temperature:0";
++			poe_fan_temp1_hyst =	<&trip1>,"hysteresis:0";
++		};
++	};
+ };
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1277_61f21a574764577a1408c2b4a654fc956b88aabd.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1277_61f21a574764577a1408c2b4a654fc956b88aabd.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

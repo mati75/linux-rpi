@@ -1,0 +1,53 @@
+commit 0098f2e791d72bc6407459c856fec14470783fba
+Author: Paul Burton <paul.burton@mips.com>
+Date:   Fri Jan 11 19:06:44 2019 +0000
+
+    kbuild: Disable LD_DEAD_CODE_DATA_ELIMINATION with ftrace & GCC <= 4.7
+    
+    commit 16fd20aa98080c2fa666dc384036ec08c80af710 upstream.
+    
+    When building using GCC 4.7 or older, -ffunction-sections & the -pg flag
+    used by ftrace are incompatible. This causes warnings or build failures
+    (where -Werror applies) such as the following:
+    
+      arch/mips/generic/init.c:
+        error: -ffunction-sections disabled; it makes profiling impossible
+    
+    This used to be taken into account by the ordering of calls to cc-option
+    from within the top-level Makefile, which was introduced by commit
+    90ad4052e85c ("kbuild: avoid conflict between -ffunction-sections and
+    -pg on gcc-4.7"). Unfortunately this was broken when the
+    CONFIG_LD_DEAD_CODE_DATA_ELIMINATION cc-option check was moved to
+    Kconfig in commit e85d1d65cd8a ("kbuild: test dead code/data elimination
+    support in Kconfig"), because the flags used by this check no longer
+    include -pg.
+    
+    Fix this by not allowing CONFIG_LD_DEAD_CODE_DATA_ELIMINATION to be
+    enabled at the same time as ftrace/CONFIG_FUNCTION_TRACER when building
+    using GCC 4.7 or older.
+    
+    Signed-off-by: Paul Burton <paul.burton@mips.com>
+    Fixes: e85d1d65cd8a ("kbuild: test dead code/data elimination support in Kconfig")
+    Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+    Cc: Nicholas Piggin <npiggin@gmail.com>
+    Cc: stable@vger.kernel.org # v4.19+
+    Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/init/Kconfig b/init/Kconfig
+index 317d5ccb5191..864af10bb1b9 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1102,6 +1102,7 @@ config LD_DEAD_CODE_DATA_ELIMINATION
+ 	bool "Dead code and data elimination (EXPERIMENTAL)"
+ 	depends on HAVE_LD_DEAD_CODE_DATA_ELIMINATION
+ 	depends on EXPERT
++	depends on !(FUNCTION_TRACER && CC_IS_GCC && GCC_VERSION < 40800)
+ 	depends on $(cc-option,-ffunction-sections -fdata-sections)
+ 	depends on $(ld-option,--gc-sections)
+ 	help
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1053_0098f2e791d72bc6407459c856fec14470783fba.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1053_0098f2e791d72bc6407459c856fec14470783fba.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

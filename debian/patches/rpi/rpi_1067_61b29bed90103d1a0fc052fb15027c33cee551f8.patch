@@ -1,0 +1,46 @@
+commit 61b29bed90103d1a0fc052fb15027c33cee551f8
+Author: J. Bruce Fields <bfields@redhat.com>
+Date:   Thu Dec 20 10:35:11 2018 -0500
+
+    sunrpc: handle ENOMEM in rpcb_getport_async
+    
+    commit 81c88b18de1f11f70c97f28ced8d642c00bb3955 upstream.
+    
+    If we ignore the error we'll hit a null dereference a little later.
+    
+    Reported-by: syzbot+4b98281f2401ab849f4b@syzkaller.appspotmail.com
+    Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+    Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/net/sunrpc/rpcb_clnt.c b/net/sunrpc/rpcb_clnt.c
+index c7872bc13860..08b5fa4a2852 100644
+--- a/net/sunrpc/rpcb_clnt.c
++++ b/net/sunrpc/rpcb_clnt.c
+@@ -771,6 +771,12 @@ void rpcb_getport_async(struct rpc_task *task)
+ 	case RPCBVERS_3:
+ 		map->r_netid = xprt->address_strings[RPC_DISPLAY_NETID];
+ 		map->r_addr = rpc_sockaddr2uaddr(sap, GFP_ATOMIC);
++		if (!map->r_addr) {
++			status = -ENOMEM;
++			dprintk("RPC: %5u %s: no memory available\n",
++				task->tk_pid, __func__);
++			goto bailout_free_args;
++		}
+ 		map->r_owner = "";
+ 		break;
+ 	case RPCBVERS_2:
+@@ -793,6 +799,8 @@ void rpcb_getport_async(struct rpc_task *task)
+ 	rpc_put_task(child);
+ 	return;
+ 
++bailout_free_args:
++	kfree(map);
+ bailout_release_client:
+ 	rpc_release_client(rpcb_clnt);
+ bailout_nofree:
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1067_61b29bed90103d1a0fc052fb15027c33cee551f8.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1067_61b29bed90103d1a0fc052fb15027c33cee551f8.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,28 @@
+commit 2f9464a485f9fd3f3409621fc3b4d8a0b6e9dfc1
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Nov 6 12:57:48 2018 +0000
+
+    sc16is7xx: Don't spin if no data received
+    
+    See: https://github.com/raspberrypi/linux/issues/2676
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/tty/serial/sc16is7xx.c b/drivers/tty/serial/sc16is7xx.c
+index 47b41159a8bc..35f7eadcfe8b 100644
+--- a/drivers/tty/serial/sc16is7xx.c
++++ b/drivers/tty/serial/sc16is7xx.c
+@@ -678,6 +678,8 @@ static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
+ 			rxlen = sc16is7xx_port_read(port, SC16IS7XX_RXLVL_REG);
+ 			if (rxlen)
+ 				sc16is7xx_handle_rx(port, rxlen, iir);
++			else
++				return false;
+ 			break;
+ 		case SC16IS7XX_IIR_THRI_SRC:
+ 			sc16is7xx_handle_tx(port);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1251_2f9464a485f9fd3f3409621fc3b4d8a0b6e9dfc1.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1251_2f9464a485f9fd3f3409621fc3b4d8a0b6e9dfc1.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

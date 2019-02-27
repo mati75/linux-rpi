@@ -1,0 +1,38 @@
+commit 68afc7c36461a5989b91ca88f82bbcd90dece24d
+Author: Eric Biggers <ebiggers@google.com>
+Date:   Tue Jan 8 22:12:41 2019 -0800
+
+    crypto: sm3 - fix undefined shift by >= width of value
+    
+    commit d45a90cb5d061fa7d411b974b950fe0b8bc5f265 upstream.
+    
+    sm3_compress() calls rol32() with shift >= 32, which causes undefined
+    behavior.  This is easily detected by enabling CONFIG_UBSAN.
+    
+    Explicitly AND with 31 to make the behavior well defined.
+    
+    Fixes: 4f0fc1600edb ("crypto: sm3 - add OSCCA SM3 secure hash")
+    Cc: <stable@vger.kernel.org> # v4.15+
+    Cc: Gilad Ben-Yossef <gilad@benyossef.com>
+    Signed-off-by: Eric Biggers <ebiggers@google.com>
+    Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/crypto/sm3_generic.c b/crypto/sm3_generic.c
+index 9a5c60f08aad..c0cf87ae7ef6 100644
+--- a/crypto/sm3_generic.c
++++ b/crypto/sm3_generic.c
+@@ -100,7 +100,7 @@ static void sm3_compress(u32 *w, u32 *wt, u32 *m)
+ 
+ 	for (i = 0; i <= 63; i++) {
+ 
+-		ss1 = rol32((rol32(a, 12) + e + rol32(t(i), i)), 7);
++		ss1 = rol32((rol32(a, 12) + e + rol32(t(i), i & 31)), 7);
+ 
+ 		ss2 = ss1 ^ rol32(a, 12);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1030_68afc7c36461a5989b91ca88f82bbcd90dece24d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1030_68afc7c36461a5989b91ca88f82bbcd90dece24d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
