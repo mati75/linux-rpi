@@ -1,0 +1,54 @@
+commit 7543c3cf17c6bd3e241c29d7a575d60313033da0
+Author: Boris Brezillon <boris.brezillon@bootlin.com>
+Date:   Fri Nov 9 11:26:32 2018 +0100
+
+    drm/vc4: ->x_scaling[1] should never be set to VC4_SCALING_NONE
+    
+    [ Upstream commit 0560054da5673b25d56bea6c57c8d069673af73b ]
+    
+    For the YUV conversion to work properly, ->x_scaling[1] should never
+    be set to VC4_SCALING_NONE, but vc4_get_scaling_mode() might return
+    VC4_SCALING_NONE if the horizontal scaling ratio exactly matches the
+    horizontal subsampling factor. Add a test to turn VC4_SCALING_NONE
+    into VC4_SCALING_PPF when that happens.
+    
+    The old ->x_scaling[0] adjustment is dropped as I couldn't find any
+    mention to this constraint in the spec and it's proven to be
+    unnecessary (I tested various multi-planar YUV formats with scaling
+    disabled, and all of them worked fine without this adjustment).
+    
+    Fixes: fc04023fafec ("drm/vc4: Add support for YUV planes.")
+    Signed-off-by: Boris Brezillon <boris.brezillon@bootlin.com>
+    Reviewed-by: Eric Anholt <eric@anholt.net>
+    Link: https://patchwork.freedesktop.org/patch/msgid/20181109102633.32603-1-boris.brezillon@bootlin.com
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
+index 629f40424bba..ab39315c9078 100644
+--- a/drivers/gpu/drm/vc4/vc4_plane.c
++++ b/drivers/gpu/drm/vc4/vc4_plane.c
+@@ -315,12 +315,14 @@ static int vc4_plane_setup_clipping_and_scaling(struct drm_plane_state *state)
+ 			vc4_get_scaling_mode(vc4_state->src_h[1],
+ 					     vc4_state->crtc_h);
+ 
+-		/* YUV conversion requires that horizontal scaling be enabled,
+-		 * even on a plane that's otherwise 1:1. Looks like only PPF
+-		 * works in that case, so let's pick that one.
++		/* YUV conversion requires that horizontal scaling be enabled
++		 * on the UV plane even if vc4_get_scaling_mode() returned
++		 * VC4_SCALING_NONE (which can happen when the down-scaling
++		 * ratio is 0.5). Let's force it to VC4_SCALING_PPF in this
++		 * case.
+ 		 */
+-		if (vc4_state->is_unity)
+-			vc4_state->x_scaling[0] = VC4_SCALING_PPF;
++		if (vc4_state->x_scaling[1] == VC4_SCALING_NONE)
++			vc4_state->x_scaling[1] = VC4_SCALING_PPF;
+ 	} else {
+ 		vc4_state->is_yuv = false;
+ 		vc4_state->x_scaling[1] = VC4_SCALING_NONE;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1024_7543c3cf17c6bd3e241c29d7a575d60313033da0.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1024_7543c3cf17c6bd3e241c29d7a575d60313033da0.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

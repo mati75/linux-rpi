@@ -1,0 +1,38 @@
+commit 5214c28b688ae1ffb673b15e7a07872feebedb55
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Nov 28 15:09:27 2018 -0800
+
+    drm/v3d: Fix prime imports of buffers from other drivers.
+    
+    [ Upstream commit 62d1a752874962f072de8a779e960fcd2ab4847b ]
+    
+    v3d_bo_get_pages() checks this to decide to map the imported buffer
+    instead of the backing shmem file.  The caller was about to set this
+    value anyway, and there's no error path in between.  Ideally we
+    wouldn't even allocate the shmem file for our imports, but that's a
+    more invasive fix.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+    Fixes: 57692c94dcbe ("drm/v3d: Introduce a new DRM driver for Broadcom V3D V3.x+")
+    Link: https://patchwork.freedesktop.org/patch/msgid/20181128230927.10951-3-eric@anholt.net
+    Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+    Reviewed-by: Dave Emett <david.emett@broadcom.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/gpu/drm/v3d/v3d_bo.c b/drivers/gpu/drm/v3d/v3d_bo.c
+index 54d96518a131..a08766d39eab 100644
+--- a/drivers/gpu/drm/v3d/v3d_bo.c
++++ b/drivers/gpu/drm/v3d/v3d_bo.c
+@@ -293,6 +293,7 @@ v3d_prime_import_sg_table(struct drm_device *dev,
+ 	bo->resv = attach->dmabuf->resv;
+ 
+ 	bo->sgt = sgt;
++	obj->import_attach = attach;
+ 	v3d_bo_get_pages(bo);
+ 
+ 	v3d_mmu_insert_ptes(bo);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1083_5214c28b688ae1ffb673b15e7a07872feebedb55.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1083_5214c28b688ae1ffb673b15e7a07872feebedb55.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

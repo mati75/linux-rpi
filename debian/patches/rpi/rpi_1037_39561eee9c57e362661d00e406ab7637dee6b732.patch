@@ -1,0 +1,37 @@
+commit 39561eee9c57e362661d00e406ab7637dee6b732
+Author: Xiang Chen <chenxiang66@hisilicon.com>
+Date:   Fri Nov 9 22:06:36 2018 +0800
+
+    scsi: hisi_sas: change the time of SAS SSP connection
+    
+    [ Upstream commit 15bc43f31a074076f114e0b87931e3b220b7bff1 ]
+    
+    Currently the time of SAS SSP connection is 1ms, which means the link
+    connection will fail if no IO response after this period.
+    
+    For some disks handling large IO (such as 512k), 1ms is not enough, so
+    change it to 5ms.
+    
+    Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+    Signed-off-by: John Garry <john.garry@huawei.com>
+    Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+index 687ff61bba9f..3922b17e2ea3 100644
+--- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
++++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
+@@ -492,7 +492,7 @@ static void init_reg_v3_hw(struct hisi_hba *hisi_hba)
+ 		hisi_sas_phy_write32(hisi_hba, i, PHYCTRL_OOB_RESTART_MSK, 0x1);
+ 		hisi_sas_phy_write32(hisi_hba, i, STP_LINK_TIMER, 0x7f7a120);
+ 		hisi_sas_phy_write32(hisi_hba, i, CON_CFG_DRIVER, 0x2a0a01);
+-
++		hisi_sas_phy_write32(hisi_hba, i, SAS_SSP_CON_TIMER_CFG, 0x32);
+ 		/* used for 12G negotiate */
+ 		hisi_sas_phy_write32(hisi_hba, i, COARSETUNE_TIME, 0x1e);
+ 	}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1037_39561eee9c57e362661d00e406ab7637dee6b732.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1037_39561eee9c57e362661d00e406ab7637dee6b732.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

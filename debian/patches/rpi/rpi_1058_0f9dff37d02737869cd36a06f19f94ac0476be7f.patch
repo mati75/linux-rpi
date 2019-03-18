@@ -1,0 +1,49 @@
+commit 0f9dff37d02737869cd36a06f19f94ac0476be7f
+Author: Mathieu Malaterre <malat@debian.org>
+Date:   Wed Oct 31 13:31:56 2018 +0100
+
+    powerpc/32: Add .data..Lubsan_data*/.data..Lubsan_type* sections explicitly
+    
+    [ Upstream commit beba24ac59133cb36ecd03f9af9ccb11971ee20e ]
+    
+    When both `CONFIG_LD_DEAD_CODE_DATA_ELIMINATION=y` and `CONFIG_UBSAN=y`
+    are set, link step typically produce numberous warnings about orphan
+    section:
+    
+      + powerpc-linux-gnu-ld -EB -m elf32ppc -Bstatic --orphan-handling=warn --build-id --gc-sections -X -o .tmp_vmlinux1 -T ./arch/powerpc/kernel/vmlinux.lds --who
+      le-archive built-in.a --no-whole-archive --start-group lib/lib.a --end-group
+      powerpc-linux-gnu-ld: warning: orphan section `.data..Lubsan_data393' from `init/main.o' being placed in section `.data..Lubsan_data393'.
+      powerpc-linux-gnu-ld: warning: orphan section `.data..Lubsan_data394' from `init/main.o' being placed in section `.data..Lubsan_data394'.
+      ...
+      powerpc-linux-gnu-ld: warning: orphan section `.data..Lubsan_type11' from `init/main.o' being placed in section `.data..Lubsan_type11'.
+      powerpc-linux-gnu-ld: warning: orphan section `.data..Lubsan_type12' from `init/main.o' being placed in section `.data..Lubsan_type12'.
+      ...
+    
+    This commit remove those warnings produced at W=1.
+    
+    Link: https://www.mail-archive.com/linuxppc-dev@lists.ozlabs.org/msg135407.html
+    Suggested-by: Nicholas Piggin <npiggin@gmail.com>
+    Signed-off-by: Mathieu Malaterre <malat@debian.org>
+    Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/arch/powerpc/kernel/vmlinux.lds.S b/arch/powerpc/kernel/vmlinux.lds.S
+index 07ae018e550e..53016c753f3c 100644
+--- a/arch/powerpc/kernel/vmlinux.lds.S
++++ b/arch/powerpc/kernel/vmlinux.lds.S
+@@ -296,6 +296,10 @@ SECTIONS
+ #ifdef CONFIG_PPC32
+ 	.data : AT(ADDR(.data) - LOAD_OFFSET) {
+ 		DATA_DATA
++#ifdef CONFIG_UBSAN
++		*(.data..Lubsan_data*)
++		*(.data..Lubsan_type*)
++#endif
+ 		*(.data.rel*)
+ 		*(SDATA_MAIN)
+ 		*(.sdata2)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1058_0f9dff37d02737869cd36a06f19f94ac0476be7f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1058_0f9dff37d02737869cd36a06f19f94ac0476be7f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

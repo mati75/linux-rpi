@@ -1,0 +1,67 @@
+commit 9b66753c68a00620b0a9c0864e40e5ef19219378
+Author: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Date:   Mon Jan 14 19:38:36 2019 -0800
+
+    pinctrl: cherryview: fix Strago DMI workaround
+    
+    commit e3f72b749da2bf63bed7409e416f160418d475b6 upstream.
+    
+    Well, hopefully 3rd time is a charm. We tried making that check
+    DMI_BIOS_VERSION and DMI_BOARD_VERSION, but the real one is
+    DMI_PRODUCT_VERSION.
+    
+    Fixes: 86c5dd6860a6 ("pinctrl: cherryview: limit Strago DMI workarounds to version 1.0")
+    Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=197953
+    Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1631930
+    Cc: stable@vger.kernel.org
+    Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+    Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+    Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+    Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/pinctrl/intel/pinctrl-cherryview.c b/drivers/pinctrl/intel/pinctrl-cherryview.c
+index 6d31ad799987..b7e272d6ae81 100644
+--- a/drivers/pinctrl/intel/pinctrl-cherryview.c
++++ b/drivers/pinctrl/intel/pinctrl-cherryview.c
+@@ -1524,7 +1524,7 @@ static const struct dmi_system_id chv_no_valid_mask[] = {
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
+ 			DMI_MATCH(DMI_PRODUCT_FAMILY, "Intel_Strago"),
+-			DMI_MATCH(DMI_BOARD_VERSION, "1.0"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
+ 		},
+ 	},
+ 	{
+@@ -1532,7 +1532,7 @@ static const struct dmi_system_id chv_no_valid_mask[] = {
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "Setzer"),
+-			DMI_MATCH(DMI_BOARD_VERSION, "1.0"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
+ 		},
+ 	},
+ 	{
+@@ -1540,7 +1540,7 @@ static const struct dmi_system_id chv_no_valid_mask[] = {
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "Cyan"),
+-			DMI_MATCH(DMI_BOARD_VERSION, "1.0"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
+ 		},
+ 	},
+ 	{
+@@ -1548,7 +1548,7 @@ static const struct dmi_system_id chv_no_valid_mask[] = {
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "GOOGLE"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "Celes"),
+-			DMI_MATCH(DMI_BOARD_VERSION, "1.0"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "1.0"),
+ 		},
+ 	},
+ 	{}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1324_9b66753c68a00620b0a9c0864e40e5ef19219378.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1324_9b66753c68a00620b0a9c0864e40e5ef19219378.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

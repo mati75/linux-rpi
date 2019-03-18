@@ -1,0 +1,77 @@
+commit 3564fa62a8d7ac531431fb0da97d71e94024e39f
+Author: Eric Yang <Eric.Yang2@amd.com>
+Date:   Thu Nov 22 02:07:06 2018 -0500
+
+    drm/amd/display: fix YCbCr420 blank color
+    
+    [ Upstream commit 12750d1647f118496f1da727146f255f5e44d500 ]
+    
+    [Why]
+    YCbCr420 packing format uses two chanels for luma, and 1
+    channel for both chroma component. Our previous implementation
+    did not account for this and results in every other pixel having
+    very high luma value, showing greyish color instead of black.
+    
+    YCbCr444 = <Y1, Cb1, Cr1>; <Y2, Cb2, Cr2> .....
+    YCbCr420 = <Y1, Y2,  Cb1>; <Y3, Y4,  Cr1> .....
+    
+    [How]
+    Program the second channel with the black color value for luma
+    as well.
+    
+    Signed-off-by: Eric Yang <Eric.Yang2@amd.com>
+    Reviewed-by: Hugo Hu <Hugo.Hu@amd.com>
+    Acked-by: Leo Li <sunpeng.li@amd.com>
+    Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
+index 0941f3c689bc..580e7e82034f 100644
+--- a/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
++++ b/drivers/gpu/drm/amd/display/dc/dce110/dce110_hw_sequencer.c
+@@ -1268,10 +1268,19 @@ static void program_scaler(const struct dc *dc,
+ 		pipe_ctx->plane_res.scl_data.lb_params.depth,
+ 		&pipe_ctx->stream->bit_depth_params);
+ 
+-	if (pipe_ctx->stream_res.tg->funcs->set_overscan_blank_color)
++	if (pipe_ctx->stream_res.tg->funcs->set_overscan_blank_color) {
++		/*
++		 * The way 420 is packed, 2 channels carry Y component, 1 channel
++		 * alternate between Cb and Cr, so both channels need the pixel
++		 * value for Y
++		 */
++		if (pipe_ctx->stream->timing.pixel_encoding == PIXEL_ENCODING_YCBCR420)
++			color.color_r_cr = color.color_g_y;
++
+ 		pipe_ctx->stream_res.tg->funcs->set_overscan_blank_color(
+ 				pipe_ctx->stream_res.tg,
+ 				&color);
++	}
+ 
+ 	pipe_ctx->plane_res.xfm->funcs->transform_set_scaler(pipe_ctx->plane_res.xfm,
+ 		&pipe_ctx->plane_res.scl_data);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+index 33a9d0c58966..4058b59d9bea 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_hw_sequencer.c
+@@ -2121,6 +2121,15 @@ static void dcn10_blank_pixel_data(
+ 	color_space = stream->output_color_space;
+ 	color_space_to_black_color(dc, color_space, &black_color);
+ 
++	/*
++	 * The way 420 is packed, 2 channels carry Y component, 1 channel
++	 * alternate between Cb and Cr, so both channels need the pixel
++	 * value for Y
++	 */
++	if (stream->timing.pixel_encoding == PIXEL_ENCODING_YCBCR420)
++		black_color.color_r_cr = black_color.color_g_y;
++
++
+ 	if (stream_res->tg->funcs->set_blank_color)
+ 		stream_res->tg->funcs->set_blank_color(
+ 				stream_res->tg,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1168_3564fa62a8d7ac531431fb0da97d71e94024e39f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1168_3564fa62a8d7ac531431fb0da97d71e94024e39f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

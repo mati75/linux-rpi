@@ -1,0 +1,33 @@
+commit cb8d79c044557423a310767a39f8e1f61079a9a2
+Author: Matthias Reichl <hias@horus.com>
+Date:   Sun Nov 18 13:21:26 2018 +0100
+
+    Revert "ASoC: wm8804: MCLK configuration options, 32-bit"
+    
+    This reverts commit 3b12dcf797f5a4635aecd7f5c090dc507b124ffd.
+    
+    Despite the commit message being wrong idle_bias changes
+    were already reverted in the 4.14 tree.
+    
+    So drop the commit to bring the wm8804 driver back in line with
+    the rpi-4.14.y and upstream linux trees.
+    
+    Signed-off-by: Matthias Reichl <hias@horus.com>
+
+diff --git a/sound/soc/codecs/wm8804.c b/sound/soc/codecs/wm8804.c
+index 813c47766fb4..89f13249966e 100644
+--- a/sound/soc/codecs/wm8804.c
++++ b/sound/soc/codecs/wm8804.c
+@@ -550,7 +550,6 @@ static const struct snd_soc_component_driver soc_component_dev_wm8804 = {
+ 	.use_pmdown_time	= 1,
+ 	.endianness		= 1,
+ 	.non_legacy_dai_naming	= 1,
+-	.idle_bias_on		= true,
+ };
+ 
+ const struct regmap_config wm8804_regmap_config = {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1680_cb8d79c044557423a310767a39f8e1f61079a9a2.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1680_cb8d79c044557423a310767a39f8e1f61079a9a2.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

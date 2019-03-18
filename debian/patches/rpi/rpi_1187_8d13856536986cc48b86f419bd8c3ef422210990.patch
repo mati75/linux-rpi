@@ -1,0 +1,47 @@
+commit 8d13856536986cc48b86f419bd8c3ef422210990
+Author: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Date:   Thu Dec 20 19:13:07 2018 +0100
+
+    video: clps711x-fb: release disp device node in probe()
+    
+    [ Upstream commit fdac751355cd76e049f628afe6acb8ff4b1399f7 ]
+    
+    clps711x_fb_probe() increments refcnt of disp device node by
+    of_parse_phandle() and leaves it undecremented on both
+    successful and error paths.
+    
+    Found by Linux Driver Verification project (linuxtesting.org).
+    
+    Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+    Cc: Alexander Shiyan <shc_work@mail.ru>
+    Signed-off-by: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/video/fbdev/clps711x-fb.c b/drivers/video/fbdev/clps711x-fb.c
+index ff561073ee4e..42f909618f04 100644
+--- a/drivers/video/fbdev/clps711x-fb.c
++++ b/drivers/video/fbdev/clps711x-fb.c
+@@ -287,14 +287,17 @@ static int clps711x_fb_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	ret = of_get_fb_videomode(disp, &cfb->mode, OF_USE_NATIVE_MODE);
+-	if (ret)
++	if (ret) {
++		of_node_put(disp);
+ 		goto out_fb_release;
++	}
+ 
+ 	of_property_read_u32(disp, "ac-prescale", &cfb->ac_prescale);
+ 	cfb->cmap_invert = of_property_read_bool(disp, "cmap-invert");
+ 
+ 	ret = of_property_read_u32(disp, "bits-per-pixel",
+ 				   &info->var.bits_per_pixel);
++	of_node_put(disp);
+ 	if (ret)
+ 		goto out_fb_release;
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1187_8d13856536986cc48b86f419bd8c3ef422210990.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1187_8d13856536986cc48b86f419bd8c3ef422210990.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

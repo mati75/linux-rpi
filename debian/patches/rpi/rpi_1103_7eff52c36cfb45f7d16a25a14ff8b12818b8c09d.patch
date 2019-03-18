@@ -1,0 +1,48 @@
+commit 7eff52c36cfb45f7d16a25a14ff8b12818b8c09d
+Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date:   Mon Dec 3 11:28:47 2018 +0200
+
+    usb: dwc3: trace: add missing break statement to make compiler happy
+    
+    [ Upstream commit 54d48183d21e03f780053d7129312049cb5dd591 ]
+    
+    The missed break statement in the outer switch makes the code fall through
+    always and thus always same value will be printed.
+    
+    Besides that, compiler warns about missed fall through marker:
+    
+    drivers/usb/dwc3/./trace.h: In function ‘trace_raw_output_dwc3_log_trb’:
+    drivers/usb/dwc3/./trace.h:246:4: warning: this statement may fall through [-Wimplicit-fallthrough=]
+        switch (pcm) {
+        ^~~~~~
+    
+    Add the missing break statement to work correctly without compilation
+    warnings.
+    
+    Fixes: fa8d965d736b ("usb: dwc3: trace: pretty print high-bandwidth transfers too")
+    Cc: Felipe Balbi <felipe.balbi@linux.intel.com>
+    Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+    Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/usb/dwc3/trace.h b/drivers/usb/dwc3/trace.h
+index f22714cce070..f27c5cbe285c 100644
+--- a/drivers/usb/dwc3/trace.h
++++ b/drivers/usb/dwc3/trace.h
+@@ -251,9 +251,11 @@ DECLARE_EVENT_CLASS(dwc3_log_trb,
+ 				s = "2x ";
+ 				break;
+ 			case 3:
++			default:
+ 				s = "3x ";
+ 				break;
+ 			}
++			break;
+ 		default:
+ 			s = "";
+ 		} s; }),
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1103_7eff52c36cfb45f7d16a25a14ff8b12818b8c09d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1103_7eff52c36cfb45f7d16a25a14ff8b12818b8c09d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

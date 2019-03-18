@@ -1,24 +1,27 @@
-commit 806d6240729e09e4a04ccf038f1f3847e92ba8dd
-Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
-Date:   Thu Jan 24 15:09:28 2019 +0000
+commit 78eb13b25d5e53b3e3b8031ddc4eb2049a0e9cd0
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Feb 5 18:53:18 2018 +0000
 
-    clk: clk-bcm2835: Use %zd when printing size_t
+    drm/vc4: Don't wait for vblank on fkms cursor updates.
     
-    The debug text for how many clocks have been registered
-    uses "%d" with a size_t. Correct it to "%zd".
+    We don't use the same async update path between fkms and normal kms,
+    and the normal kms workaround ended up making us wait.  This became a
+    larger problem in rpi-4.14.y, as the USB HID update rate throttling
+    got (accidentally?) dropped.
     
-    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+    Signed-off-by: Eric Anholt <eric@anholt.net>
 
-diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
-index a142253afdff..3e001a7467a0 100644
---- a/drivers/clk/bcm/clk-bcm2835.c
-+++ b/drivers/clk/bcm/clk-bcm2835.c
-@@ -2271,7 +2271,7 @@ static int bcm2835_clk_probe(struct platform_device *pdev)
+diff --git a/drivers/gpu/drm/vc4/vc4_kms.c b/drivers/gpu/drm/vc4/vc4_kms.c
+index baf9bd7931ac..f8c6cafff14a 100644
+--- a/drivers/gpu/drm/vc4/vc4_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_kms.c
+@@ -222,7 +222,8 @@ static int vc4_atomic_commit(struct drm_device *dev,
+ 	 * drm_atomic_helper_setup_commit() from auto-completing
+ 	 * commit->flip_done.
+ 	 */
+-	state->legacy_cursor_update = false;
++	if (!vc4->firmware_kms)
++		state->legacy_cursor_update = false;
+ 	ret = drm_atomic_helper_setup_commit(state, nonblock);
+ 	if (ret)
  		return ret;
- 
- 	/* note that we have registered all the clocks */
--	dev_dbg(dev, "registered %d clocks\n", asize);
-+	dev_dbg(dev, "registered %zd clocks\n", asize);
- 
- 	return 0;
- }

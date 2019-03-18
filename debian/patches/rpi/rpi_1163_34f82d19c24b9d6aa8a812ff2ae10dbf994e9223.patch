@@ -1,0 +1,47 @@
+commit 34f82d19c24b9d6aa8a812ff2ae10dbf994e9223
+Author: Arnaldo Carvalho de Melo <acme@redhat.com>
+Date:   Tue Dec 11 16:43:40 2018 -0300
+
+    perf tools: Cast off_t to s64 to avoid warning on bionic libc
+    
+    [ Upstream commit 866053bb644f754d1a93aaa9db9998fecf7a8978 ]
+    
+    To avoid this warning:
+    
+        CC       /tmp/build/perf/util/s390-cpumsf.o
+      util/s390-cpumsf.c: In function 's390_cpumsf_samples':
+      util/s390-cpumsf.c:508:3: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'off_t' [-Wformat=]
+         pr_err("[%#08" PRIx64 "] Invalid AUX trailer entry TOD clock base\n",
+         ^
+    
+    Now the various Android cross toolchains used in the perf tools
+    container test builds are all clean and we can remove this:
+    
+      export EXTRA_MAKE_ARGS="WERROR=0"
+    
+    Cc: Adrian Hunter <adrian.hunter@intel.com>
+    Cc: Jiri Olsa <jolsa@kernel.org>
+    Cc: Namhyung Kim <namhyung@kernel.org>
+    Cc: Thomas Richter <tmricht@linux.ibm.com>
+    Link: https://lkml.kernel.org/n/tip-5rav4ccyb0sjciysz2i4p3sx@git.kernel.org
+    Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/tools/perf/util/s390-cpumsf.c b/tools/perf/util/s390-cpumsf.c
+index d2c78ffd9fee..aa7f8c11fbb7 100644
+--- a/tools/perf/util/s390-cpumsf.c
++++ b/tools/perf/util/s390-cpumsf.c
+@@ -499,7 +499,7 @@ static int s390_cpumsf_samples(struct s390_cpumsf_queue *sfq, u64 *ts)
+ 	aux_ts = get_trailer_time(buf);
+ 	if (!aux_ts) {
+ 		pr_err("[%#08" PRIx64 "] Invalid AUX trailer entry TOD clock base\n",
+-		       sfq->buffer->data_offset);
++		       (s64)sfq->buffer->data_offset);
+ 		aux_ts = ~0ULL;
+ 		goto out;
+ 	}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1163_34f82d19c24b9d6aa8a812ff2ae10dbf994e9223.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1163_34f82d19c24b9d6aa8a812ff2ae10dbf994e9223.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

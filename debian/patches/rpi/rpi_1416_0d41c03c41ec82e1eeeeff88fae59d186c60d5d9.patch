@@ -1,0 +1,38 @@
+commit 0d41c03c41ec82e1eeeeff88fae59d186c60d5d9
+Author: Xiaoyao Li <xiaoyao.li@linux.intel.com>
+Date:   Thu Feb 14 12:08:58 2019 +0800
+
+    kvm: vmx: Fix entry number check for add_atomic_switch_msr()
+    
+    commit 98ae70cc476e833332a2c6bb72f941a25f0de226 upstream.
+    
+    Commit ca83b4a7f2d068da79a0 ("x86/KVM/VMX: Add find_msr() helper function")
+    introduces the helper function find_msr(), which returns -ENOENT when
+    not find the msr in vmx->msr_autoload.guest/host. Correct checking contion
+    of no more available entry in vmx->msr_autoload.
+    
+    Fixes: ca83b4a7f2d0 ("x86/KVM/VMX: Add find_msr() helper function")
+    Cc: stable@vger.kernel.org
+    Signed-off-by: Xiaoyao Li <xiaoyao.li@linux.intel.com>
+    Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index a7899da66164..f6da5c37d2e8 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -2757,7 +2757,8 @@ static void add_atomic_switch_msr(struct vcpu_vmx *vmx, unsigned msr,
+ 	if (!entry_only)
+ 		j = find_msr(&m->host, msr);
+ 
+-	if (i == NR_AUTOLOAD_MSRS || j == NR_AUTOLOAD_MSRS) {
++	if ((i < 0 && m->guest.nr == NR_AUTOLOAD_MSRS) ||
++		(j < 0 &&  m->host.nr == NR_AUTOLOAD_MSRS)) {
+ 		printk_once(KERN_WARNING "Not enough msr switch entries. "
+ 				"Can't add msr %x\n", msr);
+ 		return;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1416_0d41c03c41ec82e1eeeeff88fae59d186c60d5d9.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1416_0d41c03c41ec82e1eeeeff88fae59d186c60d5d9.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

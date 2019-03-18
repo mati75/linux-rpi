@@ -1,0 +1,53 @@
+commit 8b27642c70721932935a4d685c69c7a2f3137d84
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Mon Sep 24 16:21:06 2018 +0100
+
+    staging: bcm2835-camera: Add multiple inclusion protection to headers
+    
+    mmal-common.h and mmal-msg.h didn't have the normal
+    ifndef FOO / define FOO / endif protection to stop it being
+    included multiple times. Add it.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/mmal-common.h b/drivers/staging/vc04_services/bcm2835-camera/mmal-common.h
+index 858bdcde6f3d..6f56c517d850 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/mmal-common.h
++++ b/drivers/staging/vc04_services/bcm2835-camera/mmal-common.h
+@@ -13,6 +13,8 @@
+  * MMAL structures
+  *
+  */
++#ifndef MMAL_COMMON_H
++#define MMAL_COMMON_H
+ 
+ #define MMAL_FOURCC(a, b, c, d) ((a) | (b << 8) | (c << 16) | (d << 24))
+ #define MMAL_MAGIC MMAL_FOURCC('m', 'm', 'a', 'l')
+@@ -56,3 +58,4 @@ struct mmal_colourfx {
+ 	u32 u;
+ 	u32 v;
+ };
++#endif
+diff --git a/drivers/staging/vc04_services/bcm2835-camera/mmal-msg.h b/drivers/staging/vc04_services/bcm2835-camera/mmal-msg.h
+index f7a0b865500e..5a3e35f94aed 100644
+--- a/drivers/staging/vc04_services/bcm2835-camera/mmal-msg.h
++++ b/drivers/staging/vc04_services/bcm2835-camera/mmal-msg.h
+@@ -23,6 +23,8 @@
+  * implementation uses fixed size types and not the enums (though the
+  * comments have the actual enum type
+  */
++#ifndef MMAL_MSG_H
++#define MMAL_MSG_H
+ 
+ #define VC_MMAL_VER 15
+ #define VC_MMAL_MIN_VER 10
+@@ -401,3 +403,4 @@ struct mmal_msg {
+ 		u8 payload[MMAL_MSG_MAX_PAYLOAD];
+ 	} u;
+ };
++#endif
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1728_8b27642c70721932935a4d685c69c7a2f3137d84.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1728_8b27642c70721932935a4d685c69c7a2f3137d84.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,37 @@
+commit da77b546055c07793c6ae9f6d781d6cb598b7b69
+Author: Sean Young <sean@mess.org>
+Date:   Sun Nov 4 05:12:09 2018 -0500
+
+    media: rc: ensure close() is called on rc_unregister_device
+    
+    [ Upstream commit 8e782fcf78275f505194e767c515202d4fd274bc ]
+    
+    If userspace has an open file descriptor on the rc input device or lirc
+    device when rc_unregister_device() is called, then the rc close() is
+    never called.
+    
+    This ensures that the receiver is turned off on the nuvoton-cir driver
+    during shutdown.
+    
+    Signed-off-by: Sean Young <sean@mess.org>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/media/rc/rc-main.c b/drivers/media/rc/rc-main.c
+index 8b2c16dd58bd..0f218afdadaa 100644
+--- a/drivers/media/rc/rc-main.c
++++ b/drivers/media/rc/rc-main.c
+@@ -1956,6 +1956,8 @@ void rc_unregister_device(struct rc_dev *dev)
+ 	rc_free_rx_device(dev);
+ 
+ 	mutex_lock(&dev->lock);
++	if (dev->users && dev->close)
++		dev->close(dev);
+ 	dev->registered = false;
+ 	mutex_unlock(&dev->lock);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1049_da77b546055c07793c6ae9f6d781d6cb598b7b69.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1049_da77b546055c07793c6ae9f6d781d6cb598b7b69.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

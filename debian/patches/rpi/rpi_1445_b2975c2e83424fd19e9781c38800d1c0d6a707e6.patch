@@ -1,0 +1,92 @@
+commit b2975c2e83424fd19e9781c38800d1c0d6a707e6
+Author: Hauke Mehrtens <hauke.mehrtens@intel.com>
+Date:   Fri Feb 15 17:58:54 2019 +0100
+
+    net: Fix for_each_netdev_feature on Big endian
+    
+    [ Upstream commit 3b89ea9c5902acccdbbdec307c85edd1bf52515e ]
+    
+    The features attribute is of type u64 and stored in the native endianes on
+    the system. The for_each_set_bit() macro takes a pointer to a 32 bit array
+    and goes over the bits in this area. On little Endian systems this also
+    works with an u64 as the most significant bit is on the highest address,
+    but on big endian the words are swapped. When we expect bit 15 here we get
+    bit 47 (15 + 32).
+    
+    This patch converts it more or less to its own for_each_set_bit()
+    implementation which works on 64 bit integers directly. This is then
+    completely in host endianness and should work like expected.
+    
+    Fixes: fd867d51f ("net/core: generic support for disabling netdev features down stack")
+    Signed-off-by: Hauke Mehrtens <hauke.mehrtens@intel.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+index 2b2a6dce1630..fce28562bed2 100644
+--- a/include/linux/netdev_features.h
++++ b/include/linux/netdev_features.h
+@@ -11,6 +11,7 @@
+ #define _LINUX_NETDEV_FEATURES_H
+ 
+ #include <linux/types.h>
++#include <asm/byteorder.h>
+ 
+ typedef u64 netdev_features_t;
+ 
+@@ -154,8 +155,26 @@ enum {
+ #define NETIF_F_HW_TLS_TX	__NETIF_F(HW_TLS_TX)
+ #define NETIF_F_HW_TLS_RX	__NETIF_F(HW_TLS_RX)
+ 
+-#define for_each_netdev_feature(mask_addr, bit)	\
+-	for_each_set_bit(bit, (unsigned long *)mask_addr, NETDEV_FEATURE_COUNT)
++/* Finds the next feature with the highest number of the range of start till 0.
++ */
++static inline int find_next_netdev_feature(u64 feature, unsigned long start)
++{
++	/* like BITMAP_LAST_WORD_MASK() for u64
++	 * this sets the most significant 64 - start to 0.
++	 */
++	feature &= ~0ULL >> (-start & ((sizeof(feature) * 8) - 1));
++
++	return fls64(feature) - 1;
++}
++
++/* This goes for the MSB to the LSB through the set feature bits,
++ * mask_addr should be a u64 and bit an int
++ */
++#define for_each_netdev_feature(mask_addr, bit)				\
++	for ((bit) = find_next_netdev_feature((mask_addr),		\
++					      NETDEV_FEATURE_COUNT);	\
++	     (bit) >= 0;						\
++	     (bit) = find_next_netdev_feature((mask_addr), (bit) - 1))
+ 
+ /* Features valid for ethtool to change */
+ /* = all defined minus driver/device-class-related */
+diff --git a/net/core/dev.c b/net/core/dev.c
+index af097ca9cb4f..5c8c0a572ee9 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -8039,7 +8039,7 @@ static netdev_features_t netdev_sync_upper_features(struct net_device *lower,
+ 	netdev_features_t feature;
+ 	int feature_bit;
+ 
+-	for_each_netdev_feature(&upper_disables, feature_bit) {
++	for_each_netdev_feature(upper_disables, feature_bit) {
+ 		feature = __NETIF_F_BIT(feature_bit);
+ 		if (!(upper->wanted_features & feature)
+ 		    && (features & feature)) {
+@@ -8059,7 +8059,7 @@ static void netdev_sync_lower_features(struct net_device *upper,
+ 	netdev_features_t feature;
+ 	int feature_bit;
+ 
+-	for_each_netdev_feature(&upper_disables, feature_bit) {
++	for_each_netdev_feature(upper_disables, feature_bit) {
+ 		feature = __NETIF_F_BIT(feature_bit);
+ 		if (!(features & feature) && (lower->features & feature)) {
+ 			netdev_dbg(upper, "Disabling feature %pNF on lower dev %s.\n",
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1445_b2975c2e83424fd19e9781c38800d1c0d6a707e6.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1445_b2975c2e83424fd19e9781c38800d1c0d6a707e6.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

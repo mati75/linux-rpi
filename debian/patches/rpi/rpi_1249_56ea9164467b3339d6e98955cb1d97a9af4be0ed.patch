@@ -1,0 +1,42 @@
+commit 56ea9164467b3339d6e98955cb1d97a9af4be0ed
+Author: Eduardo Valentin <edubezval@gmail.com>
+Date:   Wed Jan 2 00:34:03 2019 +0000
+
+    thermal: hwmon: inline helpers when CONFIG_THERMAL_HWMON is not set
+    
+    commit 03334ba8b425b2ad275c8f390cf83c7b081c3095 upstream.
+    
+    Avoid warnings like this:
+    thermal_hwmon.h:29:1: warning: ‘thermal_remove_hwmon_sysfs’ defined but not used [-Wunused-function]
+     thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz)
+    
+    Fixes: 0dd88793aacd ("thermal: hwmon: move hwmon support to single file")
+    Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+    Signed-off-by: Eduardo Valentin <edubezval@gmail.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/thermal/thermal_hwmon.h b/drivers/thermal/thermal_hwmon.h
+index 019f6f88224e..a160b9d62dd0 100644
+--- a/drivers/thermal/thermal_hwmon.h
++++ b/drivers/thermal/thermal_hwmon.h
+@@ -19,13 +19,13 @@
+ int thermal_add_hwmon_sysfs(struct thermal_zone_device *tz);
+ void thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz);
+ #else
+-static int
++static inline int
+ thermal_add_hwmon_sysfs(struct thermal_zone_device *tz)
+ {
+ 	return 0;
+ }
+ 
+-static void
++static inline void
+ thermal_remove_hwmon_sysfs(struct thermal_zone_device *tz)
+ {
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1249_56ea9164467b3339d6e98955cb1d97a9af4be0ed.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1249_56ea9164467b3339d6e98955cb1d97a9af4be0ed.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

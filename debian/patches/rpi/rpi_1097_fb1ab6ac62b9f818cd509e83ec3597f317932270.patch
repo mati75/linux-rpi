@@ -1,0 +1,43 @@
+commit fb1ab6ac62b9f818cd509e83ec3597f317932270
+Author: Luca Ceresoli <luca@lucaceresoli.net>
+Date:   Tue Nov 27 03:34:45 2018 -0500
+
+    media: imx274: select REGMAP_I2C
+    
+    [ Upstream commit 4f9d7225c70dd9d3f406b79e60f8dbd2cd5ae743 ]
+    
+    The imx274 driver uses regmap and the build will fail without it.
+    
+    Fixes:
+    
+      drivers/media/i2c/imx274.c:142:21: error: variable ‘imx274_regmap_config’ has initializer but incomplete type
+       static const struct regmap_config imx274_regmap_config = {
+                           ^~~~~~~~~~~~~
+      drivers/media/i2c/imx274.c:1869:19: error: implicit declaration of function ‘devm_regmap_init_i2c’ [-Werror=implicit-function-declaration]
+        imx274->regmap = devm_regmap_init_i2c(client, &imx274_regmap_config);
+                         ^~~~~~~~~~~~~~~~~~~~
+    
+    and others.
+    
+    Signed-off-by: Luca Ceresoli <luca@lucaceresoli.net>
+    Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+    Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/media/i2c/Kconfig b/drivers/media/i2c/Kconfig
+index 041a777dfdee..63c9ac2c6a5f 100644
+--- a/drivers/media/i2c/Kconfig
++++ b/drivers/media/i2c/Kconfig
+@@ -611,6 +611,7 @@ config VIDEO_IMX274
+ 	tristate "Sony IMX274 sensor support"
+ 	depends on I2C && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
+ 	depends on MEDIA_CAMERA_SUPPORT
++	select REGMAP_I2C
+ 	---help---
+ 	  This is a V4L2 sensor driver for the Sony IMX274
+ 	  CMOS image sensor.
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1097_fb1ab6ac62b9f818cd509e83ec3597f317932270.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1097_fb1ab6ac62b9f818cd509e83ec3597f317932270.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,53 @@
+commit a3fadeff71221781ac37cc0ed2cf6a436e6b5091
+Author: Meelis Roos <mroos@linux.ee>
+Date:   Fri Oct 12 12:27:51 2018 +0300
+
+    alpha: Fix Eiger NR_IRQS to 128
+    
+    commit bfc913682464f45bc4d6044084e370f9048de9d5 upstream.
+    
+    Eiger machine vector definition has nr_irqs 128, and working 2.6.26
+    boot shows SCSI getting IRQ-s 64 and 65. Current kernel boot fails
+    because Symbios SCSI fails to request IRQ-s and does not find the disks.
+    It has been broken at least since 3.18 - the earliest I could test with
+    my gcc-5.
+    
+    The headers have moved around and possibly another order of defines has
+    worked in the past - but since 128 seems to be correct and used, fix
+    arch/alpha/include/asm/irq.h to have NR_IRQS=128 for Eiger.
+    
+    This fixes 4.19-rc7 boot on my Force Flexor A264 (Eiger subarch).
+    
+    Cc: stable@vger.kernel.org # v3.18+
+    Signed-off-by: Meelis Roos <mroos@linux.ee>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/alpha/include/asm/irq.h b/arch/alpha/include/asm/irq.h
+index 4d17cacd1462..432402c8e47f 100644
+--- a/arch/alpha/include/asm/irq.h
++++ b/arch/alpha/include/asm/irq.h
+@@ -56,15 +56,15 @@
+ 
+ #elif defined(CONFIG_ALPHA_DP264) || \
+       defined(CONFIG_ALPHA_LYNX)  || \
+-      defined(CONFIG_ALPHA_SHARK) || \
+-      defined(CONFIG_ALPHA_EIGER)
++      defined(CONFIG_ALPHA_SHARK)
+ # define NR_IRQS	64
+ 
+ #elif defined(CONFIG_ALPHA_TITAN)
+ #define NR_IRQS		80
+ 
+ #elif defined(CONFIG_ALPHA_RAWHIDE) || \
+-	defined(CONFIG_ALPHA_TAKARA)
++      defined(CONFIG_ALPHA_TAKARA) || \
++      defined(CONFIG_ALPHA_EIGER)
+ # define NR_IRQS	128
+ 
+ #elif defined(CONFIG_ALPHA_WILDFIRE)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1425_a3fadeff71221781ac37cc0ed2cf6a436e6b5091.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1425_a3fadeff71221781ac37cc0ed2cf6a436e6b5091.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

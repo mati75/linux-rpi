@@ -1,0 +1,53 @@
+commit 93e7d51029bd366c0f4bd432edb9fbfa8430f543
+Author: Charles Keepax <ckeepax@opensource.cirrus.com>
+Date:   Tue Feb 5 16:29:40 2019 +0000
+
+    ALSA: compress: Fix stop handling on compressed capture streams
+    
+    commit 4f2ab5e1d13d6aa77c55f4914659784efd776eb4 upstream.
+    
+    It is normal user behaviour to start, stop, then start a stream
+    again without closing it. Currently this works for compressed
+    playback streams but not capture ones.
+    
+    The states on a compressed capture stream go directly from OPEN to
+    PREPARED, unlike a playback stream which moves to SETUP and waits
+    for a write of data before moving to PREPARED. Currently however,
+    when a stop is sent the state is set to SETUP for both types of
+    streams. This leaves a capture stream in the situation where a new
+    start can't be sent as that requires the state to be PREPARED and
+    a new set_params can't be sent as that requires the state to be
+    OPEN. The only option being to close the stream, and then reopen.
+    
+    Correct this issues by allowing snd_compr_drain_notify to set the
+    state depending on the stream direction, as we already do in
+    set_params.
+    
+    Fixes: 49bb6402f1aa ("ALSA: compress_core: Add support for capture streams")
+    Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+    Cc: <stable@vger.kernel.org>
+    Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/include/sound/compress_driver.h b/include/sound/compress_driver.h
+index ea8c93bbb0e0..e87f2d5b3cc6 100644
+--- a/include/sound/compress_driver.h
++++ b/include/sound/compress_driver.h
+@@ -171,7 +171,11 @@ static inline void snd_compr_drain_notify(struct snd_compr_stream *stream)
+ 	if (snd_BUG_ON(!stream))
+ 		return;
+ 
+-	stream->runtime->state = SNDRV_PCM_STATE_SETUP;
++	if (stream->direction == SND_COMPRESS_PLAYBACK)
++		stream->runtime->state = SNDRV_PCM_STATE_SETUP;
++	else
++		stream->runtime->state = SNDRV_PCM_STATE_PREPARED;
++
+ 	wake_up(&stream->runtime->sleep);
+ }
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1269_93e7d51029bd366c0f4bd432edb9fbfa8430f543.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1269_93e7d51029bd366c0f4bd432edb9fbfa8430f543.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

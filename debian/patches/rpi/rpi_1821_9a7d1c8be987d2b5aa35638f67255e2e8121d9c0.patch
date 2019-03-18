@@ -1,0 +1,27 @@
+commit 9a7d1c8be987d2b5aa35638f67255e2e8121d9c0
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Tue Feb 5 12:31:23 2019 +0000
+
+    config: Add IPVLAN module to bcmrpi3_defconfig
+    
+    It's built for the 32bit kernels, but not for the 64bit ones.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 474d5c56a881..f6df43298ef5 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -430,6 +430,7 @@ CONFIG_BONDING=m
+ CONFIG_DUMMY=m
+ CONFIG_IFB=m
+ CONFIG_MACVLAN=m
++CONFIG_IPVLAN=m
+ CONFIG_VXLAN=m
+ CONFIG_NETCONSOLE=m
+ CONFIG_TUN=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1821_9a7d1c8be987d2b5aa35638f67255e2e8121d9c0.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1821_9a7d1c8be987d2b5aa35638f67255e2e8121d9c0.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

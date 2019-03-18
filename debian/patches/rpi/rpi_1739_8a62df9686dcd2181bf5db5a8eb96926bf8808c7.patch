@@ -1,0 +1,78 @@
+commit 8a62df9686dcd2181bf5db5a8eb96926bf8808c7
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Mon Oct 29 16:20:46 2018 +0000
+
+    staging: mmal-vchiq: Avoid use of bool in structures
+    
+    Fixes up a checkpatch error "Avoid using bool structure members
+    because of possible alignment issues".
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+Index: linuxtest/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
+===================================================================
+--- linuxtest.orig/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
++++ linuxtest/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
+@@ -860,9 +860,9 @@ static int port_info_get(struct vchiq_mm
+ 		goto release_msg;
+ 
+ 	if (rmsg->u.port_info_get_reply.port.is_enabled == 0)
+-		port->enabled = false;
++		port->enabled = 0;
+ 	else
+-		port->enabled = true;
++		port->enabled = 1;
+ 
+ 	/* copy the values out of the message */
+ 	port->handle = rmsg->u.port_info_get_reply.port_handle;
+@@ -1299,7 +1299,7 @@ static int port_disable(struct vchiq_mma
+ 	if (!port->enabled)
+ 		return 0;
+ 
+-	port->enabled = false;
++	port->enabled = 0;
+ 
+ 	ret = port_action_port(instance, port,
+ 			       MMAL_MSG_PORT_ACTION_TYPE_DISABLE);
+@@ -1351,7 +1351,7 @@ static int port_enable(struct vchiq_mmal
+ 	if (ret)
+ 		goto done;
+ 
+-	port->enabled = true;
++	port->enabled = 1;
+ 
+ 	if (port->buffer_cb) {
+ 		/* send buffer headers to videocore */
+@@ -1523,7 +1523,7 @@ int vchiq_mmal_port_connect_tunnel(struc
+ 			pr_err("failed disconnecting src port\n");
+ 			goto release_unlock;
+ 		}
+-		src->connected->enabled = false;
++		src->connected->enabled = 0;
+ 		src->connected = NULL;
+ 	}
+ 
+@@ -1759,7 +1759,7 @@ int vchiq_mmal_component_enable(struct v
+ 
+ 	ret = enable_component(instance, component);
+ 	if (ret == 0)
+-		component->enabled = true;
++		component->enabled = 1;
+ 
+ 	mutex_unlock(&instance->vchiq_mutex);
+ 
+@@ -1785,7 +1785,7 @@ int vchiq_mmal_component_disable(struct
+ 
+ 	ret = disable_component(instance, component);
+ 	if (ret == 0)
+-		component->enabled = false;
++		component->enabled = 0;
+ 
+ 	mutex_unlock(&instance->vchiq_mutex);
+ 
+Index: linuxtest/dummy/rpi_1739_8a62df9686dcd2181bf5db5a8eb96926bf8808c7.txt
+===================================================================
+--- /dev/null
++++ linuxtest/dummy/rpi_1739_8a62df9686dcd2181bf5db5a8eb96926bf8808c7.txt
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

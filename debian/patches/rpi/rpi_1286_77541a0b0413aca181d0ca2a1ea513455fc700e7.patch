@@ -1,0 +1,45 @@
+commit 77541a0b0413aca181d0ca2a1ea513455fc700e7
+Author: Gustavo A. R. Silva <gustavo@embeddedor.com>
+Date:   Tue Jan 22 15:28:08 2019 -0600
+
+    usb: gadget: udc: net2272: Fix bitwise and boolean operations
+    
+    commit 07c69f1148da7de3978686d3af9263325d9d60bd upstream.
+    
+    (!x & y) strikes again.
+    
+    Fix bitwise and boolean operations by enclosing the expression:
+    
+            intcsr & (1 << NET2272_PCI_IRQ)
+    
+    in parentheses, before applying the boolean operator '!'.
+    
+    Notice that this code has been there since 2011. So, it would
+    be helpful if someone can double-check this.
+    
+    This issue was detected with the help of Coccinelle.
+    
+    Fixes: ceb80363b2ec ("USB: net2272: driver for PLX NET2272 USB device controller")
+    Cc: stable@vger.kernel.org
+    Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+    Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/usb/gadget/udc/net2272.c b/drivers/usb/gadget/udc/net2272.c
+index 660878a19505..b77f3126580e 100644
+--- a/drivers/usb/gadget/udc/net2272.c
++++ b/drivers/usb/gadget/udc/net2272.c
+@@ -2083,7 +2083,7 @@ static irqreturn_t net2272_irq(int irq, void *_dev)
+ #if defined(PLX_PCI_RDK2)
+ 	/* see if PCI int for us by checking irqstat */
+ 	intcsr = readl(dev->rdk2.fpga_base_addr + RDK2_IRQSTAT);
+-	if (!intcsr & (1 << NET2272_PCI_IRQ)) {
++	if (!(intcsr & (1 << NET2272_PCI_IRQ))) {
+ 		spin_unlock(&dev->lock);
+ 		return IRQ_NONE;
+ 	}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1286_77541a0b0413aca181d0ca2a1ea513455fc700e7.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1286_77541a0b0413aca181d0ca2a1ea513455fc700e7.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

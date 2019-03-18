@@ -1,0 +1,40 @@
+commit d180c28698a1b6ae01c570d2166d96cf94439ca2
+Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
+Date:   Thu Jan 3 13:59:48 2019 +0200
+
+    drm/bridge: tc358767: add bus flags
+    
+    [ Upstream commit 4842379cbe6e851de914a7132f76f4e200b9a98b ]
+    
+    tc358767 driver does not set DRM bus_flags, even if it does configures
+    the polarity settings into its registers. This means that the DPI source
+    can't configure the polarities correctly.
+    
+    Add sync flags accordingly.
+    
+    Signed-off-by: Tomi Valkeinen <tomi.valkeinen@ti.com>
+    Reviewed-by: Andrzej Hajda <a.hajda@samsung.com>
+    Signed-off-by: Andrzej Hajda <a.hajda@samsung.com>
+    Link: https://patchwork.freedesktop.org/patch/msgid/20190103115954.12785-2-tomi.valkeinen@ti.com
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/gpu/drm/bridge/tc358767.c b/drivers/gpu/drm/bridge/tc358767.c
+index 8e28e738cb52..29a7e33e8ae0 100644
+--- a/drivers/gpu/drm/bridge/tc358767.c
++++ b/drivers/gpu/drm/bridge/tc358767.c
+@@ -1195,6 +1195,10 @@ static int tc_bridge_attach(struct drm_bridge *bridge)
+ 
+ 	drm_display_info_set_bus_formats(&tc->connector.display_info,
+ 					 &bus_format, 1);
++	tc->connector.display_info.bus_flags =
++		DRM_BUS_FLAG_DE_HIGH |
++		DRM_BUS_FLAG_PIXDATA_NEGEDGE |
++		DRM_BUS_FLAG_SYNC_NEGEDGE;
+ 	drm_connector_attach_encoder(&tc->connector, tc->bridge.encoder);
+ 
+ 	return 0;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1382_d180c28698a1b6ae01c570d2166d96cf94439ca2.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1382_d180c28698a1b6ae01c570d2166d96cf94439ca2.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

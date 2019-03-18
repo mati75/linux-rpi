@@ -1,0 +1,47 @@
+commit 8b8f7b04f868214dddc41614bd2754e6e3e39b9d
+Author: Benedict Wong <benedictwong@google.com>
+Date:   Mon Jan 14 11:24:38 2019 -0800
+
+    xfrm: Make set-mark default behavior backward compatible
+    
+    commit e2612cd496e7b465711d219ea6118893d7253f52 upstream.
+    
+    Fixes 9b42c1f179a6, which changed the default route lookup behavior for
+    tunnel mode SAs in the outbound direction to use the skb mark, whereas
+    previously mark=0 was used if the output mark was unspecified. In
+    mark-based routing schemes such as Android’s, this change in default
+    behavior causes routing loops or lookup failures.
+    
+    This patch restores the default behavior of using a 0 mark while still
+    incorporating the skb mark if the SET_MARK (and SET_MARK_MASK) is
+    specified.
+    
+    Tested with additions to Android's kernel unit test suite:
+    https://android-review.googlesource.com/c/kernel/tests/+/860150
+    
+    Fixes: 9b42c1f179a6 ("xfrm: Extend the output_mark to support input direction and masking")
+    Signed-off-by: Benedict Wong <benedictwong@google.com>
+    Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 119a427d9b2b..6ea8036fcdbe 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -1628,7 +1628,10 @@ static struct dst_entry *xfrm_bundle_create(struct xfrm_policy *policy,
+ 		dst_copy_metrics(dst1, dst);
+ 
+ 		if (xfrm[i]->props.mode != XFRM_MODE_TRANSPORT) {
+-			__u32 mark = xfrm_smark_get(fl->flowi_mark, xfrm[i]);
++			__u32 mark = 0;
++
++			if (xfrm[i]->props.smark.v || xfrm[i]->props.smark.m)
++				mark = xfrm_smark_get(fl->flowi_mark, xfrm[i]);
+ 
+ 			family = xfrm[i]->props.family;
+ 			dst = xfrm_dst_lookup(xfrm[i], tos, fl->flowi_oif,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1344_8b8f7b04f868214dddc41614bd2754e6e3e39b9d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1344_8b8f7b04f868214dddc41614bd2754e6e3e39b9d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

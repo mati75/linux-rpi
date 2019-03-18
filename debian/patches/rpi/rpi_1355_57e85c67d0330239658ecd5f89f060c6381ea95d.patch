@@ -1,0 +1,32 @@
+commit 57e85c67d0330239658ecd5f89f060c6381ea95d
+Author: Adrian Bunk <bunk@kernel.org>
+Date:   Thu Nov 29 21:58:57 2018 +0200
+
+    dt-bindings: eeprom: at24: add "atmel,24c2048" compatible string
+    
+    [ Upstream commit 6c0c5dc33ff42af49243e94842d0ebdb153189ea ]
+    
+    Add new compatible to the device tree bindings.
+    
+    Signed-off-by: Adrian Bunk <bunk@kernel.org>
+    Acked-by: Rob Herring <robh@kernel.org>
+    Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/Documentation/devicetree/bindings/eeprom/at24.txt b/Documentation/devicetree/bindings/eeprom/at24.txt
+index aededdbc262b..f9a7c984274c 100644
+--- a/Documentation/devicetree/bindings/eeprom/at24.txt
++++ b/Documentation/devicetree/bindings/eeprom/at24.txt
+@@ -27,6 +27,7 @@ Required properties:
+                 "atmel,24c256",
+                 "atmel,24c512",
+                 "atmel,24c1024",
++                "atmel,24c2048",
+ 
+                 If <manufacturer> is not "atmel", then a fallback must be used
+                 with the same <model> and "atmel" as manufacturer.
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1355_57e85c67d0330239658ecd5f89f060c6381ea95d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1355_57e85c67d0330239658ecd5f89f060c6381ea95d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

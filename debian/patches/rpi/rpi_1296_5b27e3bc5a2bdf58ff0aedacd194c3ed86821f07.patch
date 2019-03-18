@@ -1,0 +1,53 @@
+commit 5b27e3bc5a2bdf58ff0aedacd194c3ed86821f07
+Author: Tony Luck <tony.luck@intel.com>
+Date:   Thu Jan 31 16:33:41 2019 -0800
+
+    x86/MCE: Initialize mce.bank in the case of a fatal error in mce_no_way_out()
+    
+    commit d28af26faa0b1daf3c692603d46bc4687c16f19e upstream.
+    
+    Internal injection testing crashed with a console log that said:
+    
+      mce: [Hardware Error]: CPU 7: Machine Check Exception: f Bank 0: bd80000000100134
+    
+    This caused a lot of head scratching because the MCACOD (bits 15:0) of
+    that status is a signature from an L1 data cache error. But Linux says
+    that it found it in "Bank 0", which on this model CPU only reports L1
+    instruction cache errors.
+    
+    The answer was that Linux doesn't initialize "m->bank" in the case that
+    it finds a fatal error in the mce_no_way_out() pre-scan of banks. If
+    this was a local machine check, then this partially initialized struct
+    mce is being passed to mce_panic().
+    
+    Fix is simple: just initialize m->bank in the case of a fatal error.
+    
+    Fixes: 40c36e2741d7 ("x86/mce: Fix incorrect "Machine check from unknown source" message")
+    Signed-off-by: Tony Luck <tony.luck@intel.com>
+    Signed-off-by: Borislav Petkov <bp@suse.de>
+    Cc: "H. Peter Anvin" <hpa@zytor.com>
+    Cc: Ingo Molnar <mingo@redhat.com>
+    Cc: Thomas Gleixner <tglx@linutronix.de>
+    Cc: Vishal Verma <vishal.l.verma@intel.com>
+    Cc: x86-ml <x86@kernel.org>
+    Cc: stable@vger.kernel.org # v4.18 Note pre-v5.0 arch/x86/kernel/cpu/mce/core.c was called arch/x86/kernel/cpu/mcheck/mce.c
+    Link: https://lkml.kernel.org/r/20190201003341.10638-1-tony.luck@intel.com
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/x86/kernel/cpu/mcheck/mce.c b/arch/x86/kernel/cpu/mcheck/mce.c
+index cdbedeb3f3db..f9e7096b1804 100644
+--- a/arch/x86/kernel/cpu/mcheck/mce.c
++++ b/arch/x86/kernel/cpu/mcheck/mce.c
+@@ -783,6 +783,7 @@ static int mce_no_way_out(struct mce *m, char **msg, unsigned long *validp,
+ 			quirk_no_way_out(i, m, regs);
+ 
+ 		if (mce_severity(m, mca_cfg.tolerant, &tmp, true) >= MCE_PANIC_SEVERITY) {
++			m->bank = i;
+ 			mce_read_aux(m, i);
+ 			*msg = tmp;
+ 			return 1;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1296_5b27e3bc5a2bdf58ff0aedacd194c3ed86821f07.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1296_5b27e3bc5a2bdf58ff0aedacd194c3ed86821f07.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

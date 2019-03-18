@@ -1,0 +1,67 @@
+commit 0a5dc03690cc45ecdcd304000f619f6976da5e60
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Jul 18 17:25:00 2018 +0100
+
+    overlays: Add gpio-no-bank0-irq overlay
+    
+    See: https://github.com/raspberrypi/linux/issues/2590
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index 99338350fc51..bcfde487ea1a 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -37,6 +37,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	gpio-ir.dtbo \
+ 	gpio-ir-tx.dtbo \
+ 	gpio-key.dtbo \
++	gpio-no-bank0-irq.dtbo \
+ 	gpio-no-irq.dtbo \
+ 	gpio-poweroff.dtbo \
+ 	gpio-shutdown.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index ab70c054ac15..fda97eb4c1dc 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -597,6 +597,15 @@ Params: gpio                    GPIO pin to trigger on (default 3)
+         keycode                 Set the key code for the button
+ 
+ 
++Name:   gpio-no-bank0-irq
++Info:   Use this overlay to disable GPIO interrupts for GPIOs in bank 0 (0-27),
++        which can be useful for UIO drivers.
++        N.B. Using this overlay will trigger a kernel WARN during booting, but
++        this can safely be ignored - the system should work as expected.
++Load:   dtoverlay=gpio-no-bank0-irq
++Params: <None>
++
++
+ Name:   gpio-no-irq
+ Info:   Use this overlay to disable all GPIO interrupts, which can be useful
+         for user-space GPIO edge detection systems.
+diff --git a/arch/arm/boot/dts/overlays/gpio-no-bank0-irq-overlay.dts b/arch/arm/boot/dts/overlays/gpio-no-bank0-irq-overlay.dts
+new file mode 100755
+index 000000000000..96cbe80820b7
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/gpio-no-bank0-irq-overlay.dts
+@@ -0,0 +1,14 @@
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2835";
++
++	fragment@0 {
++		// Configure the gpio pin controller
++		target = <&gpio>;
++		__overlay__ {
++			    interrupts = <255 255>, <2 18>;
++		};
++	};
++};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1646_0a5dc03690cc45ecdcd304000f619f6976da5e60.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1646_0a5dc03690cc45ecdcd304000f619f6976da5e60.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

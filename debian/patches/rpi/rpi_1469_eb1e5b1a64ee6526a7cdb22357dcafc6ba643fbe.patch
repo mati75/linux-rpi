@@ -1,0 +1,24 @@
+commit eb1e5b1a64ee6526a7cdb22357dcafc6ba643fbe
+Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Date:   Sat Feb 23 09:07:27 2019 +0100
+
+    Linux 4.19.25
+
+diff --git a/Makefile b/Makefile
+index 370ad0d34076..2caa131ff306 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ VERSION = 4
+ PATCHLEVEL = 19
+-SUBLEVEL = 24
++SUBLEVEL = 25
+ EXTRAVERSION =
+ NAME = "People's Front"
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1469_eb1e5b1a64ee6526a7cdb22357dcafc6ba643fbe.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1469_eb1e5b1a64ee6526a7cdb22357dcafc6ba643fbe.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

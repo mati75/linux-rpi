@@ -1,0 +1,41 @@
+commit 1f16ac59e7e5dd6f001121f2e5ee0a0869a47176
+Author: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Date:   Sat Nov 24 21:14:16 2018 +0300
+
+    sata_rcar: fix deferred probing
+    
+    [ Upstream commit 9f83cfdb1ace3ef268ecc6fda50058d2ec37d603 ]
+    
+    The driver overrides the error codes returned by platform_get_irq() to
+    -EINVAL, so if it returns -EPROBE_DEFER, the driver would fail the probe
+    permanently instead of the deferred probing. Switch to propagating the
+    error code upstream, still checking/overriding IRQ0 as libata regards it
+    as "no IRQ" (thus polling) anyway...
+    
+    Fixes: 9ec36cafe43b ("of/irq: do irq resolution in platform_get_irq")
+    Reviewed-by: Simon Horman <horms+renesas@verge.net.au>
+    Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+    Signed-off-by: Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+    Signed-off-by: Jens Axboe <axboe@kernel.dk>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/ata/sata_rcar.c b/drivers/ata/sata_rcar.c
+index 10ecb232245d..03867f539f3a 100644
+--- a/drivers/ata/sata_rcar.c
++++ b/drivers/ata/sata_rcar.c
+@@ -895,7 +895,9 @@ static int sata_rcar_probe(struct platform_device *pdev)
+ 	int ret = 0;
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (irq <= 0)
++	if (irq < 0)
++		return irq;
++	if (!irq)
+ 		return -EINVAL;
+ 
+ 	priv = devm_kzalloc(dev, sizeof(struct sata_rcar_priv), GFP_KERNEL);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1118_1f16ac59e7e5dd6f001121f2e5ee0a0869a47176.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1118_1f16ac59e7e5dd6f001121f2e5ee0a0869a47176.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

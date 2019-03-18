@@ -1,0 +1,52 @@
+commit 6a3f7237871c4d5c090ab9a6fce3ba6a1baf1f82
+Author: Jann Horn <jannh@google.com>
+Date:   Wed Feb 6 22:56:15 2019 +0100
+
+    netfilter: nf_nat_snmp_basic: add missing length checks in ASN.1 cbs
+    
+    commit c4c07b4d6fa1f11880eab8e076d3d060ef3f55fc upstream.
+    
+    The generic ASN.1 decoder infrastructure doesn't guarantee that callbacks
+    will get as much data as they expect; callbacks have to check the `datalen`
+    parameter before looking at `data`. Make sure that snmp_version() and
+    snmp_helper() don't read/write beyond the end of the packet data.
+    
+    (Also move the assignment to `pdata` down below the check to make it clear
+    that it isn't necessarily a pointer we can use before the `datalen` check.)
+    
+    Fixes: cc2d58634e0f ("netfilter: nf_nat_snmp_basic: use asn1 decoder library")
+    Signed-off-by: Jann Horn <jannh@google.com>
+    Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/net/ipv4/netfilter/nf_nat_snmp_basic_main.c b/net/ipv4/netfilter/nf_nat_snmp_basic_main.c
+index ac110c1d55b5..481437fc1eb2 100644
+--- a/net/ipv4/netfilter/nf_nat_snmp_basic_main.c
++++ b/net/ipv4/netfilter/nf_nat_snmp_basic_main.c
+@@ -104,6 +104,8 @@ static void fast_csum(struct snmp_ctx *ctx, unsigned char offset)
+ int snmp_version(void *context, size_t hdrlen, unsigned char tag,
+ 		 const void *data, size_t datalen)
+ {
++	if (datalen != 1)
++		return -EINVAL;
+ 	if (*(unsigned char *)data > 1)
+ 		return -ENOTSUPP;
+ 	return 1;
+@@ -113,8 +115,11 @@ int snmp_helper(void *context, size_t hdrlen, unsigned char tag,
+ 		const void *data, size_t datalen)
+ {
+ 	struct snmp_ctx *ctx = (struct snmp_ctx *)context;
+-	__be32 *pdata = (__be32 *)data;
++	__be32 *pdata;
+ 
++	if (datalen != 4)
++		return -EINVAL;
++	pdata = (__be32 *)data;
+ 	if (*pdata == ctx->from) {
+ 		pr_debug("%s: %pI4 to %pI4\n", __func__,
+ 			 (void *)&ctx->from, (void *)&ctx->to);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1465_6a3f7237871c4d5c090ab9a6fce3ba6a1baf1f82.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1465_6a3f7237871c4d5c090ab9a6fce3ba6a1baf1f82.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

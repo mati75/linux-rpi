@@ -1,0 +1,70 @@
+commit 83430596d497eaf7ecb431dc6105e9299f4acf0a
+Author: Suganath Prabu <suganath-prabu.subramani@broadcom.com>
+Date:   Wed Oct 31 18:53:35 2018 +0530
+
+    scsi: mpt3sas: Call sas_remove_host before removing the target devices
+    
+    [ Upstream commit dc730212e8a378763cb182b889f90c8101331332 ]
+    
+    Call sas_remove_host() before removing the target devices in the driver's
+    .remove() callback function(i.e. during driver unload time).  So that
+    driver can provide a way to allow SYNC CACHE, START STOP unit commands
+    etc. (which are issued from SML) to the target drives during driver unload
+    time.
+    
+    Once sas_remove_host() is called before removing the target drives then
+    driver can just clean up the resources allocated for target devices and no
+    need to call sas_port_delete_phy(), sas_port_delete() API's as these API's
+    internally called from sas_remove_host().
+    
+    Signed-off-by: Suganath Prabu <suganath-prabu.subramani@broadcom.com>
+    Reviewed-by: Bjorn Helgaas <bhelgaas@google.com>
+    Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+    Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_scsih.c b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
+index 53133cfd420f..622832e55211 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_scsih.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_scsih.c
+@@ -9809,6 +9809,7 @@ static void scsih_remove(struct pci_dev *pdev)
+ 
+ 	/* release all the volumes */
+ 	_scsih_ir_shutdown(ioc);
++	sas_remove_host(shost);
+ 	list_for_each_entry_safe(raid_device, next, &ioc->raid_device_list,
+ 	    list) {
+ 		if (raid_device->starget) {
+@@ -9851,7 +9852,6 @@ static void scsih_remove(struct pci_dev *pdev)
+ 		ioc->sas_hba.num_phys = 0;
+ 	}
+ 
+-	sas_remove_host(shost);
+ 	mpt3sas_base_detach(ioc);
+ 	spin_lock(&gioc_lock);
+ 	list_del(&ioc->list);
+diff --git a/drivers/scsi/mpt3sas/mpt3sas_transport.c b/drivers/scsi/mpt3sas/mpt3sas_transport.c
+index f8cc2677c1cd..20d36061c217 100644
+--- a/drivers/scsi/mpt3sas/mpt3sas_transport.c
++++ b/drivers/scsi/mpt3sas/mpt3sas_transport.c
+@@ -834,10 +834,13 @@ mpt3sas_transport_port_remove(struct MPT3SAS_ADAPTER *ioc, u64 sas_address,
+ 			    mpt3sas_port->remote_identify.sas_address,
+ 			    mpt3sas_phy->phy_id);
+ 		mpt3sas_phy->phy_belongs_to_port = 0;
+-		sas_port_delete_phy(mpt3sas_port->port, mpt3sas_phy->phy);
++		if (!ioc->remove_host)
++			sas_port_delete_phy(mpt3sas_port->port,
++						mpt3sas_phy->phy);
+ 		list_del(&mpt3sas_phy->port_siblings);
+ 	}
+-	sas_port_delete(mpt3sas_port->port);
++	if (!ioc->remove_host)
++		sas_port_delete(mpt3sas_port->port);
+ 	kfree(mpt3sas_port);
+ }
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1016_83430596d497eaf7ecb431dc6105e9299f4acf0a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1016_83430596d497eaf7ecb431dc6105e9299f4acf0a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

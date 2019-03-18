@@ -1,0 +1,39 @@
+commit d65fbc4fe9a9688ad2e63c92befe2be5e66c9b5b
+Author: YueHaibing <yuehaibing@huawei.com>
+Date:   Sat Nov 24 18:16:41 2018 +0800
+
+    net: aquantia: return 'err' if set MPI_DEINIT state fails
+    
+    [ Upstream commit 4e3c7c00bba0636b97eb23d582c20b0f5d95ce20 ]
+    
+    Fixes gcc '-Wunused-but-set-variable' warning:
+    
+    drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c:260:7:
+     warning: variable 'err' set but not used [-Wunused-but-set-variable]
+    
+    'err' should be returned while set MPI_DEINIT state fails
+    in hw_atl_utils_soft_reset.
+    
+    Fixes: cce96d1883da ("net: aquantia: Regression on reset with 1.x firmware")
+    Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+index c965e65d07db..9939ccaeb125 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_utils.c
+@@ -262,6 +262,8 @@ int hw_atl_utils_soft_reset(struct aq_hw_s *self)
+ 		AQ_HW_WAIT_FOR((aq_hw_read_reg(self, HW_ATL_MPI_STATE_ADR) &
+ 			       HW_ATL_MPI_STATE_MSK) == MPI_DEINIT,
+ 			       10, 1000U);
++		if (err)
++			return err;
+ 	}
+ 
+ 	if (self->rbl_enabled)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1070_d65fbc4fe9a9688ad2e63c92befe2be5e66c9b5b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1070_d65fbc4fe9a9688ad2e63c92befe2be5e66c9b5b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

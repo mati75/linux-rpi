@@ -1,0 +1,37 @@
+commit 1e3300eb2189d3657c7f222eb334838520113d8b
+Author: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Tue Feb 19 23:45:29 2019 +0800
+
+    sky2: Increase D3 delay again
+    
+    [ Upstream commit 1765f5dcd00963e33f1b8a4e0f34061fbc0e2f7f ]
+    
+    Another platform requires even longer delay to make the device work
+    correctly after S3.
+    
+    So increase the delay to 300ms.
+    
+    BugLink: https://bugs.launchpad.net/bugs/1798921
+    
+    Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
+index 697d9b374f5e..ae2f35039343 100644
+--- a/drivers/net/ethernet/marvell/sky2.c
++++ b/drivers/net/ethernet/marvell/sky2.c
+@@ -5087,7 +5087,7 @@ static int sky2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	INIT_WORK(&hw->restart_work, sky2_restart);
+ 
+ 	pci_set_drvdata(pdev, hw);
+-	pdev->d3_delay = 200;
++	pdev->d3_delay = 300;
+ 
+ 	return 0;
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1452_1e3300eb2189d3657c7f222eb334838520113d8b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1452_1e3300eb2189d3657c7f222eb334838520113d8b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

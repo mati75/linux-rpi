@@ -1,0 +1,48 @@
+commit d657e82f4e6799cc406e875b003b48b430e5f84f
+Author: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Mon Dec 3 13:54:38 2018 +0800
+
+    igb: Fix an issue that PME is not enabled during runtime suspend
+    
+    [ Upstream commit 1fb3a7a75e2efcc83ef21f2434069cddd6fae6f5 ]
+    
+    I210 ethernet card doesn't wakeup when a cable gets plugged. It's
+    because its PME is not set.
+    
+    Since commit 42eca2302146 ("PCI: Don't touch card regs after runtime
+    suspend D3"), if the PCI state is saved, pci_pm_runtime_suspend() stops
+    calling pci_finish_runtime_suspend(), which enables the PCI PME.
+    
+    To fix the issue, let's not to save PCI states when it's runtime
+    suspend, to let the PCI subsystem enables PME.
+    
+    Fixes: 42eca2302146 ("PCI: Don't touch card regs after runtime suspend D3")
+    Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+    Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+    Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 0796cef96fa3..ffaa6e031632 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -8770,9 +8770,11 @@ static int __igb_shutdown(struct pci_dev *pdev, bool *enable_wake,
+ 	rtnl_unlock();
+ 
+ #ifdef CONFIG_PM
+-	retval = pci_save_state(pdev);
+-	if (retval)
+-		return retval;
++	if (!runtime) {
++		retval = pci_save_state(pdev);
++		if (retval)
++			return retval;
++	}
+ #endif
+ 
+ 	status = rd32(E1000_STATUS);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1192_d657e82f4e6799cc406e875b003b48b430e5f84f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1192_d657e82f4e6799cc406e875b003b48b430e5f84f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

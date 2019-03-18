@@ -1,0 +1,45 @@
+commit c58f010bebfd4e1a862b43fce0a608d862fa785f
+Author: Vitaly Kuznetsov <vkuznets@redhat.com>
+Date:   Thu Feb 7 11:42:14 2019 +0100
+
+    x86/kvm/nVMX: read from MSR_IA32_VMX_PROCBASED_CTLS2 only when it is available
+    
+    commit 6b1971c694975e49af302229202c0043568b1791 upstream.
+    
+    SDM says MSR_IA32_VMX_PROCBASED_CTLS2 is only available "If
+    (CPUID.01H:ECX.[5] && IA32_VMX_PROCBASED_CTLS[63])". It was found that
+    some old cpus (namely "Intel(R) Core(TM)2 CPU 6600 @ 2.40GHz (family: 0x6,
+    model: 0xf, stepping: 0x6") don't have it. Add the missing check.
+    
+    Reported-by: Zdenek Kaspar <zkaspar82@gmail.com>
+    Tested-by: Zdenek Kaspar <zkaspar82@gmail.com>
+    Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+    Reviewed-by: Jim Mattson <jmattson@google.com>
+    Cc: stable@vger.kernel.org
+    Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 0b2e13dd517b..a7899da66164 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -3601,9 +3601,11 @@ static void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, bool apicv)
+ 	 * secondary cpu-based controls.  Do not include those that
+ 	 * depend on CPUID bits, they are added later by vmx_cpuid_update.
+ 	 */
+-	rdmsr(MSR_IA32_VMX_PROCBASED_CTLS2,
+-		msrs->secondary_ctls_low,
+-		msrs->secondary_ctls_high);
++	if (msrs->procbased_ctls_high & CPU_BASED_ACTIVATE_SECONDARY_CONTROLS)
++		rdmsr(MSR_IA32_VMX_PROCBASED_CTLS2,
++		      msrs->secondary_ctls_low,
++		      msrs->secondary_ctls_high);
++
+ 	msrs->secondary_ctls_low = 0;
+ 	msrs->secondary_ctls_high &=
+ 		SECONDARY_EXEC_DESC |
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1415_c58f010bebfd4e1a862b43fce0a608d862fa785f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1415_c58f010bebfd4e1a862b43fce0a608d862fa785f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,46 @@
+commit 8a35f678e603122ff9a4093e9c3825c7bb1cdfb9
+Author: Konstantin Khorenko <khorenko@virtuozzo.com>
+Date:   Fri Nov 23 19:10:28 2018 +0300
+
+    i40e: define proper net_device::neigh_priv_len
+    
+    [ Upstream commit 31389b53b3e0b535867af9090a5d19ec64768d55 ]
+    
+    Out of bound read reported by KASan.
+    
+    i40iw_net_event() reads unconditionally 16 bytes from
+    neigh->primary_key while the memory allocated for
+    "neighbour" struct is evaluated in neigh_alloc() as
+    
+      tbl->entry_size + dev->neigh_priv_len
+    
+    where "dev" is a net_device.
+    
+    But the driver does not setup dev->neigh_priv_len and
+    we read beyond the neigh entry allocated memory,
+    so the patch in the next mail fixes this.
+    
+    Signed-off-by: Konstantin Khorenko <khorenko@virtuozzo.com>
+    Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+    Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index bfa5c525cf31..41fa22c562c1 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -12016,6 +12016,9 @@ static int i40e_config_netdev(struct i40e_vsi *vsi)
+ 	ether_addr_copy(netdev->dev_addr, mac_addr);
+ 	ether_addr_copy(netdev->perm_addr, mac_addr);
+ 
++	/* i40iw_net_event() reads 16 bytes from neigh->primary_key */
++	netdev->neigh_priv_len = sizeof(u32) * 4;
++
+ 	netdev->priv_flags |= IFF_UNICAST_FLT;
+ 	netdev->priv_flags |= IFF_SUPP_NOFCS;
+ 	/* Setup netdev TC information */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1190_8a35f678e603122ff9a4093e9c3825c7bb1cdfb9.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1190_8a35f678e603122ff9a4093e9c3825c7bb1cdfb9.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

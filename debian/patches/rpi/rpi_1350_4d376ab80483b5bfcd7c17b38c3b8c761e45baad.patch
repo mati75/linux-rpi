@@ -1,0 +1,43 @@
+commit 4d376ab80483b5bfcd7c17b38c3b8c761e45baad
+Author: Chuck Lever <chuck.lever@oracle.com>
+Date:   Mon Oct 1 14:15:56 2018 -0400
+
+    svcrdma: Reduce max_send_sges
+    
+    commit f3c1fd0ee294abd4367dfa72d89f016c682202f0 upstream.
+    
+    There's no need to request a large number of send SGEs because the
+    inline threshold already constrains the number of SGEs per Send.
+    
+    Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+    Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+    Signed-off-by: J. Bruce Fields <bfields@redhat.com>
+    Cc: Don Dutile <ddutile@redhat.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/net/sunrpc/xprtrdma/svc_rdma_transport.c b/net/sunrpc/xprtrdma/svc_rdma_transport.c
+index 2848cafd4a17..2f7ec8912f49 100644
+--- a/net/sunrpc/xprtrdma/svc_rdma_transport.c
++++ b/net/sunrpc/xprtrdma/svc_rdma_transport.c
+@@ -475,10 +475,12 @@ static struct svc_xprt *svc_rdma_accept(struct svc_xprt *xprt)
+ 
+ 	/* Qualify the transport resource defaults with the
+ 	 * capabilities of this particular device */
+-	newxprt->sc_max_send_sges = dev->attrs.max_send_sge;
+-	/* transport hdr, head iovec, one page list entry, tail iovec */
+-	if (newxprt->sc_max_send_sges < 4) {
+-		pr_err("svcrdma: too few Send SGEs available (%d)\n",
++	/* Transport header, head iovec, tail iovec */
++	newxprt->sc_max_send_sges = 3;
++	/* Add one SGE per page list entry */
++	newxprt->sc_max_send_sges += svcrdma_max_req_size / PAGE_SIZE;
++	if (newxprt->sc_max_send_sges > dev->attrs.max_send_sge) {
++		pr_err("svcrdma: too few Send SGEs available (%d needed)\n",
+ 		       newxprt->sc_max_send_sges);
+ 		goto errout;
+ 	}
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1350_4d376ab80483b5bfcd7c17b38c3b8c761e45baad.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1350_4d376ab80483b5bfcd7c17b38c3b8c761e45baad.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

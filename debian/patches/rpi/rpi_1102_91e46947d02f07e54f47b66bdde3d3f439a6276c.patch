@@ -1,0 +1,46 @@
+commit 91e46947d02f07e54f47b66bdde3d3f439a6276c
+Author: Kaike Wan <kaike.wan@intel.com>
+Date:   Wed Nov 28 10:22:09 2018 -0800
+
+    IB/hfi1: Unreserve a reserved request when it is completed
+    
+    [ Upstream commit ca95f802ef5139722acc8d30aeaab6fe5bbe939e ]
+    
+    Currently, When a reserved operation is completed, its entry in the send
+    queue will not be unreserved, which leads to the miscalculation of
+    qp->s_avail and thus the triggering of a WARN_ON call trace. This patch
+    fixes the problem by unreserving the reserved operation when it is
+    completed.
+    
+    Fixes: 856cc4c237ad ("IB/hfi1: Add the capability for reserved operations")
+    Reviewed-by: Mike Marciniszyn <mike.marciniszyn@intel.com>
+    Signed-off-by: Kaike Wan <kaike.wan@intel.com>
+    Signed-off-by: Dennis Dalessandro <dennis.dalessandro@intel.com>
+    Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/infiniband/hw/hfi1/rc.c b/drivers/infiniband/hw/hfi1/rc.c
+index 9bd63abb2dfe..6f013a565353 100644
+--- a/drivers/infiniband/hw/hfi1/rc.c
++++ b/drivers/infiniband/hw/hfi1/rc.c
+@@ -1157,6 +1157,7 @@ void hfi1_rc_send_complete(struct rvt_qp *qp, struct hfi1_opa_header *opah)
+ 		if (cmp_psn(wqe->lpsn, qp->s_sending_psn) >= 0 &&
+ 		    cmp_psn(qp->s_sending_psn, qp->s_sending_hpsn) <= 0)
+ 			break;
++		rvt_qp_wqe_unreserve(qp, wqe);
+ 		s_last = qp->s_last;
+ 		trace_hfi1_qp_send_completion(qp, wqe, s_last);
+ 		if (++s_last >= qp->s_size)
+@@ -1209,6 +1210,7 @@ static struct rvt_swqe *do_rc_completion(struct rvt_qp *qp,
+ 		u32 s_last;
+ 
+ 		rvt_put_swqe(wqe);
++		rvt_qp_wqe_unreserve(qp, wqe);
+ 		s_last = qp->s_last;
+ 		trace_hfi1_qp_send_completion(qp, wqe, s_last);
+ 		if (++s_last >= qp->s_size)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1102_91e46947d02f07e54f47b66bdde3d3f439a6276c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1102_91e46947d02f07e54f47b66bdde3d3f439a6276c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

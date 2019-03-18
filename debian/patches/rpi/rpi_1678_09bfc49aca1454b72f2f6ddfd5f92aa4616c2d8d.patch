@@ -1,0 +1,31 @@
+commit 09bfc49aca1454b72f2f6ddfd5f92aa4616c2d8d
+Author: James Hughes <JamesH65@users.noreply.github.com>
+Date:   Tue Nov 13 16:51:21 2018 +0000
+
+    Update README (#2750)
+    
+    Small update to the DT blob docs to include the axiperf option.
+    
+    Signed-off-by: James Hughes <james.hughes@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index d4d8438cfef7..b851a32cb65d 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -89,6 +89,11 @@ Params:
+         audio                   Set to "on" to enable the onboard ALSA audio
+                                 interface (default "off")
+ 
++        axiperf                 Set to "on" to enable the AXI bus performance
++                                monitors.
++                                See /sys/kernel/debug/raspberrypi_axi_monitor
++                                for the results.
++
+         eee                     Enable Energy Efficient Ethernet support for
+                                 compatible devices (default "on"). See also
+                                 "tx_lpi_timer".
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1678_09bfc49aca1454b72f2f6ddfd5f92aa4616c2d8d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1678_09bfc49aca1454b72f2f6ddfd5f92aa4616c2d8d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

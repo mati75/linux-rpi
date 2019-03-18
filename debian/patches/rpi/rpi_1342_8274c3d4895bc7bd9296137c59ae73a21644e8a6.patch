@@ -1,0 +1,40 @@
+commit 8274c3d4895bc7bd9296137c59ae73a21644e8a6
+Author: Thomas Hellstrom <thellstrom@vmware.com>
+Date:   Thu Jan 31 10:55:37 2019 +0100
+
+    drm/vmwgfx: Return error code from vmw_execbuf_copy_fence_user
+    
+    commit 728354c005c36eaf44b6e5552372b67e60d17f56 upstream.
+    
+    The function was unconditionally returning 0, and a caller would have to
+    rely on the returned fence pointer being NULL to detect errors. However,
+    the function vmw_execbuf_copy_fence_user() would expect a non-zero error
+    code in that case and would BUG otherwise.
+    
+    So make sure we return a proper non-zero error code if the fence pointer
+    returned is NULL.
+    
+    Cc: <stable@vger.kernel.org>
+    Fixes: ae2a104058e2: ("vmwgfx: Implement fence objects")
+    Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+    Reviewed-by: Deepak Rawat <drawat@vmware.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
+index f0ab6b2313bb..c3e2022bda5d 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_execbuf.c
+@@ -3843,7 +3843,7 @@ int vmw_execbuf_fence_commands(struct drm_file *file_priv,
+ 		*p_fence = NULL;
+ 	}
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ /**
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1342_8274c3d4895bc7bd9296137c59ae73a21644e8a6.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1342_8274c3d4895bc7bd9296137c59ae73a21644e8a6.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

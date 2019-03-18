@@ -1,0 +1,30 @@
+commit 010678e3a60edb3a79a7bd866a0d848943ce9970
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Tue Feb 19 15:18:25 2019 +0000
+
+    drm: vc4: Programming the CTM is conditional on running full KMS
+    
+    vc4_ctm_commit writes to HVS registers, so this is only applicable
+    when in full KMS mode, not in firmware KMS mode. Add this conditional.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/gpu/drm/vc4/vc4_kms.c b/drivers/gpu/drm/vc4/vc4_kms.c
+index f4d8a730e821..baf9bd7931ac 100644
+--- a/drivers/gpu/drm/vc4/vc4_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_kms.c
+@@ -147,7 +147,8 @@ vc4_atomic_complete_commit(struct drm_atomic_state *state)
+ 
+ 	drm_atomic_helper_commit_modeset_disables(dev, state);
+ 
+-	vc4_ctm_commit(vc4, state);
++	if (!vc4->firmware_kms)
++		vc4_ctm_commit(vc4, state);
+ 
+ 	drm_atomic_helper_commit_planes(dev, state, 0);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1827_010678e3a60edb3a79a7bd866a0d848943ce9970.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1827_010678e3a60edb3a79a7bd866a0d848943ce9970.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

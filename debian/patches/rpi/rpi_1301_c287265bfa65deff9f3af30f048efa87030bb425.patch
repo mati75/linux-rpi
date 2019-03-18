@@ -1,0 +1,49 @@
+commit c287265bfa65deff9f3af30f048efa87030bb425
+Author: Chris Brandt <chris.brandt@renesas.com>
+Date:   Mon Jan 28 13:25:56 2019 -0500
+
+    serial: sh-sci: Do not free irqs that have already been freed
+    
+    commit 4d95987a32db53f3beca76f8c4c8309ef6a5f192 upstream.
+    
+    Since IRQs might be muxed on some parts, we need to pay attention when we
+    are freeing them.
+    Otherwise we get the ugly WARNING "Trying to free already-free IRQ 20".
+    
+    Fixes: 628c534ae735 ("serial: sh-sci: Improve support for separate TEI and DRI interrupts")
+    Cc: stable <stable@vger.kernel.org>
+    Signed-off-by: Chris Brandt <chris.brandt@renesas.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
+index c6e8ca2e5f7d..859b173e3b82 100644
+--- a/drivers/tty/serial/sh-sci.c
++++ b/drivers/tty/serial/sh-sci.c
+@@ -1921,7 +1921,7 @@ static int sci_request_irq(struct sci_port *port)
+ 
+ static void sci_free_irq(struct sci_port *port)
+ {
+-	int i;
++	int i, j;
+ 
+ 	/*
+ 	 * Intentionally in reverse order so we iterate over the muxed
+@@ -1937,6 +1937,13 @@ static void sci_free_irq(struct sci_port *port)
+ 		if (unlikely(irq < 0))
+ 			continue;
+ 
++		/* Check if already freed (irq was muxed) */
++		for (j = 0; j < i; j++)
++			if (port->irqs[j] == irq)
++				j = i + 1;
++		if (j > i)
++			continue;
++
+ 		free_irq(port->irqs[i], port);
+ 		kfree(port->irqstr[i]);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1301_c287265bfa65deff9f3af30f048efa87030bb425.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1301_c287265bfa65deff9f3af30f048efa87030bb425.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

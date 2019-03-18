@@ -1,0 +1,73 @@
+commit 7c06896ea1342233b591dac43ed620d7d831d17b
+Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Date:   Wed Dec 19 13:47:23 2018 +0200
+
+    ARM: dts: da850-evm: Correct the audio codec regulators
+    
+    [ Upstream commit 706edaa88835e3d8de8920584ad5da76dd3d6666 ]
+    
+    Add the board level fixed regulators for 3.3V and 1.8V which is used to
+    power - among other things - the tlv320aic3106 codec.
+    
+    Apart from removing the following warning during boot:
+    tlv320aic3x-codec 0-0018: Too high supply voltage(s) AVDD: 5000000, DVDD: 5000000
+    
+    With the correct voltages the driver can select correct OCMV value to
+    reduce pop noise.
+    
+    Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+    Signed-off-by: Sekhar Nori <nsekhar@ti.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/arch/arm/boot/dts/da850-evm.dts b/arch/arm/boot/dts/da850-evm.dts
+index f9b757905845..e0ac195950b1 100644
+--- a/arch/arm/boot/dts/da850-evm.dts
++++ b/arch/arm/boot/dts/da850-evm.dts
+@@ -94,6 +94,28 @@
+ 		regulator-boot-on;
+ 	};
+ 
++	baseboard_3v3: fixedregulator-3v3 {
++		/* TPS73701DCQ */
++		compatible = "regulator-fixed";
++		regulator-name = "baseboard_3v3";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vbat>;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
++	baseboard_1v8: fixedregulator-1v8 {
++		/* TPS73701DCQ */
++		compatible = "regulator-fixed";
++		regulator-name = "baseboard_1v8";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		vin-supply = <&vbat>;
++		regulator-always-on;
++		regulator-boot-on;
++	};
++
+ 	backlight_lcd: backlight-regulator {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "lcd_backlight_pwr";
+@@ -210,10 +232,9 @@
+ 
+ 		/* Regulators */
+ 		IOVDD-supply = <&vdcdc2_reg>;
+-		/* Derived from VBAT: Baseboard 3.3V / 1.8V */
+-		AVDD-supply = <&vbat>;
+-		DRVDD-supply = <&vbat>;
+-		DVDD-supply = <&vbat>;
++		AVDD-supply = <&baseboard_3v3>;
++		DRVDD-supply = <&baseboard_3v3>;
++		DVDD-supply = <&baseboard_1v8>;
+ 	};
+ 	tca6416: gpio@20 {
+ 		compatible = "ti,tca6416";
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1393_7c06896ea1342233b591dac43ed620d7d831d17b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1393_7c06896ea1342233b591dac43ed620d7d831d17b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

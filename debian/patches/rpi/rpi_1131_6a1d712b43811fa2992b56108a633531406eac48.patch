@@ -1,0 +1,38 @@
+commit 6a1d712b43811fa2992b56108a633531406eac48
+Author: Jan Kara <jack@suse.cz>
+Date:   Wed Dec 12 14:29:20 2018 +0100
+
+    udf: Fix BUG on corrupted inode
+    
+    [ Upstream commit d288d95842f1503414b7eebce3773bac3390457e ]
+    
+    When inode is corrupted so that extent type is invalid, some functions
+    (such as udf_truncate_extents()) will just BUG. Check that extent type
+    is valid when loading the inode to memory.
+    
+    Reported-by: Anatoly Trosinenko <anatoly.trosinenko@gmail.com>
+    Signed-off-by: Jan Kara <jack@suse.cz>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/fs/udf/inode.c b/fs/udf/inode.c
+index 5df554a9f9c9..ae796e10f68b 100644
+--- a/fs/udf/inode.c
++++ b/fs/udf/inode.c
+@@ -1357,6 +1357,12 @@ static int udf_read_inode(struct inode *inode, bool hidden_inode)
+ 
+ 	iinfo->i_alloc_type = le16_to_cpu(fe->icbTag.flags) &
+ 							ICBTAG_FLAG_AD_MASK;
++	if (iinfo->i_alloc_type != ICBTAG_FLAG_AD_SHORT &&
++	    iinfo->i_alloc_type != ICBTAG_FLAG_AD_LONG &&
++	    iinfo->i_alloc_type != ICBTAG_FLAG_AD_IN_ICB) {
++		ret = -EIO;
++		goto out;
++	}
+ 	iinfo->i_unique = 0;
+ 	iinfo->i_lenEAttr = 0;
+ 	iinfo->i_lenExtents = 0;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1131_6a1d712b43811fa2992b56108a633531406eac48.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1131_6a1d712b43811fa2992b56108a633531406eac48.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

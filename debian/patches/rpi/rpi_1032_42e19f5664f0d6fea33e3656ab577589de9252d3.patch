@@ -1,0 +1,65 @@
+commit 42e19f5664f0d6fea33e3656ab577589de9252d3
+Author: Dexuan Cui <decui@microsoft.com>
+Date:   Thu Oct 18 05:09:32 2018 +0000
+
+    Tools: hv: kvp: Fix a warning of buffer overflow with gcc 8.0.1
+    
+    [ Upstream commit 4fcba7802c3e15a6e56e255871d6c72f829b9dd8 ]
+    
+    The patch fixes:
+    
+    hv_kvp_daemon.c: In function 'kvp_set_ip_info':
+    hv_kvp_daemon.c:1305:2: note: 'snprintf' output between 41 and 4136 bytes
+    into a destination of size 4096
+    
+    The "(unsigned int)str_len" is to avoid:
+    
+    hv_kvp_daemon.c:1309:30: warning: comparison of integer expressions of
+    different signedness: 'int' and 'long unsigned int' [-Wsign-compare]
+    
+    Signed-off-by: Dexuan Cui <decui@microsoft.com>
+    Cc: K. Y. Srinivasan <kys@microsoft.com>
+    Cc: Haiyang Zhang <haiyangz@microsoft.com>
+    Cc: Stephen Hemminger <sthemmin@microsoft.com>
+    Signed-off-by: K. Y. Srinivasan <kys@microsoft.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/tools/hv/hv_kvp_daemon.c b/tools/hv/hv_kvp_daemon.c
+index bbb2a8ef367c..d7e06fe0270e 100644
+--- a/tools/hv/hv_kvp_daemon.c
++++ b/tools/hv/hv_kvp_daemon.c
+@@ -1178,6 +1178,7 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
+ 	FILE *file;
+ 	char cmd[PATH_MAX];
+ 	char *mac_addr;
++	int str_len;
+ 
+ 	/*
+ 	 * Set the configuration for the specified interface with
+@@ -1301,8 +1302,18 @@ static int kvp_set_ip_info(char *if_name, struct hv_kvp_ipaddr_value *new_val)
+ 	 * invoke the external script to do its magic.
+ 	 */
+ 
+-	snprintf(cmd, sizeof(cmd), KVP_SCRIPTS_PATH "%s %s",
+-		 "hv_set_ifconfig", if_file);
++	str_len = snprintf(cmd, sizeof(cmd), KVP_SCRIPTS_PATH "%s %s",
++			   "hv_set_ifconfig", if_file);
++	/*
++	 * This is a little overcautious, but it's necessary to suppress some
++	 * false warnings from gcc 8.0.1.
++	 */
++	if (str_len <= 0 || (unsigned int)str_len >= sizeof(cmd)) {
++		syslog(LOG_ERR, "Cmd '%s' (len=%d) may be too long",
++		       cmd, str_len);
++		return HV_E_FAIL;
++	}
++
+ 	if (system(cmd)) {
+ 		syslog(LOG_ERR, "Failed to execute cmd '%s'; error: %d %s",
+ 				cmd, errno, strerror(errno));
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1032_42e19f5664f0d6fea33e3656ab577589de9252d3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1032_42e19f5664f0d6fea33e3656ab577589de9252d3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

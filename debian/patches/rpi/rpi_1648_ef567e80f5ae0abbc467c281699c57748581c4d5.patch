@@ -1,0 +1,37 @@
+commit ef567e80f5ae0abbc467c281699c57748581c4d5
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Thu Oct 25 14:08:43 2018 +0100
+
+    config: Add CONFIG_USBIP_VUDC
+    
+    See: https://github.com/raspberrypi/firmware/issues/353
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 2f4d08ac6a05..acb05e74fcf6 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -1013,6 +1013,7 @@ CONFIG_USB_MICROTEK=m
+ CONFIG_USBIP_CORE=m
+ CONFIG_USBIP_VHCI_HCD=m
+ CONFIG_USBIP_HOST=m
++CONFIG_USBIP_VUDC=m
+ CONFIG_USB_DWC2=m
+ CONFIG_USB_SERIAL=m
+ CONFIG_USB_SERIAL_GENERIC=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index ada667342bfb..9374a682a766 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -1006,6 +1006,7 @@ CONFIG_USB_MICROTEK=m
+ CONFIG_USBIP_CORE=m
+ CONFIG_USBIP_VHCI_HCD=m
+ CONFIG_USBIP_HOST=m
++CONFIG_USBIP_VUDC=m
+ CONFIG_USB_DWC2=m
+ CONFIG_USB_SERIAL=m
+ CONFIG_USB_SERIAL_GENERIC=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1648_ef567e80f5ae0abbc467c281699c57748581c4d5.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1648_ef567e80f5ae0abbc467c281699c57748581c4d5.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

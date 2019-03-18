@@ -1,0 +1,52 @@
+commit df1b583c1654133825d4a9e5e7e048d0edb32bda
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Fri Feb 15 13:36:20 2019 -0800
+
+    tcp: clear icsk_backoff in tcp_write_queue_purge()
+    
+    [ Upstream commit 04c03114be82194d4a4858d41dba8e286ad1787c ]
+    
+    soukjin bae reported a crash in tcp_v4_err() handling
+    ICMP_DEST_UNREACH after tcp_write_queue_head(sk)
+    returned a NULL pointer.
+    
+    Current logic should have prevented this :
+    
+      if (seq != tp->snd_una  || !icsk->icsk_retransmits ||
+          !icsk->icsk_backoff || fastopen)
+          break;
+    
+    Problem is the write queue might have been purged
+    and icsk_backoff has not been cleared.
+    
+    Signed-off-by: Eric Dumazet <edumazet@google.com>
+    Reported-by: soukjin bae <soukjin.bae@samsung.com>
+    Acked-by: Neal Cardwell <ncardwell@google.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 87fe44197aa1..432dc9af1172 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -2519,6 +2519,7 @@ void tcp_write_queue_purge(struct sock *sk)
+ 	sk_mem_reclaim(sk);
+ 	tcp_clear_all_retrans_hints(tcp_sk(sk));
+ 	tcp_sk(sk)->packets_out = 0;
++	inet_csk(sk)->icsk_backoff = 0;
+ }
+ 
+ int tcp_disconnect(struct sock *sk, int flags)
+@@ -2567,7 +2568,6 @@ int tcp_disconnect(struct sock *sk, int flags)
+ 	tp->write_seq += tp->max_window + 2;
+ 	if (tp->write_seq == 0)
+ 		tp->write_seq = 1;
+-	icsk->icsk_backoff = 0;
+ 	tp->snd_cwnd = 2;
+ 	icsk->icsk_probes_out = 0;
+ 	tp->snd_ssthresh = TCP_INFINITE_SSTHRESH;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1457_df1b583c1654133825d4a9e5e7e048d0edb32bda.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1457_df1b583c1654133825d4a9e5e7e048d0edb32bda.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

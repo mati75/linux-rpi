@@ -1,0 +1,48 @@
+commit 5d3b4cd8734b41ea04e384d231a09244cfcaebca
+Author: Ronnie Sahlberg <lsahlber@redhat.com>
+Date:   Thu Dec 13 08:06:16 2018 +1000
+
+    cifs: check ntwrk_buf_start for NULL before dereferencing it
+    
+    [ Upstream commit 59a63e479ce36a3f24444c3a36efe82b78e4a8e0 ]
+    
+    RHBZ: 1021460
+    
+    There is an issue where when multiple threads open/close the same directory
+    ntwrk_buf_start might end up being NULL, causing the call to smbCalcSize
+    later to oops with a NULL deref.
+    
+    The real bug is why this happens and why this can become NULL for an
+    open cfile, which should not be allowed.
+    This patch tries to avoid a oops until the time when we fix the underlying
+    issue.
+    
+    Signed-off-by: Ronnie Sahlberg <lsahlber@redhat.com>
+    Signed-off-by: Steve French <stfrench@microsoft.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/fs/cifs/readdir.c b/fs/cifs/readdir.c
+index e169e1a5fd35..3925a7bfc74d 100644
+--- a/fs/cifs/readdir.c
++++ b/fs/cifs/readdir.c
+@@ -655,7 +655,14 @@ find_cifs_entry(const unsigned int xid, struct cifs_tcon *tcon, loff_t pos,
+ 		/* scan and find it */
+ 		int i;
+ 		char *cur_ent;
+-		char *end_of_smb = cfile->srch_inf.ntwrk_buf_start +
++		char *end_of_smb;
++
++		if (cfile->srch_inf.ntwrk_buf_start == NULL) {
++			cifs_dbg(VFS, "ntwrk_buf_start is NULL during readdir\n");
++			return -EIO;
++		}
++
++		end_of_smb = cfile->srch_inf.ntwrk_buf_start +
+ 			server->ops->calc_smb_size(
+ 					cfile->srch_inf.ntwrk_buf_start,
+ 					server);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1209_5d3b4cd8734b41ea04e384d231a09244cfcaebca.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1209_5d3b4cd8734b41ea04e384d231a09244cfcaebca.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

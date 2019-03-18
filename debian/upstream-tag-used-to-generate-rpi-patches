@@ -1,41 +1,41 @@
-tag v4.19.16
+tag v4.19.20
 Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Wed Jan 16 22:04:38 2019 +0100
+Date:   Wed Feb 6 17:30:16 2019 +0100
 
-This is the 4.19.16 stable release
+This is the 4.19.20 stable release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlw/nGYACgkQONu9yGCS
-aT5/LA//bP/+XrOaB6YIkiM7EfhWTuATY6DOkhwT7kpIgRXMR4FvyTA3o7iEz0DE
-5HfSL2wUpF+UZ0sC8c+zFCaNqhMNTwl95J6w4YI3N4V6IsTWxDYQOosQLU1y11Zw
-w5SV1FXqvKnbPchHehg/toDORs+sryw9QbydTXOPukqEQ1J9Kx8xtcyNivpvccVs
-/Jn+MNwnDZXWgw1gyx4/BcbtSVnu9RgLdtXSyBBUfZmZxy4Tx+e+ckfp+sd0TpE7
-H7QPrMZHZys7EVKfvP1SWOJgStJNGav869Klj8HAZm3rI0R3EhMZBEIxG96HsxFd
-XOqRfn3Yarl0OQHKggRJQi0EbcOAEUAzWgJKxKFaoqBJyYVoQivp3XJvF+2B56Yb
-sg4EISWR2OXdO4ER1eYbPyDL+ZO+P0C5eQ16NRly1PifiUk1iHs1dyGg266GU4Tj
-cHWmdt743nMNCndQ+cUnHAqbJS+UQ6Y/96bOxZlKei93fQfMqynUZBV9FN6DejJt
-mMNqwV0aEEPlTx37rvExrxS30ydYg1lnF9BY7QP8r71RjpdXgB8fjLN3W2S21SWv
-04zMSg9kAKgC3vRDc2vr7nZ9zkeujD/VBVp3HdTLU9gDb1xUL4MqdXNnTiUOzS29
-wBWBi7+uiPhSC282kNM08PE1SDq6WtKU9WixJxLP9jYZccMjJDk=
-=Fi9w
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlxbC5gACgkQONu9yGCS
+aT4DYQ//Uqm/Q63KQuExgd7W+61FoP4NFHlYXZ31B5Rkydryyk2K5P2ONSdVd5n9
+k3wjzRrxvlPvjOwbh9PHv+pLkGxBDqpT1X8IAXPe36bYUkvXoH71BE4YSRPRUJAf
+sdzw/vs7WE/Kx41iT3SXiQih8ok0y3LoACBKmUsEXoLI1cJZCUnnSFpP++QNe1Iz
+B/y04BigL8R7OWR/jow6OPWe9uXOI8iEe9QKVX26g4oaakzly4vkp6OwROSwM31q
+0wut8jF/AtDcZpZXjJLjDCj10k5DRN8jwGcLD7iZeIKqexOabjUrsvfIHfbpUtXr
+e7pJw2aUM8BFb8Ba2lsB7gkqvdHQohqVKQE4Qy59aPyesm2G5miH4gAbncoixjCa
+u3eQV5ACpFLksUFR4RAMKq+10k7swsutyyJr5vG4qdbRpcTCNJirEwAGGqgI6IEP
+SDqtw6u8gMP8+SicwA9p71Wwntcq9RR6fx0gX/3wi2DQp6F8Txem00SqaciE7uQ1
+uIOUrhcpWzIq4m58SGhgTSQcBkm5qBD5S154/xRKIo0mvME+NwBub/x3fIsixN/u
+AzWQmQPXBajHbYXbKGC7t2jNHkU5d9FedZ4iDmJk/+ZZsWyFByY1bH1cg4Qnq89e
+tDxL114YmSujbZD/mFlbGWcqdmGNT355BmyetKDx6w0rNiU/RBU=
+=oprJ
 -----END PGP SIGNATURE-----
 
-commit 9c5931b65a7b58ddeaf1530f1c4b515ba8640f8d
+commit 323e0195e63ff967a4fbdab7b17120f544ddc88f
 Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Wed Jan 16 22:04:38 2019 +0100
+Date:   Wed Feb 6 17:30:16 2019 +0100
 
-    Linux 4.19.16
+    Linux 4.19.20
 
 diff --git a/Makefile b/Makefile
-index 0e30d48274fa..e8cb4875b86d 100644
+index 39c4e7c3c13c..f1859811dca1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
  PATCHLEVEL = 19
--SUBLEVEL = 15
-+SUBLEVEL = 16
+-SUBLEVEL = 19
++SUBLEVEL = 20
  EXTRAVERSION =
  NAME = "People's Front"
  

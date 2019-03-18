@@ -1,0 +1,46 @@
+commit d74ff5f67849944eeee9796192b8cc77354d3828
+Author: Thomas Hellstrom <thellstrom@vmware.com>
+Date:   Mon Jan 28 10:31:33 2019 +0100
+
+    drm/vmwgfx: Fix setting of dma masks
+    
+    commit 4cbfa1e6c09e98450aab3240e5119b0ab2c9795b upstream.
+    
+    Previously we set only the dma mask and not the coherent mask. Fix that.
+    Also, for clarity, make sure both are initially set to 64 bits.
+    
+    Cc: <stable@vger.kernel.org>
+    Fixes: 0d00c488f3de: ("drm/vmwgfx: Fix the driver for large dma addresses")
+    Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+    Reviewed-by: Deepak Rawat <drawat@vmware.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+index bb6dbbe18835..c72b942f2bdf 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
+@@ -627,13 +627,16 @@ static int vmw_dma_select_mode(struct vmw_private *dev_priv)
+ static int vmw_dma_masks(struct vmw_private *dev_priv)
+ {
+ 	struct drm_device *dev = dev_priv->dev;
++	int ret = 0;
+ 
+-	if (intel_iommu_enabled &&
++	ret = dma_set_mask_and_coherent(dev->dev, DMA_BIT_MASK(64));
++	if (dev_priv->map_mode != vmw_dma_phys &&
+ 	    (sizeof(unsigned long) == 4 || vmw_restrict_dma_mask)) {
+ 		DRM_INFO("Restricting DMA addresses to 44 bits.\n");
+-		return dma_set_mask(dev->dev, DMA_BIT_MASK(44));
++		return dma_set_mask_and_coherent(dev->dev, DMA_BIT_MASK(44));
+ 	}
+-	return 0;
++
++	return ret;
+ }
+ #else
+ static int vmw_dma_masks(struct vmw_private *dev_priv)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1341_d74ff5f67849944eeee9796192b8cc77354d3828.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1341_d74ff5f67849944eeee9796192b8cc77354d3828.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
