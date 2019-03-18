@@ -1,0 +1,77 @@
+commit d23792f53f0de5706520f1302a8a4143e13a1680
+Author: Piotr Jaroszynski <pjaroszynski@nvidia.com>
+Date:   Sun Jan 27 08:46:45 2019 -0800
+
+    iomap: get/put the page in iomap_page_create/release()
+    
+    [ Upstream commit 8e47a457321ca1a74ad194ab5dcbca764bc70731 ]
+    
+    migrate_page_move_mapping() expects pages with private data set to have
+    a page_count elevated by 1.  This is what used to happen for xfs through
+    the buffer_heads code before the switch to iomap in commit 82cb14175e7d
+    ("xfs: add support for sub-pagesize writeback without buffer_heads").
+    Not having the count elevated causes move_pages() to fail on memory
+    mapped files coming from xfs.
+    
+    Make iomap compatible with the migrate_page_move_mapping() assumption by
+    elevating the page count as part of iomap_page_create() and lowering it
+    in iomap_page_release().
+    
+    It causes the move_pages() syscall to misbehave on memory mapped files
+    from xfs.  It does not not move any pages, which I suppose is "just" a
+    perf issue, but it also ends up returning a positive number which is out
+    of spec for the syscall.  Talking to Michal Hocko, it sounds like
+    returning positive numbers might be a necessary update to move_pages()
+    anyway though.
+    
+    Fixes: 82cb14175e7d ("xfs: add support for sub-pagesize writeback without buffer_heads")
+    Signed-off-by: Piotr Jaroszynski <pjaroszynski@nvidia.com>
+    [hch: actually get/put the page iomap_migrate_page() to make it work
+          properly]
+    Signed-off-by: Christoph Hellwig <hch@lst.de>
+    Reviewed-by: Dave Chinner <dchinner@redhat.com>
+    Reviewed-by: Darrick J. Wong <darrick.wong@oracle.com>
+    Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/fs/iomap.c b/fs/iomap.c
+index e57fb1e534c5..2e3e64012db7 100644
+--- a/fs/iomap.c
++++ b/fs/iomap.c
+@@ -117,6 +117,12 @@ iomap_page_create(struct inode *inode, struct page *page)
+ 	atomic_set(&iop->read_count, 0);
+ 	atomic_set(&iop->write_count, 0);
+ 	bitmap_zero(iop->uptodate, PAGE_SIZE / SECTOR_SIZE);
++
++	/*
++	 * migrate_page_move_mapping() assumes that pages with private data have
++	 * their count elevated by 1.
++	 */
++	get_page(page);
+ 	set_page_private(page, (unsigned long)iop);
+ 	SetPagePrivate(page);
+ 	return iop;
+@@ -133,6 +139,7 @@ iomap_page_release(struct page *page)
+ 	WARN_ON_ONCE(atomic_read(&iop->write_count));
+ 	ClearPagePrivate(page);
+ 	set_page_private(page, 0);
++	put_page(page);
+ 	kfree(iop);
+ }
+ 
+@@ -565,8 +572,10 @@ iomap_migrate_page(struct address_space *mapping, struct page *newpage,
+ 
+ 	if (page_has_private(page)) {
+ 		ClearPagePrivate(page);
++		get_page(newpage);
+ 		set_page_private(newpage, page_private(page));
+ 		set_page_private(page, 0);
++		put_page(page);
+ 		SetPagePrivate(newpage);
+ 	}
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1021_d23792f53f0de5706520f1302a8a4143e13a1680.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1021_d23792f53f0de5706520f1302a8a4143e13a1680.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

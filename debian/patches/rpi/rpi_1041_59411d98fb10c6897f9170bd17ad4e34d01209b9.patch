@@ -1,0 +1,51 @@
+commit 59411d98fb10c6897f9170bd17ad4e34d01209b9
+Author: Dan Carpenter <dan.carpenter@oracle.com>
+Date:   Thu Jan 24 13:29:40 2019 +0300
+
+    scsi: bnx2fc: Fix error handling in probe()
+    
+    [ Upstream commit b2d3492fc591b1fb46b81d79ca1fc44cac6ae0ae ]
+    
+    There are two issues here.  First if cmgr->hba is not set early enough then
+    it leads to a NULL dereference.  Second if we don't completely initialize
+    cmgr->io_bdt_pool[] then we end up dereferencing uninitialized pointers.
+    
+    Fixes: 853e2bd2103a ("[SCSI] bnx2fc: Broadcom FCoE offload driver")
+    Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+    Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/scsi/bnx2fc/bnx2fc_io.c b/drivers/scsi/bnx2fc/bnx2fc_io.c
+index 350257c13a5b..bc9f2a2365f4 100644
+--- a/drivers/scsi/bnx2fc/bnx2fc_io.c
++++ b/drivers/scsi/bnx2fc/bnx2fc_io.c
+@@ -240,6 +240,7 @@ struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba)
+ 		return NULL;
+ 	}
+ 
++	cmgr->hba = hba;
+ 	cmgr->free_list = kcalloc(arr_sz, sizeof(*cmgr->free_list),
+ 				  GFP_KERNEL);
+ 	if (!cmgr->free_list) {
+@@ -256,7 +257,6 @@ struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba)
+ 		goto mem_err;
+ 	}
+ 
+-	cmgr->hba = hba;
+ 	cmgr->cmds = (struct bnx2fc_cmd **)(cmgr + 1);
+ 
+ 	for (i = 0; i < arr_sz; i++)  {
+@@ -295,7 +295,7 @@ struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba)
+ 
+ 	/* Allocate pool of io_bdts - one for each bnx2fc_cmd */
+ 	mem_size = num_ios * sizeof(struct io_bdt *);
+-	cmgr->io_bdt_pool = kmalloc(mem_size, GFP_KERNEL);
++	cmgr->io_bdt_pool = kzalloc(mem_size, GFP_KERNEL);
+ 	if (!cmgr->io_bdt_pool) {
+ 		printk(KERN_ERR PFX "failed to alloc io_bdt_pool\n");
+ 		goto mem_err;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1041_59411d98fb10c6897f9170bd17ad4e34d01209b9.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1041_59411d98fb10c6897f9170bd17ad4e34d01209b9.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

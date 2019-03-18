@@ -1,0 +1,38 @@
+commit 76ac4183b79c21d46187510f00d991e3c7dff529
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Fri Oct 26 15:19:40 2018 +0100
+
+    staging: vchiq_arm: Register vcsm-cma as a platform driver
+    
+    Following the same pattern as bcm2835-camera and bcm2835-audio,
+    register the vcsm-cma driver as a platform driver
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+index 7b07d6e147f1..9b751a57c652 100644
+--- a/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
++++ b/drivers/staging/vc04_services/interface/vchiq_arm/vchiq_arm.c
+@@ -172,6 +172,7 @@ static DEFINE_SPINLOCK(msg_queue_spinlock);
+ static struct platform_device *bcm2835_camera;
+ static struct platform_device *bcm2835_audio;
+ static struct platform_device *bcm2835_codec;
++static struct platform_device *vcsm_cma;
+ 
+ static const char *const ioctl_names[] = {
+ 	"CONNECT",
+@@ -3655,6 +3656,9 @@ static int vchiq_probe(struct platform_device *pdev)
+ 		VCHIQ_VERSION, VCHIQ_VERSION_MIN,
+ 		MAJOR(vchiq_devid), MINOR(vchiq_devid));
+ 
++	vcsm_cma = vchiq_register_child(pdev, "vcsm-cma");
++	if (IS_ERR(vcsm_cma))
++		vcsm_cma = NULL;
+ 	bcm2835_camera = vchiq_register_child(pdev, "bcm2835-camera");
+ 	if (IS_ERR(bcm2835_camera))
+ 		bcm2835_camera = NULL;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1430_76ac4183b79c21d46187510f00d991e3c7dff529.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1430_76ac4183b79c21d46187510f00d991e3c7dff529.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

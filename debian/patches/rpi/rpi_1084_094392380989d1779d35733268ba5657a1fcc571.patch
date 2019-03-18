@@ -1,0 +1,34 @@
+commit 094392380989d1779d35733268ba5657a1fcc571
+Author: Alex Deucher <alexander.deucher@amd.com>
+Date:   Wed Jan 9 22:19:28 2019 -0500
+
+    drm/amdgpu: Add missing power attribute to APU check
+    
+    [ Upstream commit dc14eb12f6bb3e779c5461429c1889a339c67aab ]
+    
+    Add missing power_average to visible check for power
+    attributes for APUs.  Was missed before.
+    
+    Reviewed-by: Evan Quan <evan.quan@amd.com>
+    Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_pm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_pm.c
+index 7b4e657a95c7..c3df75a9f65d 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_pm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_pm.c
+@@ -1443,7 +1443,8 @@ static umode_t hwmon_attributes_visible(struct kobject *kobj,
+ 		effective_mode &= ~S_IWUSR;
+ 
+ 	if ((adev->flags & AMD_IS_APU) &&
+-	    (attr == &sensor_dev_attr_power1_cap_max.dev_attr.attr ||
++	    (attr == &sensor_dev_attr_power1_average.dev_attr.attr ||
++	     attr == &sensor_dev_attr_power1_cap_max.dev_attr.attr ||
+ 	     attr == &sensor_dev_attr_power1_cap_min.dev_attr.attr||
+ 	     attr == &sensor_dev_attr_power1_cap.dev_attr.attr))
+ 		return 0;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1084_094392380989d1779d35733268ba5657a1fcc571.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1084_094392380989d1779d35733268ba5657a1fcc571.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

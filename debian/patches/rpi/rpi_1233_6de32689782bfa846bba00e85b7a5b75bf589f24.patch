@@ -1,0 +1,37 @@
+commit 6de32689782bfa846bba00e85b7a5b75bf589f24
+Author: Daniel Matuschek <info@crazy-audio.com>
+Date:   Wed Jan 15 21:41:23 2014 +0100
+
+    ASoC: wm8804: MCLK configuration options, 32-bit
+    
+    WM8804 can run with PLL frequencies of 256xfs and 128xfs for most sample
+    rates. At 192kHz only 128xfs is supported. The existing driver selects
+    128xfs automatically for some lower samples rates. By using an
+    additional mclk_div divider, it is now possible to control the
+    behaviour. This allows using 256xfs PLL frequency on all sample rates up
+    to 96kHz. It should allow lower jitter and better signal quality. The
+    behavior has to be controlled by the sound card driver, because some
+    sample frequency share the same setting. e.g. 192kHz and 96kHz use
+    24.576MHz master clock. The only difference is the MCLK divider.
+    
+    This also added support for 32bit data.
+    
+    Signed-off-by: Daniel Matuschek <daniel@matuschek.net>
+
+diff --git a/sound/soc/codecs/wm8804.c b/sound/soc/codecs/wm8804.c
+index 89f13249966e..813c47766fb4 100644
+--- a/sound/soc/codecs/wm8804.c
++++ b/sound/soc/codecs/wm8804.c
+@@ -550,6 +550,7 @@ static const struct snd_soc_component_driver soc_component_dev_wm8804 = {
+ 	.use_pmdown_time	= 1,
+ 	.endianness		= 1,
+ 	.non_legacy_dai_naming	= 1,
++	.idle_bias_on		= true,
+ };
+ 
+ const struct regmap_config wm8804_regmap_config = {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1233_6de32689782bfa846bba00e85b7a5b75bf589f24.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1233_6de32689782bfa846bba00e85b7a5b75bf589f24.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

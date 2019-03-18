@@ -1,0 +1,38 @@
+commit 90f0a75be8eb1f24982bc7c199a21635127f2412
+Author: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Date:   Mon Dec 10 13:56:33 2018 +0000
+
+    arm64: dts: add msm8996 compatible to gicv3
+    
+    [ Upstream commit 2a81efb0de0e33f2d2c83154af0bd3ce389b3269 ]
+    
+    Add compatible to gicv3 node to enable quirk required to restrict writing
+    to GICR_WAKER register which is restricted on msm8996 SoC in Hypervisor.
+    
+    With this quirk MSM8996 can at least boot out of mainline, which can help
+    community to work with boards based on MSM8996.
+    
+    Without this patch Qualcomm DB820c board reboots on mainline.
+    
+    Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+    Signed-off-by: Andy Gross <andy.gross@linaro.org>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/arch/arm64/boot/dts/qcom/msm8996.dtsi b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+index cd3865e7a270..8c86c41a0d25 100644
+--- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+@@ -399,7 +399,7 @@
+ 		};
+ 
+ 		intc: interrupt-controller@9bc0000 {
+-			compatible = "arm,gic-v3";
++			compatible = "qcom,msm8996-gic-v3", "arm,gic-v3";
+ 			#interrupt-cells = <3>;
+ 			interrupt-controller;
+ 			#redistributor-regions = <1>;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1077_90f0a75be8eb1f24982bc7c199a21635127f2412.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1077_90f0a75be8eb1f24982bc7c199a21635127f2412.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

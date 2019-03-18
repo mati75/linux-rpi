@@ -1,0 +1,31 @@
+commit f0e56acb51c27e2c436efad76d9a1712c4a62df3
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Feb 18 15:43:30 2019 +0000
+
+    Revert "brcmfmac: Mute expected startup 'errors'"
+    
+    This reverts commit 34eba9138ccf8d84552ab9dae37d8f348640e663.
+    
+    Upstream patch 26e537884a ("brcmfmac: Do not complain about country code "00")
+    fixes the same issue, so drop this downstream patch.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index 75c8623468f4..72822c828a99 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -6838,8 +6838,6 @@ static void brcmf_cfg80211_reg_notifier(struct wiphy *wiphy,
+ 	/* ignore non-ISO3166 country codes */
+ 	for (i = 0; i < 2; i++)
+ 		if (req->alpha2[i] < 'A' || req->alpha2[i] > 'Z') {
+-			if (req->alpha2[0] == '0' && req->alpha2[1] == '0')
+-				return;
+ 			brcmf_err("not an ISO3166 code (0x%02x 0x%02x)\n",
+ 				  req->alpha2[0], req->alpha2[1]);
+ 			return;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1504_f0e56acb51c27e2c436efad76d9a1712c4a62df3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1504_f0e56acb51c27e2c436efad76d9a1712c4a62df3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

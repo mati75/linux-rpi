@@ -1,0 +1,51 @@
+commit b69c630ec1a7cfe4ebfbd232f2c06d6466140775
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Fri Jan 25 17:11:39 2019 +0000
+
+    video: bcm2708_fb: Fix warnings on 64 bit builds
+    
+    Fix up logging lines where the wrong format specifiers were
+    being used.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/video/fbdev/bcm2708_fb.c b/drivers/video/fbdev/bcm2708_fb.c
+index 929c75afd629..d6585a081523 100644
+--- a/drivers/video/fbdev/bcm2708_fb.c
++++ b/drivers/video/fbdev/bcm2708_fb.c
+@@ -513,8 +513,8 @@ static long vc_mem_copy(struct bcm2708_fb *fb, struct fb_dmacopy *ioparam)
+ 	buf = dma_alloc_coherent(fb->fb.device, PAGE_ALIGN(size), &bus_addr,
+ 				 GFP_ATOMIC);
+ 	if (!buf) {
+-		pr_err("[%s]: failed to dma_alloc_coherent(%d)\n",
+-				__func__, size);
++		pr_err("[%s]: failed to dma_alloc_coherent(%zd)\n", __func__,
++		       size);
+ 		rc = -ENOMEM;
+ 		goto out;
+ 	}
+@@ -910,8 +910,7 @@ static int bcm2708_fb_probe(struct platform_device *dev)
+ 		goto free_fb;
+ 	}
+ 
+-	pr_info("BCM2708FB: allocated DMA memory %08x\n",
+-	       fb->cb_handle);
++	pr_info("BCM2708FB: allocated DMA memory %pad\n", &fb->cb_handle);
+ 
+ 	ret = bcm_dma_chan_alloc(BCM_DMA_FEATURE_BULK,
+ 				 &fb->dma_chan_base, &fb->dma_irq);
+@@ -929,8 +928,7 @@ static int bcm2708_fb_probe(struct platform_device *dev)
+ 	}
+ 
+ 
+-	pr_info("BCM2708FB: allocated DMA channel %d @ %p\n",
+-	       fb->dma_chan, fb->dma_chan_base);
++	pr_info("BCM2708FB: allocated DMA channel %d\n", fb->dma_chan);
+ 
+ 	fb->dev = dev;
+ 	fb->fb.device = &dev->dev;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1485_b69c630ec1a7cfe4ebfbd232f2c06d6466140775.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1485_b69c630ec1a7cfe4ebfbd232f2c06d6466140775.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

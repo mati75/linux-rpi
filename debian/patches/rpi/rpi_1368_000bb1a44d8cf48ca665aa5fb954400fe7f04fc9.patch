@@ -1,0 +1,29 @@
+commit 000bb1a44d8cf48ca665aa5fb954400fe7f04fc9
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Nov 28 15:51:41 2018 +0000
+
+    dt-bindings: Document microchip,downshift-after
+    
+    Document the optional downshift-after property of the lan78xx's PHY.
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/Documentation/devicetree/bindings/net/microchip,lan78xx.txt b/Documentation/devicetree/bindings/net/microchip,lan78xx.txt
+index 76786a0f6d3d..ad1d0136c4df 100644
+--- a/Documentation/devicetree/bindings/net/microchip,lan78xx.txt
++++ b/Documentation/devicetree/bindings/net/microchip,lan78xx.txt
+@@ -15,6 +15,9 @@ Optional properties of the embedded PHY:
+ - microchip,led-modes: a 0..4 element vector, with each element configuring
+   the operating mode of an LED. Omitted LEDs are turned off. Allowed values
+   are defined in "include/dt-bindings/net/microchip-lan78xx.h".
++- microchip,downshift-after: sets the number of failed auto-negotiation
++  attempts after which the link is downgraded from 1000BASE-T. Should be one of
++  2, 3, 4, 5 or 0, where 0 means never downshift.
+ 
+ Example:
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1368_000bb1a44d8cf48ca665aa5fb954400fe7f04fc9.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1368_000bb1a44d8cf48ca665aa5fb954400fe7f04fc9.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

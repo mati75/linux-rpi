@@ -1,0 +1,43 @@
+commit 38be5d445c5b5b2bfc84a1fa1c4a6d26860490db
+Author: Sinan Kaya <okaya@kernel.org>
+Date:   Thu Jan 24 19:31:01 2019 +0000
+
+    platform/x86: Fix unmet dependency warning for SAMSUNG_Q10
+    
+    [ Upstream commit 0ee4b5f801b73b83a9fb3921d725f2162fd4a2e5 ]
+    
+    Add BACKLIGHT_LCD_SUPPORT for SAMSUNG_Q10 to fix the
+    warning: unmet direct dependencies detected for BACKLIGHT_CLASS_DEVICE.
+    
+    SAMSUNG_Q10 selects BACKLIGHT_CLASS_DEVICE but BACKLIGHT_CLASS_DEVICE
+    depends on BACKLIGHT_LCD_SUPPORT.
+    
+    Copy BACKLIGHT_LCD_SUPPORT dependency into SAMSUNG_Q10 to fix:
+    
+    WARNING: unmet direct dependencies detected for BACKLIGHT_CLASS_DEVICE
+      Depends on [n]: HAS_IOMEM [=y] && BACKLIGHT_LCD_SUPPORT [=n]
+      Selected by [y]:
+      - SAMSUNG_Q10 [=y] && X86 [=y] && X86_PLATFORM_DEVICES [=y] && ACPI [=y]
+    
+    Signed-off-by: Sinan Kaya <okaya@kernel.org>
+    Acked-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+    Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+index 96afca4648d5..7563c07e14e4 100644
+--- a/drivers/platform/x86/Kconfig
++++ b/drivers/platform/x86/Kconfig
+@@ -1078,6 +1078,7 @@ config INTEL_OAKTRAIL
+ config SAMSUNG_Q10
+ 	tristate "Samsung Q10 Extras"
+ 	depends on ACPI
++	depends on BACKLIGHT_LCD_SUPPORT
+ 	select BACKLIGHT_CLASS_DEVICE
+ 	---help---
+ 	  This driver provides support for backlight control on Samsung Q10
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1044_38be5d445c5b5b2bfc84a1fa1c4a6d26860490db.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1044_38be5d445c5b5b2bfc84a1fa1c4a6d26860490db.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

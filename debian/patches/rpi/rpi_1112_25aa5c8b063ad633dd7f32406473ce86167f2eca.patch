@@ -1,0 +1,43 @@
+commit 25aa5c8b063ad633dd7f32406473ce86167f2eca
+Author: Philip Yang <Philip.Yang@amd.com>
+Date:   Wed Jan 30 15:21:16 2019 -0500
+
+    drm/amdgpu: use spin_lock_irqsave to protect vm_manager.pasid_idr
+    
+    [ Upstream commit 0a5f49cbf9d6ad3721c16f8a6d823363ea7a160f ]
+    
+    amdgpu_vm_get_task_info is called from interrupt handler and sched timeout
+    workqueue, we should use irq version spin_lock to avoid deadlock.
+    
+    Signed-off-by: Philip Yang <Philip.Yang@amd.com>
+    Reviewed-by: Christian König <christian.koenig@amd.com>
+    Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+index 6a84526e20e0..49fe5084c53d 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+@@ -3011,14 +3011,15 @@ void amdgpu_vm_get_task_info(struct amdgpu_device *adev, unsigned int pasid,
+ 			 struct amdgpu_task_info *task_info)
+ {
+ 	struct amdgpu_vm *vm;
++	unsigned long flags;
+ 
+-	spin_lock(&adev->vm_manager.pasid_lock);
++	spin_lock_irqsave(&adev->vm_manager.pasid_lock, flags);
+ 
+ 	vm = idr_find(&adev->vm_manager.pasid_idr, pasid);
+ 	if (vm)
+ 		*task_info = vm->task_info;
+ 
+-	spin_unlock(&adev->vm_manager.pasid_lock);
++	spin_unlock_irqrestore(&adev->vm_manager.pasid_lock, flags);
+ }
+ 
+ /**
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1112_25aa5c8b063ad633dd7f32406473ce86167f2eca.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1112_25aa5c8b063ad633dd7f32406473ce86167f2eca.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

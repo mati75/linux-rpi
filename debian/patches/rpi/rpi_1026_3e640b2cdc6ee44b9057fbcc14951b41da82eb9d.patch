@@ -1,0 +1,52 @@
+commit 3e640b2cdc6ee44b9057fbcc14951b41da82eb9d
+Author: Yonglong Liu <liuyonglong@huawei.com>
+Date:   Sat Jan 26 17:18:26 2019 +0800
+
+    net: hns: Restart autoneg need return failed when autoneg off
+    
+    [ Upstream commit ed29ca8b9592562559c64d027fb5eb126e463e2c ]
+    
+    The hns driver of earlier devices, when autoneg off, restart autoneg
+    will return -EINVAL, so make the hns driver for the latest devices
+    do the same.
+    
+    Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+    Signed-off-by: Peng Li <lipeng321@huawei.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+    Signed-off-by: Sasha Levin <sashal@kernel.org>
+
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c b/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
+index 774beda040a1..e2710ff48fb0 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
+@@ -1157,16 +1157,18 @@ static int hns_get_regs_len(struct net_device *net_dev)
+  */
+ static int hns_nic_nway_reset(struct net_device *netdev)
+ {
+-	int ret = 0;
+ 	struct phy_device *phy = netdev->phydev;
+ 
+-	if (netif_running(netdev)) {
+-		/* if autoneg is disabled, don't restart auto-negotiation */
+-		if (phy && phy->autoneg == AUTONEG_ENABLE)
+-			ret = genphy_restart_aneg(phy);
+-	}
++	if (!netif_running(netdev))
++		return 0;
+ 
+-	return ret;
++	if (!phy)
++		return -EOPNOTSUPP;
++
++	if (phy->autoneg != AUTONEG_ENABLE)
++		return -EINVAL;
++
++	return genphy_restart_aneg(phy);
+ }
+ 
+ static u32
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1026_3e640b2cdc6ee44b9057fbcc14951b41da82eb9d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1026_3e640b2cdc6ee44b9057fbcc14951b41da82eb9d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
