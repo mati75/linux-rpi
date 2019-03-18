@@ -36,12 +36,10 @@ hardware-long: Raspberry PI
 
 [rpi_image]
 configs:
- armhf/config.rpix
  armhf/config.rpi
 
 [rpi2_image]
 configs:
- armhf/config.rpix
  armhf/config.rpi2
 
 [rpi2_build]
