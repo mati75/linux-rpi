@@ -1,3 +1,13 @@
+linux (4.19.28-2+rpi2) buster-staging; urgency=medium
+
+  * This is last version kernel for raspbian. For now Raspberry Pi 0 and B
+    have support in Debian armel kernel. Version 3 have support on arm64.
+    Start from today I will build only Debian patched kernel for Raspberry Pi
+    0W on armel arch and unofficial version armhf for rpi2 until it haven't
+    support in mainline kernel.
+
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 20 Mar 2019 21:05:50 +0100
+
 linux (4.19.28-2+rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]

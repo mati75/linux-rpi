@@ -48,3 +48,6 @@ image-file: arch/arm/boot/zImage
 [rpi2_description]
 hardware: RaspberryPI2
 hardware-long: Raspberry PI 2
+
+[packages]
+installer: false
