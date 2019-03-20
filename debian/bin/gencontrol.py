@@ -92,6 +92,10 @@ class Gencontrol(Base):
                 import warnings
                 warnings.warn('Disable installer modules on request '
                               '(DEBIAN_KERNEL_DISABLE_INSTALLER set)')
+            elif self.changelog[0].distribution == 'buster-staging':
+                import warnings
+                warnings.warn('Disable installer modules on request '
+                              '(DEBIAN_KERNEL_DISABLE_INSTALLER set)')
             else:
                 raise RuntimeError(
                     'Unable to disable installer modules in release build '
