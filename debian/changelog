@@ -6,7 +6,7 @@ linux (4.19.28-2+rpi2) buster-staging; urgency=medium
     0W on armel arch and unofficial version armhf for rpi2 until it haven't
     support in mainline kernel.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 20 Mar 2019 21:05:50 +0100
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 20 Mar 2019 21:27:25 +0100
 
 linux (4.19.28-2+rpi1) buster-staging; urgency=medium
 

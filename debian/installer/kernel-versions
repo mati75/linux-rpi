@@ -3,7 +3,8 @@ alpha      -       alpha-generic -             y      -
 amd64      -       amd64         -             -      -
 arm64      -       arm64         -             -      -
 armel      -       marvell       -             y      -
-armhf      -       armmp         -             -      -
+armhf      -       rpi           -             -      -
+armhf      -       rpi2          -             -      -
 hppa       -       parisc        -             y      -
 hppa       -       parisc64-smp  -             y      -
 i386       -       686           -             -      -
