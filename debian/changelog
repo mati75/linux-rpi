@@ -1,4 +1,4 @@
-linux (5.0.1-1~exp1+rpi1) buster-staging; urgency=medium
+linux (5.0.2-1~exp1+rpi1) buster-staging; urgency=medium
 
   [Changes from 3.18.5-1~exp1+rpi1 or earlier]
   [Vagrant Cascadian <vagrant@debian.org>]
@@ -139,6 +139,35 @@ linux (4.19.28-2) unstable; urgency=medium
 
  -- Ben Hutchings <ben@decadent.org.uk>  Fri, 15 Mar 2019 02:16:04 +0000
 
+linux (5.0.2-1~exp1) experimental; urgency=medium
+
+  * New upstream stable update:
+    https://www.kernel.org/pub/linux/kernel/v5.x/ChangeLog-5.0.1
+
+  [ Vagrant Cascadian ]
+  * [arm64,armhf] Enable PHY_ROCKCHIP_INNO_HDMI as modules.
+
+  [ Ben Hutchings ]
+  * [amd64] kexec: Enable KEXEC_SIG, replacing KEXEC_VERIFY_SIG
+  * [armel] MTD: Enable MTD_PHYSMAP as module and set MTD_PHYSMAP_OF=y
+    - udeb: Include physmap instead of physmap_of in mtd-modules (fixes FTBFS)
+  * [armhf] sound/soc/ti: Enable SND_SOC_DAVINCI_MCASP, SND_SOC_NOKIA_RX51,
+    SND_SOC_OMAP3_PANDORA, SND_SOC_OMAP3_TWL4030, SND_SOC_OMAP_ABE_TWL6040
+    as modules; replacing SND_DAVINCI_SOC_MCASP, SND_OMAP_SOC_RX51,
+    SND_OMAP_SOC_OMAP3_PANDORA, SND_OMAP_SOC_OMAP_TWL4030,
+    SND_OMAP_SOC_OMAP_ABE_TWL6040 respectively
+  * udeb: Add thermal_sys to kernel-image (fixes FTBFS on mips*, ppc64*,
+    riscv64)
+  * [powerpc*] mm: Only define MAX_PHYSMEM_BITS in SPARSEMEM configurations
+    (fixes FTBFS on powerpc, powerpcspe)
+  * debian/source/lintian-overrides: Override license-problem-gfdl-invariants
+    in more files
+  * debian/rules: Remove debian/*.substvars in clean target
+  * debian/source/lintian-overrides: Override
+    orig-tarball-missing-upstream-signature
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 18 Mar 2019 04:01:01 +0000
+
 linux (5.0.1-1~exp1) experimental; urgency=medium
 
   * New upstream release: https://kernelnewbies.org/Linux_5.0
@@ -195,6 +224,25 @@ linux (4.20-1~exp1) experimental; urgency=medium
   * debian/source/lintian-overrides: Update overrides for GFDL notices
 
  -- Ben Hutchings <ben@decadent.org.uk>  Mon, 24 Dec 2018 04:26:47 +0000
+
+linux (4.19.28-2) unstable; urgency=medium
+
+  [ Ben Hutchings ]
+  * [x86,alpha,m68k] binfmt: Disable BINFMT_AOUT, IA32_AOUT, OSF4_COMPAT
+  * [x86] Drop fix for #865303, which no longer affects Debian's OpenJDK
+  * udeb: Make serial_cs optional in serial-modules
+  * [ppc64el] Disable PCMCIA (fixes FTBFS)
+
+  [ Vagrant Cascadian ]
+  * [arm64] Enable DRM_SUN4I and DRM_SUN8I_DW_HDMI as modules.
+  * [arm64] Enable I2C_GPIO as a module.
+  * [arm64] Enable MESON_EFUSE as a module.
+
+  [ Yves-Alexis Perez ]
+  * certs: include both root CA and direct signing certificate.
+    closes: #924545
+
+ -- Ben Hutchings <ben@decadent.org.uk>  Fri, 15 Mar 2019 02:16:04 +0000
 
 linux (4.19.28-1) unstable; urgency=medium
 
