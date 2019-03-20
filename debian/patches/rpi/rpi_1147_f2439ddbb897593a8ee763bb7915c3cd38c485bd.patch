@@ -1,0 +1,24 @@
+commit f2439ddbb897593a8ee763bb7915c3cd38c485bd
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Mon Jan 7 17:58:05 2019 +0000
+
+    vcsm: Use struct service_creation
+
+diff --git a/drivers/char/broadcom/vc_sm/vc_vchi_sm.c b/drivers/char/broadcom/vc_sm/vc_vchi_sm.c
+index 1c8a3694521d..a1371de24b66 100644
+--- a/drivers/char/broadcom/vc_sm/vc_vchi_sm.c
++++ b/drivers/char/broadcom/vc_sm/vc_vchi_sm.c
+@@ -286,7 +286,7 @@ struct sm_instance *vc_vchi_sm_init(VCHI_INSTANCE_T vchi_instance)
+ 	/* Open the VCHI service connections */
+ 	instance->num_connections = num_connections;
+ 	for (i = 0; i < num_connections; i++) {
+-		SERVICE_CREATION_T params = {
++		struct service_creation params = {
+ 			.version	= VCHI_VERSION_EX(VC_SM_VER, VC_SM_MIN_VER),
+ 			.service_id	= VC_SM_SERVER_NAME,
+ 			.callback	= vc_sm_vchi_callback,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1147_f2439ddbb897593a8ee763bb7915c3cd38c485bd.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1147_f2439ddbb897593a8ee763bb7915c3cd38c485bd.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

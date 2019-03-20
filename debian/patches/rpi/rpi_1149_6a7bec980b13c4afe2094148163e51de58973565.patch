@@ -1,0 +1,37 @@
+commit 6a7bec980b13c4afe2094148163e51de58973565
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Mon Jan 7 18:23:44 2019 +0000
+
+    fixup: vc4_firmware_kms
+
+diff --git a/drivers/gpu/drm/vc4/vc4_firmware_kms.c b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+index 4f73f0650d66..1e53e1555755 100644
+--- a/drivers/gpu/drm/vc4/vc4_firmware_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_firmware_kms.c
+@@ -275,7 +275,6 @@ static int vc4_plane_atomic_check(struct drm_plane *plane,
+ 
+ static void vc4_plane_destroy(struct drm_plane *plane)
+ {
+-	drm_plane_helper_disable(plane, NULL);
+ 	drm_plane_cleanup(plane);
+ }
+ 
+@@ -736,11 +735,13 @@ static int vc4_fkms_bind(struct device *dev, struct device *master, void *data)
+ static void vc4_fkms_unbind(struct device *dev, struct device *master,
+ 			    void *data)
+ {
++	struct drm_device *drm = dev_get_drvdata(master);
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct vc4_crtc *vc4_crtc = dev_get_drvdata(dev);
+ 
+ 	vc4_fkms_connector_destroy(vc4_crtc->connector);
+ 	vc4_fkms_encoder_destroy(vc4_crtc->encoder);
++	drm_atomic_helper_shutdown(drm);
+ 	drm_crtc_cleanup(&vc4_crtc->base);
+ 
+ 	platform_set_drvdata(pdev, NULL);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1149_6a7bec980b13c4afe2094148163e51de58973565.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1149_6a7bec980b13c4afe2094148163e51de58973565.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

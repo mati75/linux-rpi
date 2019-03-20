@@ -1,0 +1,40 @@
+commit 6d00a05339afca45a46571a2e08d0eb289ede29a
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Nov 26 21:01:18 2018 +0000
+
+    Revert "build/arm64: Add rules for .dtbo files for dts overlays"
+    
+    DT build rules are now in the common top-level Makefile.
+    
+    This reverts commit dce5b0fbdd2174f7fc9b27f4e89877a33169239a.
+
+diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
+index 64d9be3569bc..b025304bde46 100644
+--- a/arch/arm64/Makefile
++++ b/arch/arm64/Makefile
+@@ -145,20 +145,6 @@ Image.%: Image
+ zinstall install:
+ 	$(Q)$(MAKE) $(build)=$(boot) $@
+ 
+-%.dtb: scripts
+-	$(Q)$(MAKE) $(build)=$(boot)/dts $(boot)/dts/$@
+-
+-%.dtbo: | scripts
+-	$(Q)$(MAKE) $(build)=$(boot)/dts MACHINE=$(MACHINE) $(boot)/dts/$@
+-
+-PHONY += dtbs dtbs_install
+-
+-dtbs: prepare scripts
+-	$(Q)$(MAKE) $(build)=$(boot)/dts
+-
+-dtbs_install:
+-	$(Q)$(MAKE) $(dtbinst)=$(boot)/dts
+-
+ PHONY += vdso_install
+ vdso_install:
+ 	$(Q)$(MAKE) $(build)=arch/arm64/kernel/vdso $@
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1098_6d00a05339afca45a46571a2e08d0eb289ede29a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1098_6d00a05339afca45a46571a2e08d0eb289ede29a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

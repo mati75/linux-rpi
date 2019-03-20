@@ -1,0 +1,28 @@
+commit e3b3edde85d139604774da5e29acebed6622d891
+Author: Matt Flax <flatmax@flatmax.org>
+Date:   Tue Jan 29 14:56:03 2019 +1100
+
+    audioinjector-octo: revert to dummy supplies
+    
+    The Audio Injector Octo has had a lot of reports of not coming up on power cycles. By reverting to dummy supplies, the card comes up reliably.
+
+diff --git a/arch/arm/boot/dts/overlays/audioinjector-addons-overlay.dts b/arch/arm/boot/dts/overlays/audioinjector-addons-overlay.dts
+index 60b2e94f2c9a..cedbf5ecdbcd 100644
+--- a/arch/arm/boot/dts/overlays/audioinjector-addons-overlay.dts
++++ b/arch/arm/boot/dts/overlays/audioinjector-addons-overlay.dts
+@@ -25,10 +25,6 @@
+ 				reg = <0x48>;
+ 				clocks = <&cs42448_mclk>;
+ 				clock-names = "mclk";
+-				VA-supply = <&vdd_5v0_reg>;
+-				VD-supply = <&vdd_3v3_reg>;
+-				VLS-supply = <&vdd_3v3_reg>;
+-				VLC-supply = <&vdd_3v3_reg>;
+ 				status = "okay";
+ 			};
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1180_e3b3edde85d139604774da5e29acebed6622d891.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1180_e3b3edde85d139604774da5e29acebed6622d891.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

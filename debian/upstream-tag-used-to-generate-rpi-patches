@@ -1,41 +1,41 @@
-tag v4.19.28
+tag v5.0.2
 Tagger: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Sun Mar 10 07:17:22 2019 +0100
+Date:   Wed Mar 13 14:01:33 2019 -0700
 
-This is the 4.19.28 stable release
+This is the 5.0.2 stable release
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlyEq/IACgkQONu9yGCS
-aT77AhAAgqbxHsKsgqh7JV477xEgLqrLKYw+/6Bx+l79fUZoaR3PRwM62UEzikPQ
-KbvutNuOHOWuJA0Xyj5gqV4SJaqBOkoGNnHFOBi/qjtFUsOlBFrlGpow+0fsP/ay
-Bmo0LhoTvBub4ap7bJt4pwel/elWYVtOkA1Qgv3OCiDkTorYuPTbIUyuAVOJJbRn
-sZ1eKi00CQPrN65Rxgci0g0p/m7JWpvW2zqmDNZJuZZeEmSLdrrZGwt5ExiI6oKz
-CqX/VBGChEesMTEOLsSfRyg6NZW3j4rOUaCzkxDq/Tsh9XqNabhk1jod2p3t7Nmu
-n5Js3ujfuyCKf5tD49Z8xy5A++nYyJLa5jbFnURr2H/ZJPla0CHuc4RoFf/wFYr4
-xQAeA3XXiZZB02n6oZlweUSp7hVnCgLJ4Ev2ctAyPUpyf4ncl+vffzj40bozFvAC
-adJE1UyEJp0xUuRVdx0I+HyueHcWmRIAgs0iz9B5S2KNc4rYDqE+/t+ddrNqjvSF
-+C33nMn+7A+ngmQlwWjOBaZhhQn3qWrWU0ACERbIG/DUD2voBYu3oIfQzKsXTt0V
-erSSDq0KSy73PRKN4Tzf2GnDUAlNITUuyFgWITOg8p29HuXJO00p4MQ7fOMYacyB
-WdwXFB7islUtUoA8nEedZgF7IF1WRh6Iz2HJ5uMTl6pCMSV+8Dk=
-=OvW8
+iQIzBAABCAAdFiEEZH8oZUiU471FcZm+ONu9yGCSaT4FAlyJb60ACgkQONu9yGCS
+aT5G3xAAsm6pjZfpQ17wALzFfg/I+QFzVlNDAalxqiASY7yuiT1C6ua/0Tv8zH6y
+1yHC1wy6LgadjHd9Z5/fJS5wcOO4Ibxe5rVy7j0tTRmQCoMNc48OSRhmpp0yXY0R
+I/pkirBjybekiBPCgqW5flK04UTANrk28eZwRDRbYEfAbjTT4guDgaPhnF+lCCEq
+FvsV76Nzifs/G6txxFWItheSIY2AZpgpBBPX50NLRwrJP47ut5oAXWWzjfZ6U57r
+ZKDyLPnwi93ANciQC0M2bFI8weW0Qbhjt/8hnqdjHb0CGGgd5iEwW/u7Lj6jPE9C
++wARrKZpn653GtMwkioDZKGKzmwULzcsJpsVEQ/tAU46VEBX8WhQAQQp3Bl5BMwx
+0RUaS/KSA9SSAuHrOrczUEBSfN9f4LSFGmF2F+4F7AVYhylnED7NjPeZC+cMIcNR
+7vF5FwSAbM7PwBDwtopjexBkzGClk/j/8ueBvnTfB/4uiyT0uBtSj9RrPZlL6V//
+mZI5yPRo4XicBulvAoQjHB40sa9FdHx2G7xyhS7/llB0e++0HHMIZBhC2gpejMFL
+mEgBnfckaHbofHIqokiv6xvVVBftymDyqlgLMLPrLkoz9AUnIDwSGNzprNakbKeh
+ge/rPdMtUA3aWwEtBxSpynQWSn38jFIBlGbm1clbOj2mBVhKFh8=
+=rTgq
 -----END PGP SIGNATURE-----
 
-commit 6a31767f84ad31445865f1297d49937319f775c3
+commit 9e6fdea016e45c5feab60589241e0d3607d39945
 Author: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Date:   Sun Mar 10 07:17:22 2019 +0100
+Date:   Wed Mar 13 14:01:32 2019 -0700
 
-    Linux 4.19.28
+    Linux 5.0.2
 
 diff --git a/Makefile b/Makefile
-index 70ed9a53558a..c6ac023ba33a 100644
+index 3cd7163fe164..bb2f7664594a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
- VERSION = 4
- PATCHLEVEL = 19
--SUBLEVEL = 27
-+SUBLEVEL = 28
+ VERSION = 5
+ PATCHLEVEL = 0
+-SUBLEVEL = 1
++SUBLEVEL = 2
  EXTRAVERSION =
- NAME = "People's Front"
+ NAME = Shy Crocodile
  

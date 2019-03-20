@@ -1,0 +1,45 @@
+commit 7622f9739a51077a81e2e2fe2f928df78cfbb210
+Author: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date:   Mon Jan 14 14:16:32 2019 +0100
+
+    overlays: add better target to rpi-ft5406
+    
+    The current overlay's target is set to "/firmware". This is worng as the
+    real firmware node is located at "/soc/firmware". This is not ideal as
+    the touchcreen didn't appear in the final device tree as a child of the
+    firmware node.
+    
+    the overlay still worked fine as the driver uses 'of_get_parent()' to
+    get the firmware node which in the end pointed to the right place.
+    
+    Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+
+diff --git a/arch/arm/boot/dts/overlays/rpi-ft5406-overlay.dts b/arch/arm/boot/dts/overlays/rpi-ft5406-overlay.dts
+index baa8cda1a9e1..8a4779e94aab 100644
+--- a/arch/arm/boot/dts/overlays/rpi-ft5406-overlay.dts
++++ b/arch/arm/boot/dts/overlays/rpi-ft5406-overlay.dts
+@@ -5,14 +5,12 @@
+ 	compatible = "brcm,bcm2708";
+ 
+ 	fragment@0 {
+-		target-path = "/";
++		target-path = "/soc/firmware";
+ 		__overlay__ {
+-			firmware {
+-				ts: touchscreen {
+-					compatible = "raspberrypi,firmware-ts";
+-					touchscreen-size-x = <800>;
+-					touchscreen-size-y = <480>;
+-				};
++			ts: touchscreen {
++				compatible = "raspberrypi,firmware-ts";
++				touchscreen-size-x = <800>;
++				touchscreen-size-y = <480>;
+ 			};
+ 		};
+ 	};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1156_7622f9739a51077a81e2e2fe2f928df78cfbb210.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1156_7622f9739a51077a81e2e2fe2f928df78cfbb210.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

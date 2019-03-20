@@ -1,0 +1,31 @@
+commit 379ca7a95340cb895c080c0db9a698414095a43d
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Tue Mar 5 09:51:22 2019 +0000
+
+    lan78xx: EEE support is now a PHY property
+    
+    Now that EEE support is a property of the PHY, use the PHY's DT node
+    when querying the EEE-related properties.
+    
+    See: https://github.com/raspberrypi/linux/issues/2882
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/drivers/net/usb/lan78xx.c b/drivers/net/usb/lan78xx.c
+index 30629159a52e..52726b00dfda 100644
+--- a/drivers/net/usb/lan78xx.c
++++ b/drivers/net/usb/lan78xx.c
+@@ -2185,7 +2185,7 @@ static int lan78xx_phy_init(struct lan78xx_net *dev)
+ 	mii_adv_to_linkmode_adv_t(fc, mii_adv);
+ 	linkmode_or(phydev->advertising, fc, phydev->advertising);
+ 
+-	if (of_property_read_bool(dev->udev->dev.of_node,
++	if (of_property_read_bool(phydev->mdio.dev.of_node,
+ 				  "microchip,eee-enabled")) {
+ 		struct ethtool_eee edata;
+ 		memset(&edata, 0, sizeof(edata));
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1186_379ca7a95340cb895c080c0db9a698414095a43d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1186_379ca7a95340cb895c080c0db9a698414095a43d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

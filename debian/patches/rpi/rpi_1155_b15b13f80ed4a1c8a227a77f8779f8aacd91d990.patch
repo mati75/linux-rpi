@@ -1,0 +1,56 @@
+commit b15b13f80ed4a1c8a227a77f8779f8aacd91d990
+Author: popcornmix <popcornmix@gmail.com>
+Date:   Mon Jan 14 18:59:46 2019 +0000
+
+    dma_zalloc_coherent fixups
+
+diff --git a/drivers/gpio/gpio-bcm-virt.c b/drivers/gpio/gpio-bcm-virt.c
+index c3725546def9..49e28ad9760e 100644
+--- a/drivers/gpio/gpio-bcm-virt.c
++++ b/drivers/gpio/gpio-bcm-virt.c
+@@ -101,7 +101,7 @@ static int brcmvirt_gpio_probe(struct platform_device *pdev)
+ 		goto out;
+ 	}
+ 
+-	ucb->ts_base = dma_zalloc_coherent(dev, PAGE_SIZE, &ucb->bus_addr, GFP_KERNEL);
++	ucb->ts_base = dma_alloc_coherent(dev, PAGE_SIZE, &ucb->bus_addr, GFP_KERNEL);
+ 	if (!ucb->ts_base) {
+ 		pr_err("[%s]: failed to dma_alloc_coherent(%ld)\n",
+ 				__func__, PAGE_SIZE);
+diff --git a/drivers/mmc/host/bcm2835-sdhost.c b/drivers/mmc/host/bcm2835-sdhost.c
+index 0bbac2406734..20c8dadb7106 100644
+--- a/drivers/mmc/host/bcm2835-sdhost.c
++++ b/drivers/mmc/host/bcm2835-sdhost.c
+@@ -243,7 +243,7 @@ static void __iomem *timer_base;
+ static void log_init(struct device *dev, u32 bus_to_phys)
+ {
+ 	spin_lock_init(&log_lock);
+-	sdhost_log_buf = dma_zalloc_coherent(dev, LOG_SIZE, &sdhost_log_addr,
++	sdhost_log_buf = dma_alloc_coherent(dev, LOG_SIZE, &sdhost_log_addr,
+ 					     GFP_KERNEL);
+ 	if (sdhost_log_buf) {
+ 		pr_info("sdhost: log_buf @ %p (%x)\n",
+diff --git a/drivers/usb/host/dwc_common_port/dwc_common_linux.c b/drivers/usb/host/dwc_common_port/dwc_common_linux.c
+index c2e83094d4b3..1460afaf997d 100644
+--- a/drivers/usb/host/dwc_common_port/dwc_common_linux.c
++++ b/drivers/usb/host/dwc_common_port/dwc_common_linux.c
+@@ -337,12 +337,12 @@ void DWC_DMA_POOL_FREE(dwc_pool_t *pool, void *vaddr, void *daddr)
+ 
+ void *__DWC_DMA_ALLOC(void *dma_ctx, uint32_t size, dwc_dma_t *dma_addr)
+ {
+-	return dma_zalloc_coherent(dma_ctx, size, dma_addr, GFP_KERNEL | GFP_DMA32);
++	return dma_alloc_coherent(dma_ctx, size, dma_addr, GFP_KERNEL | GFP_DMA32);
+ }
+ 
+ void *__DWC_DMA_ALLOC_ATOMIC(void *dma_ctx, uint32_t size, dwc_dma_t *dma_addr)
+ {
+-	return dma_zalloc_coherent(dma_ctx, size, dma_addr, GFP_ATOMIC);
++	return dma_alloc_coherent(dma_ctx, size, dma_addr, GFP_ATOMIC);
+ }
+ 
+ void __DWC_DMA_FREE(void *dma_ctx, uint32_t size, void *virt_addr, dwc_dma_t dma_addr)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1155_b15b13f80ed4a1c8a227a77f8779f8aacd91d990.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1155_b15b13f80ed4a1c8a227a77f8779f8aacd91d990.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

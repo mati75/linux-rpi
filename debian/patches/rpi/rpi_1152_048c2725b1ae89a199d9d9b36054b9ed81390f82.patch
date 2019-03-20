@@ -1,0 +1,29 @@
+commit 048c2725b1ae89a199d9d9b36054b9ed81390f82
+Author: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date:   Thu Jan 10 19:53:39 2019 +0100
+
+    config: bcm2709: update RPi's touchscreen driver
+    
+    With 5.0-rc1 an upstream driver is now available. It uses a different
+    config flag.
+    
+    Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index e8519f895c7a..331c9b822c5a 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -567,7 +567,7 @@ CONFIG_TOUCHSCREEN_EGALAX=m
+ CONFIG_TOUCHSCREEN_EXC3000=m
+ CONFIG_TOUCHSCREEN_GOODIX=m
+ CONFIG_TOUCHSCREEN_EDT_FT5X06=m
+-CONFIG_TOUCHSCREEN_RPI_FT5406=m
++CONFIG_TOUCHSCREEN_RASPBERRYPI_FW=m
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=m
+ CONFIG_TOUCHSCREEN_STMPE=m
+ CONFIG_INPUT_MISC=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1152_048c2725b1ae89a199d9d9b36054b9ed81390f82.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1152_048c2725b1ae89a199d9d9b36054b9ed81390f82.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

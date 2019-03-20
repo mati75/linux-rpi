@@ -1,0 +1,67 @@
+commit b77a9b5c42fd971d4d6a71a49ac59a254cc79310
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Wed Feb 6 20:45:16 2019 +0000
+
+    arm: dts: Change downstream vchiq compatible string
+    
+    The new cache line size mechanism requires a different vchiq compatible
+    string on BCM2836 and BCM2837, but the downstream dts files didn't
+    inherit the upstream changes.
+    
+    See: https://github.com/raspberrypi/linux/issues/2643
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm2708-rpi.dtsi b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+index 85e5c0a17e1f..379544f0496f 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2708-rpi.dtsi
+@@ -68,7 +68,7 @@
+ 			status = "disabled";
+ 		};
+ 
+-		mailbox@7e00b840 {
++		vchiq: mailbox@7e00b840 {
+ 			compatible = "brcm,bcm2835-vchiq";
+ 			reg = <0x7e00b840 0x3c>;
+ 			interrupts = <0 2>;
+diff --git a/arch/arm/boot/dts/bcm2709-rpi.dtsi b/arch/arm/boot/dts/bcm2709-rpi.dtsi
+new file mode 100644
+index 000000000000..babfa41cd9f7
+--- /dev/null
++++ b/arch/arm/boot/dts/bcm2709-rpi.dtsi
+@@ -0,0 +1,5 @@
++#include "bcm2708-rpi.dtsi"
++
++&vchiq {
++	compatible = "brcm,bcm2836-vchiq", "brcm,bcm2835-vchiq";
++};
+diff --git a/arch/arm/boot/dts/bcm2709.dtsi b/arch/arm/boot/dts/bcm2709.dtsi
+index 715f5aca753e..9354bcc26cd8 100644
+--- a/arch/arm/boot/dts/bcm2709.dtsi
++++ b/arch/arm/boot/dts/bcm2709.dtsi
+@@ -1,6 +1,6 @@
+ #include "bcm2836.dtsi"
+ #include "bcm270x.dtsi"
+-#include "bcm2708-rpi.dtsi"
++#include "bcm2709-rpi.dtsi"
+ 
+ / {
+ 	soc {
+diff --git a/arch/arm/boot/dts/bcm2710.dtsi b/arch/arm/boot/dts/bcm2710.dtsi
+index 56d58f588203..0d3a6c6a90c2 100644
+--- a/arch/arm/boot/dts/bcm2710.dtsi
++++ b/arch/arm/boot/dts/bcm2710.dtsi
+@@ -1,6 +1,6 @@
+ #include "bcm2837.dtsi"
+ #include "bcm270x.dtsi"
+-#include "bcm2708-rpi.dtsi"
++#include "bcm2709-rpi.dtsi"
+ 
+ / {
+ 	compatible = "brcm,bcm2837", "brcm,bcm2836";
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1181_b77a9b5c42fd971d4d6a71a49ac59a254cc79310.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1181_b77a9b5c42fd971d4d6a71a49ac59a254cc79310.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
