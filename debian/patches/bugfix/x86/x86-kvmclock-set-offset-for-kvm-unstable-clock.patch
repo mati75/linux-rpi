@@ -23,23 +23,23 @@ Fixes: 857baa87b642 ("sched/clock: Enable sched clock early")
 
 Reported-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Pavel Tatashin <pasha.tatashin@soleen.com>
-[carnil: Backport to 4.19 for context changes]
 ---
  arch/x86/kernel/kvmclock.c | 6 +-----
  1 file changed, 1 insertion(+), 5 deletions(-)
 
 --- a/arch/x86/kernel/kvmclock.c
 +++ b/arch/x86/kernel/kvmclock.c
-@@ -117,11 +117,8 @@ static u64 kvm_sched_clock_read(void)
+@@ -117,12 +117,8 @@ static u64 kvm_sched_clock_read(void)
  
  static inline void kvm_sched_clock_init(bool stable)
  {
 -	if (!stable) {
--		pv_time_ops.sched_clock = kvm_clock_read;
+-		pv_ops.time.sched_clock = kvm_clock_read;
 +	if (!stable)
  		clear_sched_clock_stable();
 -		return;
 -	}
- 
+-
  	kvm_sched_clock_offset = kvm_clock_read();
- 	pv_time_ops.sched_clock = kvm_sched_clock_read;
+ 	pv_ops.time.sched_clock = kvm_sched_clock_read;
+ 
