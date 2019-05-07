@@ -1,7 +1,6 @@
 [base]
 flavours:
- marvell
-# rpi
+ rpi
 kernel-arch: arm
 
 [build]
