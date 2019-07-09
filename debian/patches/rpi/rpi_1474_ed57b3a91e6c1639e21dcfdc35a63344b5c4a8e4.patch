@@ -1,0 +1,43 @@
+commit ed57b3a91e6c1639e21dcfdc35a63344b5c4a8e4
+Author: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date:   Wed Oct 17 21:01:54 2018 +0200
+
+    staging: bcm2835-audio: more generic probe function name
+    
+    commit 96f3bd8ae6516898c7b411ecb87064bb0dd25415 upstream.
+    
+    There will only be one probe function, there is no use for appendig
+    "_dt" the end of the name.
+    
+    Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+    Reviewed-by: Takashi Iwai <tiwai@suse.de>
+    Acked-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+index 6ee8334dfc81..039565311d10 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+@@ -291,7 +291,7 @@ static int snd_add_child_devices(struct device *device, u32 numchans)
+ 	return 0;
+ }
+ 
+-static int snd_bcm2835_alsa_probe_dt(struct platform_device *pdev)
++static int snd_bcm2835_alsa_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	u32 numchans;
+@@ -344,7 +344,7 @@ static const struct of_device_id snd_bcm2835_of_match_table[] = {
+ MODULE_DEVICE_TABLE(of, snd_bcm2835_of_match_table);
+ 
+ static struct platform_driver bcm2835_alsa0_driver = {
+-	.probe = snd_bcm2835_alsa_probe_dt,
++	.probe = snd_bcm2835_alsa_probe,
+ #ifdef CONFIG_PM
+ 	.suspend = snd_bcm2835_alsa_suspend,
+ 	.resume = snd_bcm2835_alsa_resume,
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1474_ed57b3a91e6c1639e21dcfdc35a63344b5c4a8e4.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1474_ed57b3a91e6c1639e21dcfdc35a63344b5c4a8e4.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

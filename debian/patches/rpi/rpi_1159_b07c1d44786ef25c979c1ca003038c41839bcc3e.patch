@@ -1,0 +1,55 @@
+commit b07c1d44786ef25c979c1ca003038c41839bcc3e
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Mar 9 13:26:33 2018 -0800
+
+    overlays: Remove stale notes about vc4's CMA alignment in the README.
+    
+    We haven't needed alignment since
+    553c942f8b2cbc7394b4d4fa2f848b23a8f07451, and the current overlays
+    don't specify any.
+    
+    Signed-off-by: Eric Anholt <eric@anholt.net>
+
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index a867317e7dc0..5c9ede3ea6e2 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1913,11 +1913,11 @@ Name:   vc4-fkms-v3d
+ Info:   Enable Eric Anholt's DRM VC4 V3D driver on top of the dispmanx
+         display stack.
+ Load:   dtoverlay=vc4-fkms-v3d,<param>
+-Params: cma-256                 CMA is 256MB, 256MB-aligned (needs 1GB)
+-        cma-192                 CMA is 192MB, 256MB-aligned (needs 1GB)
+-        cma-128                 CMA is 128MB, 128MB-aligned
+-        cma-96                  CMA is 96MB, 128MB-aligned
+-        cma-64                  CMA is 64MB, 64MB-aligned
++Params: cma-256                 CMA is 256MB (needs 1GB)
++        cma-192                 CMA is 192MB (needs 1GB)
++        cma-128                 CMA is 128MB
++        cma-96                  CMA is 96MB
++        cma-64                  CMA is 64MB
+ 
+ 
+ Name:   vc4-kms-kippah-7inch
+@@ -1932,11 +1932,11 @@ Info:   Enable Eric Anholt's DRM VC4 HDMI/HVS/V3D driver. Running startx or
+         booting to GUI while this overlay is in use will cause interesting
+         lockups.
+ Load:   dtoverlay=vc4-kms-v3d,<param>
+-Params: cma-256                 CMA is 256MB, 256MB-aligned (needs 1GB)
+-        cma-192                 CMA is 192MB, 256MB-aligned (needs 1GB)
+-        cma-128                 CMA is 128MB, 128MB-aligned
+-        cma-96                  CMA is 96MB, 128MB-aligned
+-        cma-64                  CMA is 64MB, 64MB-aligned
++Params: cma-256                 CMA is 256MB (needs 1GB)
++        cma-192                 CMA is 192MB (needs 1GB)
++        cma-128                 CMA is 128MB
++        cma-96                  CMA is 96MB
++        cma-64                  CMA is 64MB
+ 
+ 
+ Name:   vga666
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1159_b07c1d44786ef25c979c1ca003038c41839bcc3e.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1159_b07c1d44786ef25c979c1ca003038c41839bcc3e.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

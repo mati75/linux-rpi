@@ -1,0 +1,116 @@
+commit 29fa7fa382e41e38730aa42aa6e378a6f9b2283b
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Mar 21 11:19:46 2019 +0000
+
+    sound: Fixes for audioinjector-octo under 4.19
+    
+    1. Move the DT alias declaration to the I2C shim in the cases
+    where the shim is enabled. This works around a problem caused by a
+    4.19 commit [1] that generates DT/OF uevents for I2C drivers.
+    
+    2. Fix the diagnostics in an error path of the soundcard driver to
+    correctly identify the reason for the failure to load.
+    
+    3. Move the declaration of the clock node in the overlay outside
+    the I2C node to avoid warnings.
+    
+    4. Sort the overlay nodes so that dependencies are only to earlier
+    fragments, in an attempt to get runtime dtoverlay application to
+    work (it still doesn't...)
+    
+    See: https://github.com/Audio-Injector/Octo/issues/14
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+    
+    [1] af503716ac14 ("i2c: core: report OF style module alias for devices registered via OF")
+
+diff --git a/arch/arm/boot/dts/overlays/audioinjector-addons-overlay.dts b/arch/arm/boot/dts/overlays/audioinjector-addons-overlay.dts
+index cedbf5ecdbcd..6d192af10da9 100644
+--- a/arch/arm/boot/dts/overlays/audioinjector-addons-overlay.dts
++++ b/arch/arm/boot/dts/overlays/audioinjector-addons-overlay.dts
+@@ -13,6 +13,17 @@
+ 	};
+ 
+ 	fragment@1 {
++		target-path = "/";
++		__overlay__ {
++			cs42448_mclk: codec-mclk {
++				compatible = "fixed-clock";
++				#clock-cells = <0>;
++				clock-frequency = <49152000>;
++			};
++		};
++	};
++
++	fragment@2 {
+ 		target = <&i2c1>;
+ 		__overlay__ {
+ 			#address-cells = <1>;
+@@ -27,16 +38,10 @@
+ 				clock-names = "mclk";
+ 				status = "okay";
+ 			};
+-
+-			cs42448_mclk: codec-mclk {
+-				compatible = "fixed-clock";
+-				#clock-cells = <0>;
+-				clock-frequency = <49152000>;
+-			};
+ 		};
+ 	};
+ 
+-	fragment@2 {
++	fragment@3 {
+ 		target = <&sound>;
+ 		snd: __overlay__ {
+ 			compatible = "ai,audioinjector-octo-soundcard";
+diff --git a/sound/soc/bcm/audioinjector-octo-soundcard.c b/sound/soc/bcm/audioinjector-octo-soundcard.c
+index 6029a12d77cc..550ef25eed10 100644
+--- a/sound/soc/bcm/audioinjector-octo-soundcard.c
++++ b/sound/soc/bcm/audioinjector-octo-soundcard.c
+@@ -297,7 +297,7 @@ static int audioinjector_octo_probe(struct platform_device *pdev)
+ 			dai->codec_name = NULL;
+ 			dai->codec_of_node = codec_node;
+ 		} else
+-			if (!dai->cpu_of_node) {
++			if (!i2s_node) {
+ 				dev_err(&pdev->dev,
+ 				"i2s-controller missing or invalid in DT\n");
+ 				return -EINVAL;
+diff --git a/sound/soc/codecs/cs42xx8-i2c.c b/sound/soc/codecs/cs42xx8-i2c.c
+index 0214e3ab9da0..a4586ea4acf6 100644
+--- a/sound/soc/codecs/cs42xx8-i2c.c
++++ b/sound/soc/codecs/cs42xx8-i2c.c
+@@ -45,6 +45,13 @@ static struct i2c_device_id cs42xx8_i2c_id[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, cs42xx8_i2c_id);
+ 
++const struct of_device_id cs42xx8_of_match[] = {
++	{ .compatible = "cirrus,cs42448", .data = &cs42448_data, },
++	{ .compatible = "cirrus,cs42888", .data = &cs42888_data, },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, cs42xx8_of_match);
++
+ static struct i2c_driver cs42xx8_i2c_driver = {
+ 	.driver = {
+ 		.name = "cs42xx8",
+diff --git a/sound/soc/codecs/cs42xx8.c b/sound/soc/codecs/cs42xx8.c
+index ebb9e0cf8364..42677c630f23 100644
+--- a/sound/soc/codecs/cs42xx8.c
++++ b/sound/soc/codecs/cs42xx8.c
+@@ -436,8 +436,10 @@ const struct of_device_id cs42xx8_of_match[] = {
+ 	{ .compatible = "cirrus,cs42888", .data = &cs42888_data, },
+ 	{ /* sentinel */ }
+ };
++#if !IS_ENABLED(CONFIG_SND_SOC_CS42XX8_I2C)
+ MODULE_DEVICE_TABLE(of, cs42xx8_of_match);
+ EXPORT_SYMBOL_GPL(cs42xx8_of_match);
++#endif
+ 
+ int cs42xx8_probe(struct device *dev, struct regmap *regmap)
+ {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1433_29fa7fa382e41e38730aa42aa6e378a6f9b2283b.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1433_29fa7fa382e41e38730aa42aa6e378a6f9b2283b.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

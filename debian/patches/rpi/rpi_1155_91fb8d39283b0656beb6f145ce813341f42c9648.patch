@@ -1,0 +1,37 @@
+commit 91fb8d39283b0656beb6f145ce813341f42c9648
+Author: Jasper Boomer <jasperboomer@gmail.com>
+Date:   Mon Jul 2 13:16:22 2018 -0400
+
+    Add hd44780 module to defconfig
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 5474e5b942be..96e72f4caaae 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -1155,6 +1155,8 @@ CONFIG_RTC_DRV_RV3029C2=m
+ CONFIG_DMADEVICES=y
+ CONFIG_DMA_BCM2835=y
+ CONFIG_DMA_BCM2708=y
++CONFIG_AUXDISPLAY=y
++CONFIG_HD44780=m
+ CONFIG_UIO=m
+ CONFIG_UIO_PDRV_GENIRQ=m
+ CONFIG_STAGING=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 2ec2d31202a0..c57a4cde6947 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -1148,6 +1148,8 @@ CONFIG_RTC_DRV_RV3029C2=m
+ CONFIG_DMADEVICES=y
+ CONFIG_DMA_BCM2835=y
+ CONFIG_DMA_BCM2708=y
++CONFIG_AUXDISPLAY=y
++CONFIG_HD44780=m
+ CONFIG_UIO=m
+ CONFIG_UIO_PDRV_GENIRQ=m
+ CONFIG_STAGING=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1155_91fb8d39283b0656beb6f145ce813341f42c9648.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1155_91fb8d39283b0656beb6f145ce813341f42c9648.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

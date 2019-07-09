@@ -1,0 +1,49 @@
+commit 0ab67ad1d2b2551662ecbbed47d758f1b2329ecb
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Fri Mar 8 10:38:59 2019 +0000
+
+    staging: vc_sm_cma: Remove erroneous misc_deregister
+    
+    Code from the misc /dev node was still present in
+    bcm2835_vc_sm_cma_remove, which caused a NULL deref.
+    Remove it.
+    
+    See #2885.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/vc-sm-cma/vc_sm.c b/drivers/staging/vc04_services/vc-sm-cma/vc_sm.c
+index 7ac6b806b862..4bc738a2abf3 100644
+--- a/drivers/staging/vc04_services/vc-sm-cma/vc_sm.c
++++ b/drivers/staging/vc04_services/vc-sm-cma/vc_sm.c
+@@ -25,7 +25,6 @@
+ #include <linux/fs.h>
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+-#include <linux/miscdevice.h>
+ #include <linux/module.h>
+ #include <linux/mm.h>
+ #include <linux/of_device.h>
+@@ -72,7 +71,6 @@ struct sm_pde_t {
+ struct sm_state_t {
+ 	struct platform_device *pdev;
+ 
+-	struct miscdevice dev;
+ 	struct sm_instance *sm_handle;	/* Handle for videocore service. */
+ 
+ 	spinlock_t kernelid_map_lock;	/* Spinlock protecting kernelid_map */
+@@ -758,9 +756,6 @@ static int bcm2835_vc_sm_cma_remove(struct platform_device *pdev)
+ {
+ 	pr_debug("[%s]: start\n", __func__);
+ 	if (sm_inited) {
+-		/* Remove shared memory device. */
+-		misc_deregister(&sm_state->dev);
+-
+ 		/* Remove all proc entries. */
+ 		//debugfs_remove_recursive(sm_state->dir_root);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1372_0ab67ad1d2b2551662ecbbed47d758f1b2329ecb.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1372_0ab67ad1d2b2551662ecbbed47d758f1b2329ecb.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

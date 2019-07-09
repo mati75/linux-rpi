@@ -1,0 +1,41 @@
+commit 9e872cd2097c4fd9498093f276c22f97f20eba44
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Thu Jan 24 16:40:01 2019 +0000
+
+    staging: bcm2835-codec: variable vb2 may be used uninitialised
+    
+    In op_buffer_cb, the failure path checked whether there was
+    an associated vb2 buffer before the variable vb2 had been
+    assigned.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-codec/bcm2835-v4l2-codec.c b/drivers/staging/vc04_services/bcm2835-codec/bcm2835-v4l2-codec.c
+index 4e4e4fb69ade..4ef16379f216 100644
+--- a/drivers/staging/vc04_services/bcm2835-codec/bcm2835-v4l2-codec.c
++++ b/drivers/staging/vc04_services/bcm2835-codec/bcm2835-v4l2-codec.c
+@@ -634,6 +634,9 @@ static void op_buffer_cb(struct vchiq_mmal_instance *instance,
+ 		 __func__, status, mmal_buf, mmal_buf->length,
+ 		 mmal_buf->mmal_flags, mmal_buf->pts);
+ 
++	buf = container_of(mmal_buf, struct m2m_mmal_buffer, mmal);
++	vb2 = &buf->m2m.vb;
++
+ 	if (status) {
+ 		/* error in transfer */
+ 		if (vb2) {
+@@ -658,9 +661,6 @@ static void op_buffer_cb(struct vchiq_mmal_instance *instance,
+ 		return;
+ 	}
+ 
+-	buf = container_of(mmal_buf, struct m2m_mmal_buffer, mmal);
+-	vb2 = &buf->m2m.vb;
+-
+ 	v4l2_dbg(3, debug, &ctx->dev->v4l2_dev, "%s: length %lu, flags %x, idx %u\n",
+ 		 __func__, mmal_buf->length, mmal_buf->mmal_flags,
+ 		 vb2->vb2_buf.index);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1332_9e872cd2097c4fd9498093f276c22f97f20eba44.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1332_9e872cd2097c4fd9498093f276c22f97f20eba44.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

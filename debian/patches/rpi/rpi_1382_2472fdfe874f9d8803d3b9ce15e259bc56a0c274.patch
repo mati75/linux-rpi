@@ -1,0 +1,52 @@
+commit 2472fdfe874f9d8803d3b9ce15e259bc56a0c274
+Author: Stefan Wahren <stefan.wahren@i2se.com>
+Date:   Thu Mar 7 19:27:05 2019 +0100
+
+    configs: Enable MT76 USB wifi
+    
+    Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 2a172664a820..171bf378969b 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -526,6 +526,8 @@ CONFIG_LIBERTAS_THINFIRM_USB=m
+ CONFIG_MWIFIEX=m
+ CONFIG_MWIFIEX_SDIO=m
+ CONFIG_MT7601U=m
++CONFIG_MT76x0U=m
++CONFIG_MT76x2U=m
+ CONFIG_RT2X00=m
+ CONFIG_RT2500USB=m
+ CONFIG_RT73USB=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index edce2eb18129..e408bef908e7 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -520,6 +520,8 @@ CONFIG_LIBERTAS_THINFIRM_USB=m
+ CONFIG_MWIFIEX=m
+ CONFIG_MWIFIEX_SDIO=m
+ CONFIG_MT7601U=m
++CONFIG_MT76x0U=m
++CONFIG_MT76x2U=m
+ CONFIG_RT2X00=m
+ CONFIG_RT2500USB=m
+ CONFIG_RT73USB=m
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 2f7d6e37aea2..54b859d7149d 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -512,6 +512,8 @@ CONFIG_LIBERTAS_THINFIRM_USB=m
+ CONFIG_MWIFIEX=m
+ CONFIG_MWIFIEX_SDIO=m
+ CONFIG_MT7601U=m
++CONFIG_MT76x0U=m
++CONFIG_MT76x2U=m
+ CONFIG_RT2X00=m
+ CONFIG_RT2500USB=m
+ CONFIG_RT73USB=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1382_2472fdfe874f9d8803d3b9ce15e259bc56a0c274.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1382_2472fdfe874f9d8803d3b9ce15e259bc56a0c274.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

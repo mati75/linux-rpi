@@ -1,4 +1,4 @@
-linux (4.19.37-1+rpi2) buster-staging; urgency=medium
+linux-rpi (4.19.50-1+rpi1) buster-staging; urgency=medium
 
   * This is last version kernel for raspbian. For now Raspberry Pi 0 and B
     have support in Debian armel kernel. Version 3 have support on arm64.
@@ -6,129 +6,120 @@ linux (4.19.37-1+rpi2) buster-staging; urgency=medium
     0W on armel arch and unofficial version armhf for rpi2 until it haven't
     support in mainline kernel.
 
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Wed, 20 Mar 2019 21:27:25 +0100
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Mon, 08 Jul 2019 14:57:07 +0200
 
-linux (4.19.28-2+rpi1) buster-staging; urgency=medium
+linux (4.19.37-5) unstable; urgency=medium
 
-  [Changes from 3.18.5-1~exp1+rpi1 or earlier]
-  [Vagrant Cascadian <vagrant@debian.org>]
-  * disable other armhf variants.
-  * disable other armhf debian-installer variants.
-  * attempt to enable debian-installer udebs for rpi.
-  * try harder to enable debian-installer udebs.
-  [Peter Michael Green]
-  * Include patches to support RaspberryPI from:
-    https://github.com/raspberrypi/linux.git
-    branch: rpi-3.16.y
-  * add script to automatically regenerate rpi patches from git repos
-  * add hack to allow upgrading of kernel located on fat partition to succeed
-  * Fix clean target
-  * Merge config changes from 3.10.11-1+rpi4 packaging.
-  * Build hardware rng module.
-  * Build pps module for gps timeserver support.
-  * Disable fat modules udeb because we are compiling fat support in.
-  * Disable patches that conflict with or duplicate rpi patches
-    - features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
-  * Add various kernel config changes that the raspberry pi foundation made between
-    3.14 and 3.16 kernel series.
-  * Changes forward ported from 3.12 packaging
-    + optimise update-rpi-patches script a bit (reduce the number of calls to
-      quilt refresh).
-    + apply GPIO related configuration changes requested by Diederik
-      (LP: 1403865)
-  * Rename source package and don't build libc-dev package
-  * Add support for raspberry pi 2
-    + also turn on some stuff for pi1 that was noticed during the pi1/pi2
-      config comparison.
+  [ Romain Perier ]
+  * [sparc64] Fix device naming inconsistency between sunhv_console and
+    sunhv_reg (Closes: #926539)
 
-  [Changes introduced in 3.18.5-1~exp1+rpi10 by Peter Michael Green]
-  * Fix kernel configuration for keyboard
-  * split out config.rpix containing config containing settings that
-    are used for both pi1 and pi2.
+  [ Ben Hutchings ]
+  * tcp: Avoid ABI change for DoS fixes (Closes: #930743)
+  * Add ABI reference for 4.19.0-5
 
-  [Changes introduced in 3.18.5-1~exp1+rpi11 by Peter Michael Green]
-  * add copyright header to mkknling.
-  * enable I2S modules now we have device tree support.
+ -- Ben Hutchings <ben@decadent.org.uk>  Wed, 19 Jun 2019 23:16:58 +0100
 
-  [Changes introduced in 3.18.5-1~exp1+rpi17 by Peter Micheal Green]
-  * Add RTC drivers requested by Diederik
-  * Update mmc/dma settings to hopefully fix build failure.
+linux (4.19.37-4) unstable; urgency=high
 
-  [Changes introduced in 4.4.6-1+rpi1 by Peter Michael Green]
-  * Disable patches that conflict or potentially conflict with rpi patches.
-    + all patches under features/arm/rpi/
-    + features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
-    + bugfix/all/uas-fix-high-order-alloc.patch
-    + bugfix/all/firmware-remove-redundant-log-messages-from-drivers.patch
-  * Disable rpi_9999_other_changes.patch, it seems to contain only garbage.
-  * add device tree trailer using scripts/mkknlimg (previously we used our own copy of mkknlimg)
+  [ Ben Hutchings ]
+  * libbpf: Fix various build bugs:
+    - Drop unnecessary changes from "libbpf: add SONAME to shared object"
+    - libbpf: Use only 2 components in soversion, matching package name
+      (Closes: #929187)
+    - libbpf: Build out-of-tree
+  * README.source: Document the various makefiles and use of out-of-tree builds
+  * [x86] lockdown,sysrq: Enable ALLOW_LOCKDOWN_LIFT_BY_SYSRQ (Closes: #929583)
+  * mwifiex: Fix possible buffer overflows at parsing bss descriptor
+    (CVE-2019-3846)
+  * mwifiex: Abort at too short BSS descriptor element
+  * mwifiex: Don't abort on small, spec-compliant vendor IEs
+  * mm/mincore.c: make mincore() more conservative (CVE-2019-5489)
+  * mwifiex: Fix heap overflow in mwifiex_uap_parse_tail_ies()
+    (CVE-2019-10126)
+  * tcp: limit payload size of sacked skbs (CVE-2019-11477)
+  * tcp: tcp_fragment() should apply sane memory limits (CVE-2019-11478)
+  * tcp: add tcp_min_snd_mss sysctl (CVE-2019-11479)
+  * tcp: enforce tcp_min_snd_mss in tcp_mtu_probing()
 
-  [changes brought forward from 4.4.6-1+rpi2 by Peter Michael Green <plugwash@raspbian.org> at Sun, 17 Apr 2016 01:49:37 +0000]
-  * Add a load of rpf config settings to try and fix boot failure
-    (if it works a cleanup process will be started afterwards)
+  [ Romain Perier ]
+  * [rt] Update to 4.19.37-rt20:
+    - powerpc/pseries/iommu: Use a locallock instead local_irq_save()
+    - powerpc: reshuffle TIF bits
+    - tty/sysrq: Convert show_lock to raw_spinlock_t
+    - drm/i915: Don't disable interrupts independently of the lock
+    - sched/completion: Fix a lockup in wait_for_completion()
 
-  [changes brought forward from 4.4.6-1+rpi3 by Peter Michael Green <plugwash@raspbian.org> at Tue, 19 Apr 2016 14:24:19 +0000]
-  * Don't specity an ext3-modules udeb for rpi and rpi2 flavors, debian no
-    longer seems to provide a template for it
-  * Don't specity an ext2-modules udeb for rpi and rpi2 flavors, debian no
-    longer seems to provide a template for it
-  * Remove some of the rpf config settings added in 4.4.6-1+rpi2
+  [ Salvatore Bonaccorso ]
+  * brcmfmac: assure SSID length from firmware is limited (CVE-2019-9500)
+  * brcmfmac: add subtype check for event handling in data path
+    (CVE-2019-9503)
+  * ext4: zero out the unused memory region in the extent tree block
+    (CVE-2019-11833)
+  * Bluetooth: hidp: fix buffer overflow (CVE-2019-11884)
 
-  [changes brought forward from 4.4.6-1+rpi4 by Peter Michael Green <plugwash@raspbian.org> at Thu, 21 Apr 2016 21:08:58 +0000]
-  * With previous version rpi2 kernel booted but rpi kernel didn't.
-    try some more config changes.
+  [ Aurelien Jarno ]
+  * [mips] Correctly bounds check virt_addr_valid (Closes: #929366)
 
-  [changes brought forward from 4.4.6-1+rpi5 by Peter Michael Green <plugwash@raspbian.org> at Tue, 26 Apr 2016 15:34:06 +0000]
-  * Unshelve some more config settings.
+  [ John Paul Adrian Glaubitz ]
+  * [sparc64] udeb: Disable suffix for kernel-image
 
-  [changes brought forward from 4.4.6-1+rpi6 by Peter Michael Green <plugwash@raspbian.org> at Thu, 28 Apr 2016 13:30:55 +0000]
-  * Unshelve some more config settings.
+  [ Alper Nebi Yasak ]
+  * udeb: input-modules: Include all keyboard driver modules
+  * [arm64] udeb: kernel-image: Include cros_ec_spi and SPI drivers
+  * [arm64] udeb: kernel-image: Include phy-rockchip-pcie
+  * [arm64] udeb: usb-modules: Include phy-rockchip-typec, extcon-usbc-cros-ec
+  * [arm64] udeb: mmc-modules: Include phy-rockchip-emmc
+  * [arm64] udeb: fb-modules: Include rockchipdrm, panel-simple, pwm_bl and
+    pwm-cros-ec
 
-  [changes brought forward from 4.4.6-1+rpi7 by Peter Michael Green <plugwash@raspbian.org> at Thu, 28 Apr 2016 18:09:56 +0000]
-  * unshelve some more config settings.
+ -- Ben Hutchings <ben@decadent.org.uk>  Mon, 17 Jun 2019 20:00:22 +0100
 
-  [changes brought forward from 4.4.6-1+rpi8 by Peter Michael Green <plugwash@raspbian.org> at Thu, 28 Apr 2016 23:00:11 +0000]
-  * unshelve yet more config settings.
+linux (4.19.37-3) unstable; urgency=medium
 
-  [changes brought forward from 4.4.6-1+rpi9 by Peter Michael Green <plugwash@raspbian.org> at Sat, 30 Apr 2016 23:47:50 +0000]
-  * Unshelve remaining config settings (this should make us equivilent to +rpi2)
+  * [powerpc*] 64s: Include cpu header (fixes FTBFS)
 
-  [changes brought forward from 4.4.6-1+rpi10 by Peter Michael Green <plugwash@raspbian.org> at Sun, 01 May 2016 21:47:14 +0000]
-  * Remove config settings unshelved in +rpi7 and +rpi8
+ -- Ben Hutchings <ben@decadent.org.uk>  Wed, 15 May 2019 23:07:16 +0100
 
-  [changes brought forward from 4.4.6-1+rpi11 by Peter Michael Green <plugwash@raspbian.org> at Mon, 02 May 2016 01:51:47 +0000]
-  * Remove settings unshelved in +rpi5 and +rpi6
+linux (4.19.37-2) unstable; urgency=high
 
-  [changes brought forward from 4.4.6-1+rpi12 by Peter Michael Green <plugwash@raspbian.org> at Mon, 02 May 2016 14:59:12 +0000]
-  * Merge config.test into config.rpi
-  * Allow loop drivers to be built as modules so udeb build succeeds.
-  * Remove CONFIG_FIRMWARE_IN_KERNEL from config.rpi
+  * debian/bin: Fix Python static checker regressions (Closes: #928618)
+  * Clean up speculation mitigations:
+    - Documentation/l1tf: Fix small spelling typo
+    - x86/cpu: Sanitize FAM6_ATOM naming
+    - kvm: x86: Report STIBP on GET_SUPPORTED_CPUID
+    - x86/msr-index: Cleanup bit defines
+    - x86/speculation: Consolidate CPU whitelists
+    - Documentation: Move L1TF to separate directory
+    - cpu/speculation: Add 'mitigations=' cmdline option
+    - x86/speculation: Support 'mitigations=' cmdline option
+    - powerpc/speculation: Support 'mitigations=' cmdline option
+    - s390/speculation: Support 'mitigations=' cmdline option
+    - x86/speculation/mds: Add 'mitigations=' support for MDS
+  * [x86] Mitigate Microarchitectural Data Sampling (MDS) vulnerabilities
+    (CVE-2018-12126, CVE-2018-12127, CVE-2018-12130, CVE-2019-11091):
+    - x86/speculation/mds: Add basic bug infrastructure for MDS
+    - x86/speculation/mds: Add BUG_MSBDS_ONLY
+    - x86/kvm: Expose X86_FEATURE_MD_CLEAR to guests
+    - x86/speculation/mds: Add mds_clear_cpu_buffers()
+    - x86/speculation/mds: Clear CPU buffers on exit to user
+    - x86/kvm/vmx: Add MDS protection when L1D Flush is not active
+    - x86/speculation/mds: Conditionally clear CPU buffers on idle entry
+    - x86/speculation/mds: Add mitigation control for MDS
+    - x86/speculation/mds: Add sysfs reporting for MDS
+    - x86/speculation/mds: Add mitigation mode VMWERV
+    - Documentation: Add MDS vulnerability documentation
+    - x86/speculation/mds: Add mds=full,nosmt cmdline option
+    - x86/speculation: Move arch_smt_update() call to after mitigation decisions
+    - x86/speculation/mds: Add SMT warning message
+    - x86/speculation/mds: Fix comment
+    - x86/speculation/mds: Print SMT vulnerable on MSBDS with mitigations off
+    - x86/mds: Add MDSUM variant to the MDS documentation
+    - Documentation: Correct the possible MDS sysfs values
+    - x86/speculation/mds: Fix documentation typo
+  * [x86] linux-cpupower: Update CPPFLAGS for change in <asm/msr-index.h>
 
-  [changes brought forward from 4.4.6-1+rpi13 by Peter Michael Green <plugwash@raspbian.org> at Tue, 03 May 2016 02:16:27 +0000]
-  * Remove more stuff from config.rpi because it's breaking udeb generation
-    + Remove "# CONFIG_CRYPTO_BLOWFISH is not set"
-    + Remove "# CONFIG_CRYPTO_SERPENT is not set"
-    + Remove "# CONFIG_CRYPTO_TWOFISH is not set"
-    + Remove "# CONFIG_MINIX_FS is not set"
-
-  [changes brought forward from 4.4.6-1+rpi14 by Peter Michael Green <plugwash@raspbian.org> at Thu, 05 May 2016 19:38:10 +0000]
-  * Add a couple of settings to the rpi2 config based on looking at difference
-    between foundation rpi and rpi2 configs.
-  * Move a bunch of stuff from rpi config to rpix config.
-
-  [changes introduced in 4.9.13-1+rpi1 by Peter Michael Green]
-  * Move to new git rebased based strategy for generating rpi patches
-  * Cleanup some stuff dgit doesn't like in clean target.
-  * Disable kernel signing.
-  * Deversion debhelper build-dependency.
-  * swap order of asciidoc and asciidoc-base alternative build-depends.
-  * Deversion flex build-dependency
-  * Deversion libbabeltrace-dev and libbabeltrace-ctf-dev build-dependencys
-  * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
-  * Remove ext3 modules from d-i package list.
-  * Disable rpi armel for now.
-
- -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 19 Mar 2019 22:20:18 +0100
+ -- Ben Hutchings <ben@decadent.org.uk>  Tue, 14 May 2019 17:34:37 +0100
 
 linux (4.19.37-1) unstable; urgency=medium
 
@@ -1314,6 +1305,128 @@ linux (4.19.37-1) unstable; urgency=medium
     .json file, fixing reproducibility issues.
 
  -- Ben Hutchings <ben@decadent.org.uk>  Sun, 05 May 2019 19:32:32 +0100
+
+linux (4.19.28-2+rpi1) buster-staging; urgency=medium
+
+  [Changes from 3.18.5-1~exp1+rpi1 or earlier]
+  [Vagrant Cascadian <vagrant@debian.org>]
+  * disable other armhf variants.
+  * disable other armhf debian-installer variants.
+  * attempt to enable debian-installer udebs for rpi.
+  * try harder to enable debian-installer udebs.
+  [Peter Michael Green]
+  * Include patches to support RaspberryPI from:
+    https://github.com/raspberrypi/linux.git
+    branch: rpi-3.16.y
+  * add script to automatically regenerate rpi patches from git repos
+  * add hack to allow upgrading of kernel located on fat partition to succeed
+  * Fix clean target
+  * Merge config changes from 3.10.11-1+rpi4 packaging.
+  * Build hardware rng module.
+  * Build pps module for gps timeserver support.
+  * Disable fat modules udeb because we are compiling fat support in.
+  * Disable patches that conflict with or duplicate rpi patches
+    - features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
+  * Add various kernel config changes that the raspberry pi foundation made between
+    3.14 and 3.16 kernel series.
+  * Changes forward ported from 3.12 packaging
+    + optimise update-rpi-patches script a bit (reduce the number of calls to
+      quilt refresh).
+    + apply GPIO related configuration changes requested by Diederik
+      (LP: 1403865)
+  * Rename source package and don't build libc-dev package
+  * Add support for raspberry pi 2
+    + also turn on some stuff for pi1 that was noticed during the pi1/pi2
+      config comparison.
+
+  [Changes introduced in 3.18.5-1~exp1+rpi10 by Peter Michael Green]
+  * Fix kernel configuration for keyboard
+  * split out config.rpix containing config containing settings that
+    are used for both pi1 and pi2.
+
+  [Changes introduced in 3.18.5-1~exp1+rpi11 by Peter Michael Green]
+  * add copyright header to mkknling.
+  * enable I2S modules now we have device tree support.
+
+  [Changes introduced in 3.18.5-1~exp1+rpi17 by Peter Micheal Green]
+  * Add RTC drivers requested by Diederik
+  * Update mmc/dma settings to hopefully fix build failure.
+
+  [Changes introduced in 4.4.6-1+rpi1 by Peter Michael Green]
+  * Disable patches that conflict or potentially conflict with rpi patches.
+    + all patches under features/arm/rpi/
+    + features/all/cgroups-Allow-memory-cgroup-support-to-be-included-b.patch
+    + bugfix/all/uas-fix-high-order-alloc.patch
+    + bugfix/all/firmware-remove-redundant-log-messages-from-drivers.patch
+  * Disable rpi_9999_other_changes.patch, it seems to contain only garbage.
+  * add device tree trailer using scripts/mkknlimg (previously we used our own copy of mkknlimg)
+
+  [changes brought forward from 4.4.6-1+rpi2 by Peter Michael Green <plugwash@raspbian.org> at Sun, 17 Apr 2016 01:49:37 +0000]
+  * Add a load of rpf config settings to try and fix boot failure
+    (if it works a cleanup process will be started afterwards)
+
+  [changes brought forward from 4.4.6-1+rpi3 by Peter Michael Green <plugwash@raspbian.org> at Tue, 19 Apr 2016 14:24:19 +0000]
+  * Don't specity an ext3-modules udeb for rpi and rpi2 flavors, debian no
+    longer seems to provide a template for it
+  * Don't specity an ext2-modules udeb for rpi and rpi2 flavors, debian no
+    longer seems to provide a template for it
+  * Remove some of the rpf config settings added in 4.4.6-1+rpi2
+
+  [changes brought forward from 4.4.6-1+rpi4 by Peter Michael Green <plugwash@raspbian.org> at Thu, 21 Apr 2016 21:08:58 +0000]
+  * With previous version rpi2 kernel booted but rpi kernel didn't.
+    try some more config changes.
+
+  [changes brought forward from 4.4.6-1+rpi5 by Peter Michael Green <plugwash@raspbian.org> at Tue, 26 Apr 2016 15:34:06 +0000]
+  * Unshelve some more config settings.
+
+  [changes brought forward from 4.4.6-1+rpi6 by Peter Michael Green <plugwash@raspbian.org> at Thu, 28 Apr 2016 13:30:55 +0000]
+  * Unshelve some more config settings.
+
+  [changes brought forward from 4.4.6-1+rpi7 by Peter Michael Green <plugwash@raspbian.org> at Thu, 28 Apr 2016 18:09:56 +0000]
+  * unshelve some more config settings.
+
+  [changes brought forward from 4.4.6-1+rpi8 by Peter Michael Green <plugwash@raspbian.org> at Thu, 28 Apr 2016 23:00:11 +0000]
+  * unshelve yet more config settings.
+
+  [changes brought forward from 4.4.6-1+rpi9 by Peter Michael Green <plugwash@raspbian.org> at Sat, 30 Apr 2016 23:47:50 +0000]
+  * Unshelve remaining config settings (this should make us equivilent to +rpi2)
+
+  [changes brought forward from 4.4.6-1+rpi10 by Peter Michael Green <plugwash@raspbian.org> at Sun, 01 May 2016 21:47:14 +0000]
+  * Remove config settings unshelved in +rpi7 and +rpi8
+
+  [changes brought forward from 4.4.6-1+rpi11 by Peter Michael Green <plugwash@raspbian.org> at Mon, 02 May 2016 01:51:47 +0000]
+  * Remove settings unshelved in +rpi5 and +rpi6
+
+  [changes brought forward from 4.4.6-1+rpi12 by Peter Michael Green <plugwash@raspbian.org> at Mon, 02 May 2016 14:59:12 +0000]
+  * Merge config.test into config.rpi
+  * Allow loop drivers to be built as modules so udeb build succeeds.
+  * Remove CONFIG_FIRMWARE_IN_KERNEL from config.rpi
+
+  [changes brought forward from 4.4.6-1+rpi13 by Peter Michael Green <plugwash@raspbian.org> at Tue, 03 May 2016 02:16:27 +0000]
+  * Remove more stuff from config.rpi because it's breaking udeb generation
+    + Remove "# CONFIG_CRYPTO_BLOWFISH is not set"
+    + Remove "# CONFIG_CRYPTO_SERPENT is not set"
+    + Remove "# CONFIG_CRYPTO_TWOFISH is not set"
+    + Remove "# CONFIG_MINIX_FS is not set"
+
+  [changes brought forward from 4.4.6-1+rpi14 by Peter Michael Green <plugwash@raspbian.org> at Thu, 05 May 2016 19:38:10 +0000]
+  * Add a couple of settings to the rpi2 config based on looking at difference
+    between foundation rpi and rpi2 configs.
+  * Move a bunch of stuff from rpi config to rpix config.
+
+  [changes introduced in 4.9.13-1+rpi1 by Peter Michael Green]
+  * Move to new git rebased based strategy for generating rpi patches
+  * Cleanup some stuff dgit doesn't like in clean target.
+  * Disable kernel signing.
+  * Deversion debhelper build-dependency.
+  * swap order of asciidoc and asciidoc-base alternative build-depends.
+  * Deversion flex build-dependency
+  * Deversion libbabeltrace-dev and libbabeltrace-ctf-dev build-dependencys
+  * Fix build failure with debhelper versions that don't know --no-automatic-dbgsym
+  * Remove ext3 modules from d-i package list.
+  * Disable rpi armel for now.
+
+ -- Mateusz Łukasik <mati75@linuxmint.pl>  Tue, 19 Mar 2019 22:20:18 +0100
 
 linux (4.19.28-2) unstable; urgency=medium
 

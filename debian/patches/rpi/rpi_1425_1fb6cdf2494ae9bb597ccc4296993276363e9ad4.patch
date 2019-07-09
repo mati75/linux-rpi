@@ -1,0 +1,49 @@
+commit 1fb6cdf2494ae9bb597ccc4296993276363e9ad4
+Author: Samuel Hsu <hsu@distec.de>
+Date:   Mon Apr 8 16:54:34 2019 +0200
+
+    configs: Add TOUCHSCREEN_ILI210X=m
+    
+    Signed-off-by: Samuel Hsu <hsu@distec.de>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index a3ac6106858c..a35e772c588b 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -565,6 +565,7 @@ CONFIG_TOUCHSCREEN_ADS7846=m
+ CONFIG_TOUCHSCREEN_EGALAX=m
+ CONFIG_TOUCHSCREEN_EXC3000=m
+ CONFIG_TOUCHSCREEN_GOODIX=m
++CONFIG_TOUCHSCREEN_ILI210X=m
+ CONFIG_TOUCHSCREEN_EDT_FT5X06=m
+ CONFIG_TOUCHSCREEN_RPI_FT5406=m
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index e30ea316c52a..6327e983fb5c 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -559,6 +559,7 @@ CONFIG_TOUCHSCREEN_ADS7846=m
+ CONFIG_TOUCHSCREEN_EGALAX=m
+ CONFIG_TOUCHSCREEN_EXC3000=m
+ CONFIG_TOUCHSCREEN_GOODIX=m
++CONFIG_TOUCHSCREEN_ILI210X=m
+ CONFIG_TOUCHSCREEN_EDT_FT5X06=m
+ CONFIG_TOUCHSCREEN_RPI_FT5406=m
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=m
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index c1ca03862d22..3f9e05c01a6b 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -547,6 +547,7 @@ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
+ CONFIG_TOUCHSCREEN_EGALAX=m
+ CONFIG_TOUCHSCREEN_EKTF2127=m
++CONFIG_TOUCHSCREEN_ILI210X=m
+ CONFIG_TOUCHSCREEN_RPI_FT5406=m
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=m
+ CONFIG_TOUCHSCREEN_STMPE=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1425_1fb6cdf2494ae9bb597ccc4296993276363e9ad4.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1425_1fb6cdf2494ae9bb597ccc4296993276363e9ad4.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,63 @@
+commit 6eea05b2c6325868831485ff22e16aab4e3e09ed
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Tue Mar 19 17:55:09 2019 +0000
+
+    staging: bcm2835-codec: NULL component handle on queue_setup failure
+    
+    queue_setup tries creating the relevant MMAL component and configures
+    the input and output ports as we're expecting to start streaming.
+    If the port configuration failed then it destroyed the component,
+    but failed to clear the component handle, therefore release tried
+    destroying the component again.
+    Adds some logging should the port config fail as well.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-codec/bcm2835-v4l2-codec.c b/drivers/staging/vc04_services/bcm2835-codec/bcm2835-v4l2-codec.c
+index eb5c07bc73d0..ad555ceb8f63 100644
+--- a/drivers/staging/vc04_services/bcm2835-codec/bcm2835-v4l2-codec.c
++++ b/drivers/staging/vc04_services/bcm2835-codec/bcm2835-v4l2-codec.c
+@@ -1776,13 +1776,21 @@ static int bcm2835_codec_create_component(struct bcm2835_codec_ctx *ctx)
+ 
+ 	ret = vchiq_mmal_port_set_format(dev->instance,
+ 					 &ctx->component->input[0]);
+-	if (ret < 0)
++	if (ret < 0) {
++		v4l2_dbg(1, debug, &dev->v4l2_dev,
++			 "%s: vchiq_mmal_port_set_format ip port failed\n",
++			 __func__);
+ 		goto destroy_component;
++	}
+ 
+ 	ret = vchiq_mmal_port_set_format(dev->instance,
+ 					 &ctx->component->output[0]);
+-	if (ret < 0)
++	if (ret < 0) {
++		v4l2_dbg(1, debug, &dev->v4l2_dev,
++			 "%s: vchiq_mmal_port_set_format op port failed\n",
++			 __func__);
+ 		goto destroy_component;
++	}
+ 
+ 	if (dev->role == ENCODE) {
+ 		u32 param = 1;
+@@ -1812,11 +1820,14 @@ static int bcm2835_codec_create_component(struct bcm2835_codec_ctx *ctx)
+ 				 ctx->q_data[V4L2_M2M_DST].sizeimage,
+ 				 ctx->component->output[0].minimum_buffer.size);
+ 	}
++	v4l2_dbg(2, debug, &dev->v4l2_dev, "%s: component created as %s\n",
++		 __func__, components[dev->role]);
+ 
+ 	return 0;
+ 
+ destroy_component:
+ 	vchiq_mmal_component_finalise(ctx->dev->instance, ctx->component);
++	ctx->component = NULL;
+ 
+ 	return ret;
+ }
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1376_6eea05b2c6325868831485ff22e16aab4e3e09ed.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1376_6eea05b2c6325868831485ff22e16aab4e3e09ed.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

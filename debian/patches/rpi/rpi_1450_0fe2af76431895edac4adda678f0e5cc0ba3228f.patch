@@ -1,0 +1,45 @@
+commit 0fe2af76431895edac4adda678f0e5cc0ba3228f
+Author: Takashi Iwai <tiwai@suse.de>
+Date:   Tue Sep 4 17:58:39 2018 +0200
+
+    staging: bcm2835-audio: Kill unused spinlock
+    
+    commit 5332f6f012c0bf3a45c77dbc0f79814443a884d4 upstream.
+    
+    The alsa_stream->lock is never used.  Kill it.
+    
+    Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+index 00c2abab4bba..fc1b345d206c 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+@@ -128,8 +128,6 @@ static int snd_bcm2835_playback_open_generic(
+ 	alsa_stream->substream = substream;
+ 	alsa_stream->idx = idx;
+ 
+-	spin_lock_init(&alsa_stream->lock);
+-
+ 	err = bcm2835_audio_open(alsa_stream);
+ 	if (err) {
+ 		kfree(alsa_stream);
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
+index 2a9f3d6c10dc..20f5ff1649e6 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
+@@ -119,8 +119,6 @@ struct bcm2835_alsa_stream {
+ 	struct snd_pcm_substream *substream;
+ 	struct snd_pcm_indirect pcm_indirect;
+ 
+-	spinlock_t lock;
+-
+ 	int draining;
+ 
+ 	int channels;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1450_0fe2af76431895edac4adda678f0e5cc0ba3228f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1450_0fe2af76431895edac4adda678f0e5cc0ba3228f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

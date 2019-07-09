@@ -1,4 +1,4 @@
-Package: @source_basename@-support-@abiname@
+Package: linux-support-@abiname@
 Build-Profiles: <!stage1>
 Architecture: all
 Section: devel

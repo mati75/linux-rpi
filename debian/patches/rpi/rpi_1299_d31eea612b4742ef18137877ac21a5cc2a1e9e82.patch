@@ -1,0 +1,24 @@
+commit d31eea612b4742ef18137877ac21a5cc2a1e9e82
+Author: Ezekiel Bethel <zek@9net.org>
+Date:   Wed Dec 12 19:11:13 2018 +0000
+
+    bcm2835_smi: re-add dereference to fix DMA transfers
+
+diff --git a/drivers/misc/bcm2835_smi.c b/drivers/misc/bcm2835_smi.c
+index 126154070312..f1a7f6a3e966 100644
+--- a/drivers/misc/bcm2835_smi.c
++++ b/drivers/misc/bcm2835_smi.c
+@@ -879,7 +879,7 @@ static int bcm2835_smi_probe(struct platform_device *pdev)
+ 		goto err;
+ 	}
+ 	addr = of_get_address(node, 0, NULL, NULL);
+-	inst->smi_regs_busaddr = be32_to_cpu(addr);
++	inst->smi_regs_busaddr = be32_to_cpu(*addr);
+ 
+ 	err = bcm2835_smi_dma_setup(inst);
+ 	if (err)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1299_d31eea612b4742ef18137877ac21a5cc2a1e9e82.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1299_d31eea612b4742ef18137877ac21a5cc2a1e9e82.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

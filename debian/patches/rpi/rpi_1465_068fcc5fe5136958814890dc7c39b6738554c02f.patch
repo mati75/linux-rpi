@@ -1,0 +1,66 @@
+commit 068fcc5fe5136958814890dc7c39b6738554c02f
+Author: Takashi Iwai <tiwai@suse.de>
+Date:   Tue Sep 4 17:58:54 2018 +0200
+
+    staging: bcm2835-audio: Use coherent device buffers
+    
+    commit ad29c6e6cbf6f2af7362b043adad51a3be3d39c7 upstream.
+    
+    The memory access to the pages allocated with
+    SNDRV_DMA_TYPE_CONTINUOUS are basically non-coherent, and it becomes a
+    problem when a process accesses via mmap.
+    
+    For the more consistent access, use the device coherent memory, just
+    by replacing the call pattern in the allocator helpers.
+    
+    The only point we need to be careful for is the device object passed
+    there; since bcm2835-audio driver creates fake devices and each card
+    is created on top of that, we need to pass its parent device as the
+    real device object.
+    
+    Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+index d2373e4a4d53..8b8e286587cb 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+@@ -345,8 +345,8 @@ int snd_bcm2835_new_pcm(struct bcm2835_chip *chip, u32 numchannels)
+ 
+ 	/* pre-allocation of buffers */
+ 	/* NOTE: this may fail */
+-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
+-					      snd_dma_continuous_data(GFP_KERNEL),
++	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
++					      chip->card->dev->parent,
+ 					      snd_bcm2835_playback_hw.buffer_bytes_max,
+ 					      snd_bcm2835_playback_hw.buffer_bytes_max);
+ 
+@@ -371,8 +371,8 @@ int snd_bcm2835_new_spdif_pcm(struct bcm2835_chip *chip)
+ 
+ 	/* pre-allocation of buffers */
+ 	/* NOTE: this may fail */
+-	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
+-		snd_dma_continuous_data(GFP_KERNEL),
++	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
++		chip->card->dev->parent,
+ 		snd_bcm2835_playback_spdif_hw.buffer_bytes_max, snd_bcm2835_playback_spdif_hw.buffer_bytes_max);
+ 
+ 	return 0;
+@@ -404,8 +404,8 @@ int snd_bcm2835_new_simple_pcm(struct bcm2835_chip *chip,
+ 
+ 	snd_pcm_lib_preallocate_pages_for_all(
+ 		pcm,
+-		SNDRV_DMA_TYPE_CONTINUOUS,
+-		snd_dma_continuous_data(GFP_KERNEL),
++		SNDRV_DMA_TYPE_DEV,
++		chip->card->dev->parent,
+ 		snd_bcm2835_playback_hw.buffer_bytes_max,
+ 		snd_bcm2835_playback_hw.buffer_bytes_max);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1465_068fcc5fe5136958814890dc7c39b6738554c02f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1465_068fcc5fe5136958814890dc7c39b6738554c02f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,52 @@
+commit 9ad3d71fc0f92a890bb34e4f28b8a56de2646466
+Author: Samuel Hsu <hsu@distec.de>
+Date:   Mon Apr 8 16:49:51 2019 +0200
+
+    Input: ili210x - add DT binding document
+    
+    commit 41a852e002e65ab7a1e6841b485d72d022e95df2 upstream
+    
+    Add DT binding document for the Ilitek ILI210x and ILI251x
+    touchscreen controllers.
+    
+    Signed-off-by: Marek Vasut <marex@denx.de>
+    Reviewed-by: Rob Herring <robh@kernel.org>
+    Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+
+diff --git a/Documentation/devicetree/bindings/input/ilitek,ili2xxx.txt b/Documentation/devicetree/bindings/input/ilitek,ili2xxx.txt
+new file mode 100644
+index 000000000000..c9b1eacd34d5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/ilitek,ili2xxx.txt
+@@ -0,0 +1,26 @@
++Ilitek ILI210x/ILI251x touchscreen controller
++
++Required properties:
++- compatible:
++    ilitek,ili210x for ILI210x
++    ilitek,ili251x for ILI251x
++
++- reg: The I2C address of the device
++
++- interrupts: The sink for the touchscreen's IRQ output
++    See ../interrupt-controller/interrupts.txt
++
++Optional properties for main touchpad device:
++
++- reset-gpios: GPIO specifier for the touchscreen's reset pin (active low)
++
++Example:
++
++	touchscreen@41 {
++		compatible = "ilitek,ili251x";
++		reg = <0x41>;
++		interrupt-parent = <&gpio4>;
++		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
++		reset-gpios = <&gpio5 21 GPIO_ACTIVE_LOW>;
++	};
++
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1424_9ad3d71fc0f92a890bb34e4f28b8a56de2646466.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1424_9ad3d71fc0f92a890bb34e4f28b8a56de2646466.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -70,7 +70,7 @@ build-arch-arch: \
 	$(call if_package, libbpf-dev,                   build-libbpf) \
 	$(call if_package, hyperv-daemons,               build-hyperv-daemons)
 binary-arch-arch: \
-	$(call if_package, $(SOURCE_BASENAME)-config-$(VERSION), install-config_$(ARCH)) \
+	$(call if_package, linux-config-$(VERSION), install-config_$(ARCH)) \
 	$(call if_package, linux-headers-$(ABINAME)-all, install-headers_$(ARCH)) \
 	$(call if_package, linux-libc-dev,               install-libc-dev_$(ARCH)) \
 	$(call if_package, linux-kbuild-$(VERSION),      install-kbuild) \
@@ -83,11 +83,11 @@ binary-arch-arch: \
 	$(call if_package, hyperv-daemons,               install-hyperv-daemons)
 
 build-indep: \
-	$(call if_package, $(SOURCE_BASENAME)-doc-$(VERSION), $(STAMPS_DIR)/build-doc)
+	$(call if_package, linux-doc-$(VERSION), $(STAMPS_DIR)/build-doc)
 binary-indep: \
-	$(call if_package, $(SOURCE_BASENAME)-doc-$(VERSION), install-doc) \
-	$(call if_package, $(SOURCE_BASENAME)-source-$(VERSION), install-source) \
-	$(call if_package, $(SOURCE_BASENAME)-support-$(ABINAME), install-support) \
+	$(call if_package, linux-doc-$(VERSION), install-doc) \
+	$(call if_package, linux-source-$(VERSION), install-source) \
+	$(call if_package, linux-support-$(ABINAME), install-support) \
 	$(call if_package, lockdep,                      install-lockdep)
 
 binary-arch-flavour: \
@@ -115,20 +115,20 @@ mkdir -p '$(1)'
 cp -al $(filter-out debian .pc .svk .svn .git, $(wildcard * .[^.]*)) '$(1)'
 endef
 
-$(BUILD_DIR)/$(SOURCE_BASENAME)-source-$(UPSTREAMVERSION).tar.xz: DIR = $(BUILD_DIR)/$(SOURCE_BASENAME)-source-$(UPSTREAMVERSION)
-$(BUILD_DIR)/$(SOURCE_BASENAME)-source-$(UPSTREAMVERSION).tar.xz: $(STAMPS_DIR)/source
+$(BUILD_DIR)/linux-source-$(UPSTREAMVERSION).tar.xz: DIR = $(BUILD_DIR)/linux-source-$(UPSTREAMVERSION)
+$(BUILD_DIR)/linux-source-$(UPSTREAMVERSION).tar.xz: $(STAMPS_DIR)/source
 	rm -rf '$@' '$(DIR)'
 	$(call copy_source,$(DIR))
 	chmod -R u+rw,go=rX '$(DIR)'
 	find '$(DIR)' -depth -newermt '$(SOURCE_DATE)' -print0 | \
 		xargs -0r touch --no-dereference --date='$(SOURCE_DATE)'
 	cd '$(BUILD_DIR)'; \
-	find '$(SOURCE_BASENAME)-source-$(UPSTREAMVERSION)' \
+	find 'linux-source-$(UPSTREAMVERSION)' \
 		-name '*.pyc' -prune -o \
 		-print0 | \
 		sort -z | \
 		tar --owner=root --group=root --numeric-owner \
-			--no-recursion --null -T - -caf '$(SOURCE_BASENAME)-source-$(UPSTREAMVERSION).tar.xz'
+			--no-recursion --null -T - -caf 'linux-source-$(UPSTREAMVERSION).tar.xz'
 	rm -rf '$(DIR)'
 
 $(BUILD_DIR)/linux-patch-$(UPSTREAMVERSION)-%.patch.xz: $(STAMPS_DIR)/source_none $(STAMPS_DIR)/source_%
@@ -241,7 +241,7 @@ install-dummy:
 	dh_prep
 	+$(MAKE_SELF) install-base
 
-install-doc: PACKAGE_NAME = $(SOURCE_BASENAME)-doc-$(VERSION)
+install-doc: PACKAGE_NAME = linux-doc-$(VERSION)
 install-doc: DIR = $(BUILD_DIR)/build-doc
 install-doc: PACKAGE_DIR = debian/$(PACKAGE_NAME)
 install-doc: OUT_DIR = $(PACKAGE_DIR)/usr/share/doc/$(PACKAGE_NAME)
@@ -388,7 +388,7 @@ install-libc-dev_$(ARCH):
 
 	+$(MAKE_SELF) install-base
 
-install-support: PACKAGE_NAME = $(SOURCE_BASENAME)-support-$(ABINAME)
+install-support: PACKAGE_NAME = linux-support-$(ABINAME)
 install-support: DH_OPTIONS = -p$(PACKAGE_NAME)
 install-support: PACKAGE_DIR = debian/$(PACKAGE_NAME)
 install-support: PACKAGE_ROOT = /usr/share/$(PACKAGE_NAME)
@@ -563,9 +563,9 @@ ifeq ($(UDEB_UNSIGNED_TEST_BUILD),False)
 endif
 endif  # enabled
 
-install-source: PACKAGE_NAME = $(SOURCE_BASENAME)-source-$(VERSION)
+install-source: PACKAGE_NAME = linux-source-$(VERSION)
 install-source: DH_OPTIONS = -p$(PACKAGE_NAME)
-install-source: $(BUILD_DIR)/$(SOURCE_BASENAME)-source-$(UPSTREAMVERSION).tar.xz $(foreach FEATURESET,$(filter-out none,$(ALL_FEATURESETS)),$(BUILD_DIR)/linux-patch-$(UPSTREAMVERSION)-$(FEATURESET).patch.xz)
+install-source: $(BUILD_DIR)/linux-source-$(UPSTREAMVERSION).tar.xz $(foreach FEATURESET,$(filter-out none,$(ALL_FEATURESETS)),$(BUILD_DIR)/linux-patch-$(UPSTREAMVERSION)-$(FEATURESET).patch.xz)
 	dh_testdir
 	dh_testroot
 	dh_install $^ /usr/src
@@ -575,7 +575,7 @@ install-source: $(BUILD_DIR)/$(SOURCE_BASENAME)-source-$(UPSTREAMVERSION).tar.xz
 # other things (#725492).  So use the fastest real gzip mode.
 	+$(MAKE_SELF) install-base BUILDDEB_ARGS='-Zgzip -z1'
 
-install-config_$(ARCH): PACKAGE_NAME = $(SOURCE_BASENAME)-config-$(VERSION)
+install-config_$(ARCH): PACKAGE_NAME = linux-config-$(VERSION)
 install-config_$(ARCH): DH_OPTIONS = -p$(PACKAGE_NAME)
 install-config_$(ARCH): TRIPLETS = $(subst $(BUILD_DIR)/build_,,$(wildcard $(BUILD_DIR)/build_$(ARCH)_*_*))
 install-config_$(ARCH):

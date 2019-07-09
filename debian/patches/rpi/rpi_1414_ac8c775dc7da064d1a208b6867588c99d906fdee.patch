@@ -1,0 +1,48 @@
+commit ac8c775dc7da064d1a208b6867588c99d906fdee
+Author: Mark Brown <broonie@kernel.org>
+Date:   Tue Mar 26 13:10:13 2019 +0000
+
+    ASoC: tlv320aic32x4: Only enable with common clock
+    
+    commit 64f01d2b5ccc621c3aa66b82daf9154f5581f36a upstream.
+    
+    Some architectures do not yet support the common clock API at all but
+    the tlv320aic32x4 driver now requires it.
+    
+    Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+    Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/codecs/Kconfig b/sound/soc/codecs/Kconfig
+index 9d283a12b154..6fc3d190864d 100644
+--- a/sound/soc/codecs/Kconfig
++++ b/sound/soc/codecs/Kconfig
+@@ -170,8 +170,8 @@ config SND_SOC_ALL_CODECS
+ 	select SND_SOC_TAS5713 if I2C
+ 	select SND_SOC_TLV320AIC26 if SPI_MASTER
+ 	select SND_SOC_TLV320AIC31XX if I2C
+-	select SND_SOC_TLV320AIC32X4_I2C if I2C
+-	select SND_SOC_TLV320AIC32X4_SPI if SPI_MASTER
++	select SND_SOC_TLV320AIC32X4_I2C if I2C && COMMON_CLK
++	select SND_SOC_TLV320AIC32X4_SPI if SPI_MASTER && COMMON_CLK
+ 	select SND_SOC_TLV320AIC3X if I2C
+ 	select SND_SOC_TPA6130A2 if I2C
+ 	select SND_SOC_TLV320DAC33 if I2C
+@@ -1030,11 +1030,13 @@ config SND_SOC_TLV320AIC32X4
+ config SND_SOC_TLV320AIC32X4_I2C
+ 	tristate "Texas Instruments TLV320AIC32x4 audio CODECs - I2C"
+ 	depends on I2C
++	depends on COMMON_CLK
+ 	select SND_SOC_TLV320AIC32X4
+ 
+ config SND_SOC_TLV320AIC32X4_SPI
+ 	tristate "Texas Instruments TLV320AIC32x4 audio CODECs - SPI"
+ 	depends on SPI_MASTER
++	depends on COMMON_CLK
+ 	select SND_SOC_TLV320AIC32X4
+ 
+ config SND_SOC_TLV320AIC3X
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1414_ac8c775dc7da064d1a208b6867588c99d906fdee.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1414_ac8c775dc7da064d1a208b6867588c99d906fdee.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

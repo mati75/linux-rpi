@@ -1,0 +1,55 @@
+commit 8082b99334da061c0843af463b8159ae356dfbae
+Author: Phil Howard <phil@gadgetoid.com>
+Date:   Fri Mar 29 10:53:14 2019 +0000
+
+    rtc: rv3028: Add backup switchover mode support
+    
+    Signed-off-by: Phil Howard <phil@pimoroni.com>
+
+diff --git a/drivers/rtc/rtc-rv3028.c b/drivers/rtc/rtc-rv3028.c
+index d04c2d481655..b69d8e6408aa 100644
+--- a/drivers/rtc/rtc-rv3028.c
++++ b/drivers/rtc/rtc-rv3028.c
+@@ -74,6 +74,7 @@
+ 
+ #define RV3028_BACKUP_TCE		BIT(5)
+ #define RV3028_BACKUP_TCR_MASK		GENMASK(1,0)
++#define RV3028_BACKUP_BSM_MASK		0x0C
+ 
+ #define OFFSET_STEP_PPT			953674
+ 
+@@ -601,6 +602,7 @@ static int rv3028_probe(struct i2c_client *client)
+ 	struct rv3028_data *rv3028;
+ 	int ret, status;
+ 	u32 ohms;
++	u8 bsm;
+ 	struct nvmem_config nvmem_cfg = {
+ 		.name = "rv3028_nvram",
+ 		.word_size = 1,
+@@ -671,6 +673,21 @@ static int rv3028_probe(struct i2c_client *client)
+ 	if (ret)
+ 		return ret;
+ 
++	/* setup backup switchover mode */
++	if (!device_property_read_u8(&client->dev, "backup-switchover-mode",
++				     &bsm))  {
++		if (bsm <= 3) {
++			ret = regmap_update_bits(rv3028->regmap, RV3028_BACKUP,
++				RV3028_BACKUP_BSM_MASK,
++				(bsm & 0x03) << 2);
++
++			if (ret)
++				return ret;
++		} else {
++			dev_warn(&client->dev, "invalid backup switchover mode value\n");
++		}
++	}
++
+ 	/* setup trickle charger */
+ 	if (!device_property_read_u32(&client->dev, "trickle-resistor-ohms",
+ 				      &ohms)) {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1428_8082b99334da061c0843af463b8159ae356dfbae.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1428_8082b99334da061c0843af463b8159ae356dfbae.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

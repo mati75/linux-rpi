@@ -1,0 +1,35 @@
+commit fb65ad234b315adb162ec2dc8c71d0e001eb15c3
+Author: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date:   Wed Oct 17 21:01:51 2018 +0200
+
+    staging: bcm2835-audio: don't initialize memory twice
+    
+    commit 2e5f59fb77397cab3bc3d156e8be4164a67d32ef upstream.
+    
+    The memory is being allocated with devres_alloc(), wich ultimately uses
+    __GFP_ZERO to call kmalloc. We don't need to zero the memory area again
+    in bcm2835-audio.
+    
+    Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+    Reviewed-by: Takashi Iwai <tiwai@suse.de>
+    Acked-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+index 87d56ab1ffa0..0efae7068fef 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+@@ -39,8 +39,6 @@ static int bcm2835_devm_add_vchi_ctx(struct device *dev)
+ 	if (!vchi_ctx)
+ 		return -ENOMEM;
+ 
+-	memset(vchi_ctx, 0, sizeof(*vchi_ctx));
+-
+ 	ret = bcm2835_new_vchi_ctx(dev, vchi_ctx);
+ 	if (ret) {
+ 		devres_free(vchi_ctx);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1471_fb65ad234b315adb162ec2dc8c71d0e001eb15c3.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1471_fb65ad234b315adb162ec2dc8c71d0e001eb15c3.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

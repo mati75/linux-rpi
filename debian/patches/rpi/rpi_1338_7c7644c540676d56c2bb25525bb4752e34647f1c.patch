@@ -1,0 +1,26 @@
+commit 7c7644c540676d56c2bb25525bb4752e34647f1c
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Fri Jul 20 22:08:05 2018 +0100
+
+    bcm283x: Set the DISDEBUG flag for SD transfers
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index e99b53b41c29..1b53339a1c57 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -400,7 +400,7 @@
+ 			reg = <0x7e202000 0x100>;
+ 			interrupts = <2 24>;
+ 			clocks = <&clocks BCM2835_CLOCK_VPU>;
+-			dmas = <&dma 13>;
++			dmas = <&dma (13|(1<<29))>;
+ 			dma-names = "rx-tx";
+ 			status = "disabled";
+ 		};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1338_7c7644c540676d56c2bb25525bb4752e34647f1c.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1338_7c7644c540676d56c2bb25525bb4752e34647f1c.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,40 @@
+commit 16cadd230274ca4bdc6350eb06033a1b998c8a09
+Author: Lukas Wunner <lukas@wunner.de>
+Date:   Tue Jan 22 12:29:45 2019 +0100
+
+    bcm2835-mmc: Handle mmc_add_host() errors
+    
+    The BCM2835 MMC host driver calls mmc_add_host() but doesn't check its
+    return value.  Errors occurring in that function are therefore not
+    handled.  Fix it.
+    
+    Signed-off-by: Lukas Wunner <lukas@wunner.de>
+    Cc: Frank Pavlic <f.pavlic@kunbus.de>
+
+diff --git a/drivers/mmc/host/bcm2835-mmc.c b/drivers/mmc/host/bcm2835-mmc.c
+index 4f215a47fdd7..46ea11d5ed2e 100644
+--- a/drivers/mmc/host/bcm2835-mmc.c
++++ b/drivers/mmc/host/bcm2835-mmc.c
+@@ -1398,10 +1398,16 @@ static int bcm2835_mmc_add_host(struct bcm2835_host *host)
+ 	}
+ 
+ 	mmiowb();
+-	mmc_add_host(mmc);
++	ret = mmc_add_host(mmc);
++	if (ret) {
++		dev_err(dev, "could not add MMC host\n");
++		goto free_irq;
++	}
+ 
+ 	return 0;
+ 
++free_irq:
++	free_irq(host->irq, host);
+ untasklet:
+ 	tasklet_kill(&host->finish_tasklet);
+ 
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1390_16cadd230274ca4bdc6350eb06033a1b998c8a09.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1390_16cadd230274ca4bdc6350eb06033a1b998c8a09.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,0 +1,51 @@
+commit 536d6058c4d6a515b50988727d1d0a460e948283
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Mon Mar 25 17:54:05 2019 +0000
+
+    configs: Add CONFIG_BATTERY_MAX17040
+    
+    See: https://github.com/raspberrypi/linux/issues/2906
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 5b1e8c5abf12..252c784d0fe1 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -659,6 +659,7 @@ CONFIG_W1_SLAVE_DS28E04=m
+ CONFIG_POWER_RESET=y
+ CONFIG_POWER_RESET_GPIO=y
+ CONFIG_BATTERY_DS2760=m
++CONFIG_BATTERY_MAX17040=m
+ CONFIG_BATTERY_GAUGE_LTC2941=m
+ CONFIG_HWMON=m
+ CONFIG_SENSORS_DS1621=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index fc5d77dccf8d..75eec605cb14 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -652,6 +652,7 @@ CONFIG_W1_SLAVE_DS28E04=m
+ CONFIG_POWER_RESET=y
+ CONFIG_POWER_RESET_GPIO=y
+ CONFIG_BATTERY_DS2760=m
++CONFIG_BATTERY_MAX17040=m
+ CONFIG_BATTERY_GAUGE_LTC2941=m
+ CONFIG_HWMON=m
+ CONFIG_SENSORS_DS1621=m
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index bbbdc7a632ee..6c42e3090b6b 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -629,6 +629,7 @@ CONFIG_W1_SLAVE_DS2781=m
+ CONFIG_W1_SLAVE_DS28E04=m
+ CONFIG_POWER_RESET_GPIO=y
+ CONFIG_BATTERY_DS2760=m
++CONFIG_BATTERY_MAX17040=m
+ CONFIG_HWMON=m
+ CONFIG_SENSORS_LM75=m
+ CONFIG_SENSORS_SHT21=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1392_536d6058c4d6a515b50988727d1d0a460e948283.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1392_536d6058c4d6a515b50988727d1d0a460e948283.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

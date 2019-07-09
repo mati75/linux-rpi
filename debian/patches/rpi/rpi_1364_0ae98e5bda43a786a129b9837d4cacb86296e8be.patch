@@ -1,0 +1,60 @@
+commit 0ae98e5bda43a786a129b9837d4cacb86296e8be
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Mon Feb 18 15:52:29 2019 +0000
+
+    staging: mmal-vchiq: Update mmal_parameters.h with recently defined params
+    
+    mmal_parameters.h hasn't been updated to reflect additions made
+    over the last few years. Update it to reflect the currently
+    supported parameters.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/vchiq-mmal/mmal-parameters.h b/drivers/staging/vc04_services/vchiq-mmal/mmal-parameters.h
+index af9b5b5b181d..416b4e1f0bb8 100644
+--- a/drivers/staging/vc04_services/vchiq-mmal/mmal-parameters.h
++++ b/drivers/staging/vc04_services/vchiq-mmal/mmal-parameters.h
+@@ -580,7 +580,37 @@ enum mmal_parameter_video_type {
+ 	MMAL_PARAMETER_VIDEO_ENCODE_H264_LOW_DELAY_HRD_FLAG,
+ 
+ 	/**< @ref MMAL_PARAMETER_BOOLEAN_T */
+-	MMAL_PARAMETER_VIDEO_ENCODE_INLINE_HEADER
++	MMAL_PARAMETER_VIDEO_ENCODE_INLINE_HEADER,
++
++	/**< Take a @ref MMAL_PARAMETER_BOOLEAN_T. */
++	MMAL_PARAMETER_VIDEO_ENCODE_SEI_ENABLE,
++
++	/**< Take a @ref MMAL_PARAMETER_BOOLEAN_T. */
++	MMAL_PARAMETER_VIDEO_ENCODE_INLINE_VECTORS,
++
++	/**< Take a @ref MMAL_PARAMETER_VIDEO_RENDER_STATS_T. */
++	MMAL_PARAMETER_VIDEO_RENDER_STATS,
++
++	/**< Take a @ref MMAL_PARAMETER_VIDEO_INTERLACE_TYPE_T. */
++	MMAL_PARAMETER_VIDEO_INTERLACE_TYPE,
++
++	/**< Takes a @ref MMAL_PARAMETER_BOOLEAN_T */
++	MMAL_PARAMETER_VIDEO_INTERPOLATE_TIMESTAMPS,
++
++	/**< Takes a @ref MMAL_PARAMETER_BOOLEAN_T */
++	MMAL_PARAMETER_VIDEO_ENCODE_SPS_TIMING,
++
++	/**< Takes a @ref MMAL_PARAMETER_UINT32_T */
++	MMAL_PARAMETER_VIDEO_MAX_NUM_CALLBACKS,
++
++	/**< Takes a @ref MMAL_PARAMETER_SOURCE_PATTERN_T */
++	MMAL_PARAMETER_VIDEO_SOURCE_PATTERN,
++
++	/**< Takes a @ref MMAL_PARAMETER_BOOLEAN_T */
++	MMAL_PARAMETER_VIDEO_ENCODE_SEPARATE_NAL_BUFS,
++
++	/**< Takes a @ref MMAL_PARAMETER_UINT32_T */
++	MMAL_PARAMETER_VIDEO_DROPPABLE_PFRAME_LENGTH,
+ };
+ 
+ /** Valid mirror modes */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1364_0ae98e5bda43a786a129b9837d4cacb86296e8be.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1364_0ae98e5bda43a786a129b9837d4cacb86296e8be.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

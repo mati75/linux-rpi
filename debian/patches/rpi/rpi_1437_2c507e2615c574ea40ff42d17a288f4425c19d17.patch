@@ -1,0 +1,59 @@
+commit 2c507e2615c574ea40ff42d17a288f4425c19d17
+Author: Stefan Wahren <wahrenst@gmx.net>
+Date:   Mon Apr 29 19:28:51 2019 +0200
+
+    configs: enable LED driver for PiGlow
+    
+    Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 2c44bc558742..efb4c947293a 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -1131,6 +1131,7 @@ CONFIG_MMC_SPI=m
+ CONFIG_LEDS_CLASS=y
+ CONFIG_LEDS_GPIO=y
+ CONFIG_LEDS_PCA963X=m
++CONFIG_LEDS_IS31FL32XX=m
+ CONFIG_LEDS_TRIGGER_TIMER=y
+ CONFIG_LEDS_TRIGGER_ONESHOT=y
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 9d8f5d6bafdb..af54579699ec 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -1124,6 +1124,7 @@ CONFIG_MMC_SPI=m
+ CONFIG_LEDS_CLASS=y
+ CONFIG_LEDS_GPIO=y
+ CONFIG_LEDS_PCA963X=m
++CONFIG_LEDS_IS31FL32XX=m
+ CONFIG_LEDS_TRIGGER_TIMER=y
+ CONFIG_LEDS_TRIGGER_ONESHOT=y
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 8f42fb499f2d..fca85f7f7589 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -550,8 +550,8 @@ CONFIG_JOYSTICK_RPISENSE=m
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_ADS7846=m
+ CONFIG_TOUCHSCREEN_EGALAX=m
+-CONFIG_TOUCHSCREEN_EKTF2127=m
+ CONFIG_TOUCHSCREEN_ILI210X=m
++CONFIG_TOUCHSCREEN_EKTF2127=m
+ CONFIG_TOUCHSCREEN_RPI_FT5406=m
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=m
+ CONFIG_TOUCHSCREEN_STMPE=m
+@@ -991,6 +991,7 @@ CONFIG_MMC_SPI=m
+ CONFIG_LEDS_CLASS=y
+ CONFIG_LEDS_GPIO=y
+ CONFIG_LEDS_PCA963X=m
++CONFIG_LEDS_IS31FL32XX=m
+ CONFIG_LEDS_TRIGGER_TIMER=y
+ CONFIG_LEDS_TRIGGER_ONESHOT=y
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1437_2c507e2615c574ea40ff42d17a288f4425c19d17.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1437_2c507e2615c574ea40ff42d17a288f4425c19d17.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

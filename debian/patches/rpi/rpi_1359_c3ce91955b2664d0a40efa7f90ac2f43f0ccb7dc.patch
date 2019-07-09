@@ -1,0 +1,33 @@
+commit c3ce91955b2664d0a40efa7f90ac2f43f0ccb7dc
+Author: Dave Stevenson <dave.stevenson@raspberrypi.org>
+Date:   Wed Feb 13 12:51:03 2019 +0000
+
+    staging: mmal-vchiq: If the VPU returns an error, don't negate it
+    
+    There is an enum for the errors that the VPU can return.
+    port_parameter_get was negating that value, but also using -EINVAL
+    from the Linux error codes.
+    Pass the VPU error code as positive values. Should the function
+    need to pass a Linux failure, then return that as negative.
+    
+    Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.org>
+
+diff --git a/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c b/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
+index 3ef173f2d18b..108df9b7f834 100644
+--- a/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
++++ b/drivers/staging/vc04_services/vchiq-mmal/mmal-vchiq.c
+@@ -1400,7 +1400,8 @@ static int port_parameter_get(struct vchiq_mmal_instance *instance,
+ 		goto release_msg;
+ 	}
+ 
+-	ret = -rmsg->u.port_parameter_get_reply.status;
++	ret = rmsg->u.port_parameter_get_reply.status;
++
+ 	/* port_parameter_get_reply.size includes the header,
+ 	 * whilst *value_size doesn't.
+ 	 */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1359_c3ce91955b2664d0a40efa7f90ac2f43f0ccb7dc.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1359_c3ce91955b2664d0a40efa7f90ac2f43f0ccb7dc.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

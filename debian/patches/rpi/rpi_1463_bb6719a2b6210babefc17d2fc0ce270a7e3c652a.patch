@@ -1,0 +1,78 @@
+commit bb6719a2b6210babefc17d2fc0ce270a7e3c652a
+Author: Takashi Iwai <tiwai@suse.de>
+Date:   Tue Sep 4 17:58:52 2018 +0200
+
+    staging: bcm2835-audio: Remove unnecessary header file includes
+    
+    commit 7e46fff5f19ce2b8a9891e4c08631c64d06e9e17 upstream.
+    
+    Yet a few header files are included unnecessarily.  Drop them.
+    
+    Also remove trivial comments.
+    
+    Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+index 7fff5c63e33f..1d756f467eb8 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+@@ -1,31 +1,12 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright 2011 Broadcom Corporation.  All rights reserved. */
+ 
+-#include <linux/device.h>
+-#include <sound/core.h>
+-#include <sound/initval.h>
+-#include <sound/pcm.h>
+-#include <linux/io.h>
+-#include <linux/interrupt.h>
+-#include <linux/fs.h>
+-#include <linux/file.h>
+-#include <linux/mm.h>
+-#include <linux/syscalls.h>
+-#include <linux/uaccess.h>
+ #include <linux/slab.h>
+-#include <linux/delay.h>
+-#include <linux/atomic.h>
+ #include <linux/module.h>
+ #include <linux/completion.h>
+-
+ #include "bcm2835.h"
+-
+-/* ---- Include Files -------------------------------------------------------- */
+-
+ #include "vc_vchi_audioserv_defs.h"
+ 
+-/* ---- Private Constants and Types ------------------------------------------ */
+-
+ struct bcm2835_audio_instance {
+ 	struct device *dev;
+ 	VCHI_SERVICE_HANDLE_T vchi_handle;
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
+index 319c3e5dfbe4..4e41069dc22a 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
+@@ -5,16 +5,10 @@
+ #define __SOUND_ARM_BCM2835_H
+ 
+ #include <linux/device.h>
+-#include <linux/list.h>
+-#include <linux/interrupt.h>
+ #include <linux/wait.h>
+ #include <sound/core.h>
+-#include <sound/initval.h>
+ #include <sound/pcm.h>
+-#include <sound/pcm_params.h>
+ #include <sound/pcm-indirect.h>
+-#include <linux/workqueue.h>
+-
+ #include "interface/vchi/vchi.h"
+ 
+ #define MAX_SUBSTREAMS   (8)
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1463_bb6719a2b6210babefc17d2fc0ce270a7e3c652a.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1463_bb6719a2b6210babefc17d2fc0ce270a7e3c652a.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

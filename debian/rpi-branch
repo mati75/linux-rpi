@@ -1,47 +1,25 @@
-commit b40edce4d946218457aa65902c9baf313f670591
-Author: Stefan Wahren <stefan.wahren@i2se.com>
-Date:   Thu Mar 7 19:27:05 2019 +0100
+commit 11111f59e19871b6ce17696a29c64fcd8fec3dd8
+Author: Peter Robinson <pbrobinson@gmail.com>
+Date:   Sun May 5 21:07:12 2019 +0100
 
-    configs: Enable MT76 USB wifi
+    arm: dts: overlays: rpi-sense: add upstream humidity compatible
     
-    Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+    The upstream humidiity driver uses "st,hts221" for the compatible
+    string so add that in as well so it will work with an unmodified
+    upstream kernel driver. We leave the downstream as the priority.
+    
+    Signed-off-by: Peter Robinson <pbrobinson@gmail.com>
 
-diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
-index 2a172664a820..171bf378969b 100644
---- a/arch/arm/configs/bcm2709_defconfig
-+++ b/arch/arm/configs/bcm2709_defconfig
-@@ -526,6 +526,8 @@ CONFIG_LIBERTAS_THINFIRM_USB=m
- CONFIG_MWIFIEX=m
- CONFIG_MWIFIEX_SDIO=m
- CONFIG_MT7601U=m
-+CONFIG_MT76x0U=m
-+CONFIG_MT76x2U=m
- CONFIG_RT2X00=m
- CONFIG_RT2500USB=m
- CONFIG_RT73USB=m
-diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
-index edce2eb18129..e408bef908e7 100644
---- a/arch/arm/configs/bcmrpi_defconfig
-+++ b/arch/arm/configs/bcmrpi_defconfig
-@@ -520,6 +520,8 @@ CONFIG_LIBERTAS_THINFIRM_USB=m
- CONFIG_MWIFIEX=m
- CONFIG_MWIFIEX_SDIO=m
- CONFIG_MT7601U=m
-+CONFIG_MT76x0U=m
-+CONFIG_MT76x2U=m
- CONFIG_RT2X00=m
- CONFIG_RT2500USB=m
- CONFIG_RT73USB=m
-diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
-index 2f7d6e37aea2..54b859d7149d 100644
---- a/arch/arm64/configs/bcmrpi3_defconfig
-+++ b/arch/arm64/configs/bcmrpi3_defconfig
-@@ -512,6 +512,8 @@ CONFIG_LIBERTAS_THINFIRM_USB=m
- CONFIG_MWIFIEX=m
- CONFIG_MWIFIEX_SDIO=m
- CONFIG_MT7601U=m
-+CONFIG_MT76x0U=m
-+CONFIG_MT76x2U=m
- CONFIG_RT2X00=m
- CONFIG_RT2500USB=m
- CONFIG_RT73USB=m
+diff --git a/arch/arm/boot/dts/overlays/rpi-sense-overlay.dts b/arch/arm/boot/dts/overlays/rpi-sense-overlay.dts
+index 27153240e1be..6eba2a10bfa5 100644
+--- a/arch/arm/boot/dts/overlays/rpi-sense-overlay.dts
++++ b/arch/arm/boot/dts/overlays/rpi-sense-overlay.dts
+@@ -38,7 +38,7 @@
+ 			};
+ 
+ 			hts221-humid@5f {
+-				compatible = "st,hts221-humid";
++				compatible = "st,hts221-humid", "st,hts221";
+ 				reg = <0x5f>;
+ 				status = "okay";
+ 			};

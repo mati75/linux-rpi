@@ -1,0 +1,40 @@
+commit 919e14dd0cddfaeedfdb104cebe80778cf9622ac
+Author: Takashi Iwai <tiwai@suse.de>
+Date:   Tue Sep 4 17:58:53 2018 +0200
+
+    staging: bcm2835-audio: Move module parameter description
+    
+    commit b876f2075808e95e244053caa53fa7e86e929a99 upstream.
+    
+    For more consistency, move the module parameter description right
+    after its variable definition.
+    
+    Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+index 1d756f467eb8..0bdaea1fdd77 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+@@ -19,6 +19,8 @@ struct bcm2835_audio_instance {
+ };
+ 
+ static bool force_bulk;
++module_param(force_bulk, bool, 0444);
++MODULE_PARM_DESC(force_bulk, "Force use of vchiq bulk for audio");
+ 
+ static void bcm2835_audio_lock(struct bcm2835_audio_instance *instance)
+ {
+@@ -378,6 +380,3 @@ int bcm2835_audio_write(struct bcm2835_alsa_stream *alsa_stream,
+ 	bcm2835_audio_unlock(instance);
+ 	return err;
+ }
+-
+-module_param(force_bulk, bool, 0444);
+-MODULE_PARM_DESC(force_bulk, "Force use of vchiq bulk for audio");
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1464_919e14dd0cddfaeedfdb104cebe80778cf9622ac.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1464_919e14dd0cddfaeedfdb104cebe80778cf9622ac.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

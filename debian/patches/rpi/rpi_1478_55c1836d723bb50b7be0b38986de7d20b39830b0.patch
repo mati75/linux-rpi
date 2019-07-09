@@ -1,0 +1,32 @@
+commit 55c1836d723bb50b7be0b38986de7d20b39830b0
+Author: Stefan Wahren <stefan.wahren@i2se.com>
+Date:   Thu Dec 6 19:28:56 2018 +0100
+
+    staging: bcm2835-audio: Enable compile test
+    
+    commit 458d4866a34d0c129ffc3bd56345b2166ba46d77 upstream.
+    
+    Enable the compilation test for bcm2835-audio to gain more build coverage.
+    
+    Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Reviewed-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+    Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/Kconfig b/drivers/staging/vc04_services/bcm2835-audio/Kconfig
+index 9f536533c257..62c1c8ba4ad4 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/Kconfig
++++ b/drivers/staging/vc04_services/bcm2835-audio/Kconfig
+@@ -1,6 +1,6 @@
+ config SND_BCM2835
+         tristate "BCM2835 Audio"
+-        depends on ARCH_BCM2835 && SND
++        depends on (ARCH_BCM2835 || COMPILE_TEST) && SND
+         select SND_PCM
+         select BCM2835_VCHIQ
+         help
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1478_55c1836d723bb50b7be0b38986de7d20b39830b0.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1478_55c1836d723bb50b7be0b38986de7d20b39830b0.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

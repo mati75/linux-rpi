@@ -1,0 +1,137 @@
+commit 63ba68eb7414a17eb015cb0c9c4a4d760b761b22
+Author: wavelet2 <20504977+wavelet2@users.noreply.github.com>
+Date:   Mon Apr 15 10:00:20 2019 +0100
+
+    Maxim MAX98357A I2S DAC overlay (#2935)
+    
+    Add overlay for Maxim MAX98357A I2S DAC.
+    
+    Signed-off-by: Richard Steedman <richard.steedman@gmail.com>
+
+diff --git a/arch/arm/boot/dts/overlays/Makefile b/arch/arm/boot/dts/overlays/Makefile
+index c5b615401ddf..36c588baddb2 100644
+--- a/arch/arm/boot/dts/overlays/Makefile
++++ b/arch/arm/boot/dts/overlays/Makefile
+@@ -75,6 +75,7 @@ dtbo-$(CONFIG_ARCH_BCM2835) += \
+ 	justboom-dac.dtbo \
+ 	justboom-digi.dtbo \
+ 	ltc294x.dtbo \
++	max98357a.dtbo \
+ 	mbed-dac.dtbo \
+ 	mcp23017.dtbo \
+ 	mcp23s17.dtbo \
+diff --git a/arch/arm/boot/dts/overlays/README b/arch/arm/boot/dts/overlays/README
+index 2e5094b2cd96..8962dd0d9343 100644
+--- a/arch/arm/boot/dts/overlays/README
++++ b/arch/arm/boot/dts/overlays/README
+@@ -1276,6 +1276,15 @@ Params: ltc2941                 Select the ltc2941 device
+                                 See the datasheet for more information.
+ 
+ 
++Name:   max98357a
++Info:   Configures the Maxim MAX98357A I2S DAC
++Load:   dtoverlay=max98357a,<param>=<val>
++Params: no-sdmode               Driver does not manage the state of the DAC's
++                                SD_MODE pin (i.e. chip is always on).
++        sdmode-pin              integer, GPIO pin connected to the SD_MODE input
++                                of the DAC (default GPIO4 if parameter omitted).
++
++
+ Name:   mbed-dac
+ Info:   Configures the mbed AudioCODEC (TLV320AIC23B)
+ Load:   dtoverlay=mbed-dac
+diff --git a/arch/arm/boot/dts/overlays/max98357a-overlay.dts b/arch/arm/boot/dts/overlays/max98357a-overlay.dts
+new file mode 100644
+index 000000000000..ed3960fb8342
+--- /dev/null
++++ b/arch/arm/boot/dts/overlays/max98357a-overlay.dts
+@@ -0,0 +1,84 @@
++// Overlay for Maxim MAX98357A audio DAC
++
++// dtparams:
++//     no-sdmode  - SD_MODE pin not managed by driver.
++//     sdmode-pin - Specify GPIO pin to which SD_MODE is connected (default 4).
++
++/dts-v1/;
++/plugin/;
++
++/ {
++	compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
++
++	/* Enable I2S */
++	fragment@0 {
++		target = <&i2s>;
++		__overlay__ {
++			status = "okay";
++		};
++	};
++
++	/* DAC whose SD_MODE pin is managed by driver (via GPIO pin) */
++	fragment@1 {
++		target-path = "/";
++		__overlay__ {
++			max98357a_dac: max98357a {
++				compatible = "maxim,max98357a";
++				#sound-dai-cells = <0>;
++				sdmode-gpios = <&gpio 4 0>;   /* 2nd word overwritten by sdmode-pin parameter */
++				status = "okay";
++			};
++		};
++	};
++
++	/* DAC whose SD_MODE pin is not managed by driver */
++	fragment@2 {
++		target-path = "/";
++		__dormant__ {
++			max98357a_nsd: max98357a {
++				compatible = "maxim,max98357a";
++				#sound-dai-cells = <0>;
++				status = "okay";
++			};
++		};
++	};
++
++	/* Soundcard connecting I2S to DAC with SD_MODE */
++	fragment@3 {
++		target = <&sound>;
++		__overlay__ {
++			compatible = "simple-audio-card";
++			simple-audio-card,format = "i2s";
++			simple-audio-card,name = "MAX98357A";
++			status = "okay";
++			simple-audio-card,cpu {
++				sound-dai = <&i2s>;
++			};
++			simple-audio-card,codec {
++				sound-dai = <&max98357a_dac>;
++			};
++		};
++	};
++
++	/* Soundcard connecting I2S to DAC without SD_MODE */
++	fragment@4 {
++		target = <&sound>;
++		__dormant__ {
++			compatible = "simple-audio-card";
++			simple-audio-card,format = "i2s";
++			simple-audio-card,name = "MAX98357A";
++			status = "okay";
++			simple-audio-card,cpu {
++				sound-dai = <&i2s>;
++			};
++			simple-audio-card,codec {
++				sound-dai = <&max98357a_nsd>;
++			};
++		};
++	};
++
++	__overrides__ {
++		no-sdmode  = <0>,"-1+2-3+4";
++		sdmode-pin = <&max98357a_dac>,"sdmode-gpios:4";
++	};
++};
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1431_63ba68eb7414a17eb015cb0c9c4a4d760b761b22.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1431_63ba68eb7414a17eb015cb0c9c4a4d760b761b22.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

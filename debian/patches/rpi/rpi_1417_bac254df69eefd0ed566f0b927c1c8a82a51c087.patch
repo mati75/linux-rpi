@@ -1,0 +1,60 @@
+commit bac254df69eefd0ed566f0b927c1c8a82a51c087
+Author: Annaliese McDermond <nh6z@nh6z.net>
+Date:   Wed Apr 3 21:17:15 2019 -0700
+
+    ASoC: tlv320aic32x4: Change author's name
+    
+    commit 7297ba6c74c5b9e78d8e936af82eecfcf7d32dfb upstream.
+    
+    The author of these files has changed her name.  Update
+    instances in the code of her dead name to current legal
+    name.
+    
+    Signed-off-by: Annaliese McDermond <nh6z@nh6z.net>
+    Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/codecs/tlv320aic32x4-i2c.c b/sound/soc/codecs/tlv320aic32x4-i2c.c
+index 385fa2e9525a..22c3a6bc0b6c 100644
+--- a/sound/soc/codecs/tlv320aic32x4-i2c.c
++++ b/sound/soc/codecs/tlv320aic32x4-i2c.c
+@@ -3,7 +3,7 @@
+  *
+  * Copyright 2011 NW Digital Radio
+  *
+- * Author: Jeremy McDermond <nh6z@nh6z.net>
++ * Author: Annaliese McDermond <nh6z@nh6z.net>
+  *
+  * Based on sound/soc/codecs/wm8974 and TI driver for kernel 2.6.27.
+  *
+@@ -72,5 +72,5 @@ static struct i2c_driver aic32x4_i2c_driver = {
+ module_i2c_driver(aic32x4_i2c_driver);
+ 
+ MODULE_DESCRIPTION("ASoC TLV320AIC32x4 codec driver I2C");
+-MODULE_AUTHOR("Jeremy McDermond <nh6z@nh6z.net>");
++MODULE_AUTHOR("Annaliese McDermond <nh6z@nh6z.net>");
+ MODULE_LICENSE("GPL");
+diff --git a/sound/soc/codecs/tlv320aic32x4-spi.c b/sound/soc/codecs/tlv320aic32x4-spi.c
+index 07d78ae51e05..aa5b7ba0254b 100644
+--- a/sound/soc/codecs/tlv320aic32x4-spi.c
++++ b/sound/soc/codecs/tlv320aic32x4-spi.c
+@@ -3,7 +3,7 @@
+  *
+  * Copyright 2011 NW Digital Radio
+  *
+- * Author: Jeremy McDermond <nh6z@nh6z.net>
++ * Author: Annaliese McDermond <nh6z@nh6z.net>
+  *
+  * Based on sound/soc/codecs/wm8974 and TI driver for kernel 2.6.27.
+  *
+@@ -74,5 +74,5 @@ static struct spi_driver aic32x4_spi_driver = {
+ module_spi_driver(aic32x4_spi_driver);
+ 
+ MODULE_DESCRIPTION("ASoC TLV320AIC32x4 codec driver SPI");
+-MODULE_AUTHOR("Jeremy McDermond <nh6z@nh6z.net>");
++MODULE_AUTHOR("Annaliese McDermond <nh6z@nh6z.net>");
+ MODULE_LICENSE("GPL");
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1417_bac254df69eefd0ed566f0b927c1c8a82a51c087.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1417_bac254df69eefd0ed566f0b927c1c8a82a51c087.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

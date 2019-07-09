@@ -1,0 +1,51 @@
+commit 180a37d384aee77f1a43c4168c8362c53894857d
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu Mar 28 13:13:52 2019 +0000
+
+    configs: Add RTC_DRV_RV3028=m
+    
+    See: https://github.com/raspberrypi/linux/issues/2912
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 90e267acbf5b..0d3c9ea31423 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -1157,6 +1157,7 @@ CONFIG_RTC_DRV_FM3130=m
+ CONFIG_RTC_DRV_RX8581=m
+ CONFIG_RTC_DRV_RX8025=m
+ CONFIG_RTC_DRV_EM3027=m
++CONFIG_RTC_DRV_RV3028=m
+ CONFIG_RTC_DRV_M41T93=m
+ CONFIG_RTC_DRV_M41T94=m
+ CONFIG_RTC_DRV_DS1302=m
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index 46c121c89293..fc364176e7c7 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -1150,6 +1150,7 @@ CONFIG_RTC_DRV_FM3130=m
+ CONFIG_RTC_DRV_RX8581=m
+ CONFIG_RTC_DRV_RX8025=m
+ CONFIG_RTC_DRV_EM3027=m
++CONFIG_RTC_DRV_RV3028=m
+ CONFIG_RTC_DRV_M41T93=m
+ CONFIG_RTC_DRV_M41T94=m
+ CONFIG_RTC_DRV_DS1302=m
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 2aef655ae9fb..799e8a8cd282 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -1017,6 +1017,7 @@ CONFIG_RTC_DRV_FM3130=m
+ CONFIG_RTC_DRV_RX8581=m
+ CONFIG_RTC_DRV_RX8025=m
+ CONFIG_RTC_DRV_EM3027=m
++CONFIG_RTC_DRV_RV3028=m
+ CONFIG_RTC_DRV_M41T93=m
+ CONFIG_RTC_DRV_M41T94=m
+ CONFIG_RTC_DRV_DS1302=m
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1399_180a37d384aee77f1a43c4168c8362c53894857d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1399_180a37d384aee77f1a43c4168c8362c53894857d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

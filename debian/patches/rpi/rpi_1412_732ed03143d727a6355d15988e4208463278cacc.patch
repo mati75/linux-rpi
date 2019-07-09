@@ -1,0 +1,44 @@
+commit 732ed03143d727a6355d15988e4208463278cacc
+Author: Annaliese McDermond <nh6z@nh6z.net>
+Date:   Thu Mar 21 17:58:53 2019 -0700
+
+    ASoC: tlv320aic32x4: Remove mclk references
+    
+    commit 78f2d58a289302e56a7def96a783a7686ebf27e2 upstream.
+    
+    mclk is not used by anything anymore.  Remove support for it.
+    All that information now comes from the clock tree.
+    
+    Signed-off-by: Annaliese McDermond <nh6z@nh6z.net>
+    Signed-off-by: Mark Brown <broonie@kernel.org>
+
+diff --git a/sound/soc/codecs/tlv320aic32x4.c b/sound/soc/codecs/tlv320aic32x4.c
+index 41778ad7c668..fea51cc5cad7 100644
+--- a/sound/soc/codecs/tlv320aic32x4.c
++++ b/sound/soc/codecs/tlv320aic32x4.c
+@@ -53,7 +53,6 @@ struct aic32x4_priv {
+ 	u32 micpga_routing;
+ 	bool swapdacs;
+ 	int rstn_gpio;
+-	struct clk *mclk;
+ 	const char *mclk_name;
+ 
+ 	struct regulator *supply_ldo;
+@@ -1189,12 +1188,6 @@ int aic32x4_probe(struct device *dev, struct regmap *regmap)
+ 		aic32x4->mclk_name = "mclk";
+ 	}
+ 
+-	aic32x4->mclk = devm_clk_get(dev, "mclk");
+-	if (IS_ERR(aic32x4->mclk)) {
+-		dev_err(dev, "Failed getting the mclk. The current implementation does not support the usage of this codec without mclk\n");
+-		return PTR_ERR(aic32x4->mclk);
+-	}
+-
+ 	ret = aic32x4_register_clocks(dev, aic32x4->mclk_name);
+ 	if (ret)
+ 		return ret;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1412_732ed03143d727a6355d15988e4208463278cacc.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1412_732ed03143d727a6355d15988e4208463278cacc.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

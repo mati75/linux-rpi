@@ -1,0 +1,51 @@
+commit 43c783044b81ef59ec2791641ad499bf1aef4a15
+Author: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date:   Wed Oct 17 21:01:55 2018 +0200
+
+    staging: bcm2835-audio: rename platform_driver structure
+    
+    commit 82cdc0c6b6faf877e2aecb957cffa9cb578cc572 upstream.
+    
+    It was called bcm2835_alsa0_driver, that "0" didn't mean much.
+    
+    Suggested-by: Takashi Iwai <tiwai@suse.de>
+    Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+    Acked-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+index 039565311d10..e14b7c5aa07c 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+@@ -343,7 +343,7 @@ static const struct of_device_id snd_bcm2835_of_match_table[] = {
+ };
+ MODULE_DEVICE_TABLE(of, snd_bcm2835_of_match_table);
+ 
+-static struct platform_driver bcm2835_alsa0_driver = {
++static struct platform_driver bcm2835_alsa_driver = {
+ 	.probe = snd_bcm2835_alsa_probe,
+ #ifdef CONFIG_PM
+ 	.suspend = snd_bcm2835_alsa_suspend,
+@@ -359,7 +359,7 @@ static int bcm2835_alsa_device_init(void)
+ {
+ 	int retval;
+ 
+-	retval = platform_driver_register(&bcm2835_alsa0_driver);
++	retval = platform_driver_register(&bcm2835_alsa_driver);
+ 	if (retval)
+ 		pr_err("Error registering bcm2835_audio driver %d .\n", retval);
+ 
+@@ -368,7 +368,7 @@ static int bcm2835_alsa_device_init(void)
+ 
+ static void bcm2835_alsa_device_exit(void)
+ {
+-	platform_driver_unregister(&bcm2835_alsa0_driver);
++	platform_driver_unregister(&bcm2835_alsa_driver);
+ }
+ 
+ late_initcall(bcm2835_alsa_device_init);
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1475_43c783044b81ef59ec2791641ad499bf1aef4a15.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1475_43c783044b81ef59ec2791641ad499bf1aef4a15.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

@@ -1,8 +1,8 @@
-Package: @source_basename@-config-@version@
+Package: linux-config-@version@
 Build-Profiles: <!stage1 !pkg.linux.nosource>
 Multi-Arch: same
 Depends: ${misc:Depends}
-Recommends: @source_basename@-source-@version@
+Recommends: linux-source-@version@
 Description: Debian kernel configurations for Linux @version@
  This package contains the configuration files used to build the
  official Debian kernel files, but without references to Debian's

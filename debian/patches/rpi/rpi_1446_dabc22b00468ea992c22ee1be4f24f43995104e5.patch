@@ -1,0 +1,101 @@
+commit dabc22b00468ea992c22ee1be4f24f43995104e5
+Author: Takashi Iwai <tiwai@suse.de>
+Date:   Tue Sep 4 17:58:35 2018 +0200
+
+    staging: bcm2835-audio: Remove redundant function calls
+    
+    commit 124950ebe9fa8547c59e8d4acc8d6c59e6278ed6 upstream.
+    
+    bcm2835_audio_setup(), bcm2835_audio_flush_buffers() and
+    bcm2835_audio_flush_playback_buffers() functions do implement
+    nothing.
+    
+    Also, bcm2835_audio_set_ctls() is already called inside
+    bcm2835_audio_set_params(), so the later call is superfluous.
+    
+    This patch removes these superfluous implementations.
+    
+    Signed-off-by: Takashi Iwai <tiwai@suse.de>
+    Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+index 9a79d2267df4..a3ab5bfea08a 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+@@ -277,11 +277,6 @@ static int snd_bcm2835_pcm_prepare(struct snd_pcm_substream *substream)
+ 	if (err < 0)
+ 		audio_error(" error setting hw params\n");
+ 
+-	bcm2835_audio_setup(alsa_stream);
+-
+-	/* in preparation of the stream, set the controls (volume level) of the stream */
+-	bcm2835_audio_set_ctls(alsa_stream);
+-
+ 	memset(&alsa_stream->pcm_indirect, 0, sizeof(alsa_stream->pcm_indirect));
+ 
+ 	alsa_stream->pcm_indirect.hw_buffer_size =
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+index 8684dc1d0b41..488e676e25e1 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+@@ -580,12 +580,6 @@ int bcm2835_audio_set_params(struct bcm2835_alsa_stream *alsa_stream,
+ 	return ret;
+ }
+ 
+-int bcm2835_audio_setup(struct bcm2835_alsa_stream *alsa_stream)
+-{
+-
+-	return 0;
+-}
+-
+ static int bcm2835_audio_start_worker(struct bcm2835_alsa_stream *alsa_stream)
+ {
+ 	struct vc_audio_msg m;
+@@ -774,21 +768,6 @@ static int bcm2835_audio_write_worker(struct bcm2835_alsa_stream *alsa_stream,
+ 	return ret;
+ }
+ 
+-/**
+- * Returns all buffers from arm->vc
+- */
+-void bcm2835_audio_flush_buffers(struct bcm2835_alsa_stream *alsa_stream)
+-{
+-}
+-
+-/**
+- * Forces VC to flush(drop) its filled playback buffers and
+- * return them the us. (VC->ARM)
+- */
+-void bcm2835_audio_flush_playback_buffers(struct bcm2835_alsa_stream *alsa_stream)
+-{
+-}
+-
+ unsigned int bcm2835_audio_retrieve_buffers(struct bcm2835_alsa_stream *alsa_stream)
+ {
+ 	unsigned int count = atomic_read(&alsa_stream->retrieved);
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
+index 8ee25a837b08..d2441916960d 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.h
+@@ -158,7 +158,6 @@ int bcm2835_audio_close(struct bcm2835_alsa_stream *alsa_stream);
+ int bcm2835_audio_set_params(struct bcm2835_alsa_stream *alsa_stream,
+ 			     unsigned int channels, unsigned int samplerate,
+ 			     unsigned int bps);
+-int bcm2835_audio_setup(struct bcm2835_alsa_stream *alsa_stream);
+ int bcm2835_audio_start(struct bcm2835_alsa_stream *alsa_stream);
+ int bcm2835_audio_stop(struct bcm2835_alsa_stream *alsa_stream);
+ int bcm2835_audio_set_ctls(struct bcm2835_alsa_stream *alsa_stream);
+@@ -167,7 +166,5 @@ int bcm2835_audio_write(struct bcm2835_alsa_stream *alsa_stream,
+ 			void *src);
+ void bcm2835_playback_fifo(struct bcm2835_alsa_stream *alsa_stream);
+ unsigned int bcm2835_audio_retrieve_buffers(struct bcm2835_alsa_stream *alsa_stream);
+-void bcm2835_audio_flush_buffers(struct bcm2835_alsa_stream *alsa_stream);
+-void bcm2835_audio_flush_playback_buffers(struct bcm2835_alsa_stream *alsa_stream);
+ 
+ #endif /* __SOUND_ARM_BCM2835_H */
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1446_dabc22b00468ea992c22ee1be4f24f43995104e5.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1446_dabc22b00468ea992c22ee1be4f24f43995104e5.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

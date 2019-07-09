@@ -1,0 +1,34 @@
+#!/bin/sh -e
+
+version=4.19.0-5-5kc-malta
+image_path=/boot/vmlinux-$version
+kimage=vmlinux
+
+if [ "$1" = abort-upgrade ]; then
+    exit 0
+fi
+
+if [ "$1" = install ]; then
+    # Create a flag file for postinst
+    mkdir -p /lib/modules/$version
+    touch /lib/modules/$version/.fresh-install
+fi
+
+if [ -d /etc/kernel/preinst.d ]; then
+    DEB_MAINT_PARAMS="$*" run-parts --report --exit-on-error --arg=$version \
+	      --arg=$image_path /etc/kernel/preinst.d
+fi
+
+# Rpi diversion hack
+mkdir -p /usr/share/rpikernelhack
+dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/vmlinux-$version --rename $image_path
+dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/config-$version --rename /boot/config-$version
+dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/System.map-$version --rename /boot/System.map-$version
+
+# Rpi diversion hack
+mkdir -p /usr/share/rpikernelhack
+dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/$kimage-$version --rename /boot/$kimage-$version
+dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/config-$version --rename /boot/config-$version
+dpkg-divert --package rpikernelhack --divert /usr/share/rpikernelhack/System.map-$version --rename /boot/System.map-$version
+
+exit 0

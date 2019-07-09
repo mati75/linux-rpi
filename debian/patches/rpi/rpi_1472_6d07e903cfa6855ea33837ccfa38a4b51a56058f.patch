@@ -1,0 +1,124 @@
+commit 6d07e903cfa6855ea33837ccfa38a4b51a56058f
+Author: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Date:   Wed Oct 17 21:01:52 2018 +0200
+
+    staging: bcm2835-audio: reorder variable declarations & remove trivial comments
+    
+    commit d048385a070552ae819f99f05bd03ec41072783d upstream.
+    
+    When it comes to declaring variables it's preferred, when possible, to
+    use an inverted tree organization scheme.
+    
+    Also, removes some comments that were useless.
+    
+    Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+    Reviewed-by: Takashi Iwai <tiwai@suse.de>
+    Acked-by: Stefan Wahren <stefan.wahren@i2se.com>
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+index e66da11af5cf..98b6977bdce7 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-pcm.c
+@@ -164,14 +164,11 @@ static int snd_bcm2835_playback_spdif_open(struct snd_pcm_substream *substream)
+ 	return snd_bcm2835_playback_open_generic(substream, 1);
+ }
+ 
+-/* close callback */
+ static int snd_bcm2835_playback_close(struct snd_pcm_substream *substream)
+ {
+-	/* the hardware-specific codes will be here */
+-
+-	struct bcm2835_chip *chip;
+-	struct snd_pcm_runtime *runtime;
+ 	struct bcm2835_alsa_stream *alsa_stream;
++	struct snd_pcm_runtime *runtime;
++	struct bcm2835_chip *chip;
+ 
+ 	chip = snd_pcm_substream_chip(substream);
+ 	mutex_lock(&chip->audio_mutex);
+@@ -195,20 +192,17 @@ static int snd_bcm2835_playback_close(struct snd_pcm_substream *substream)
+ 	return 0;
+ }
+ 
+-/* hw_params callback */
+ static int snd_bcm2835_pcm_hw_params(struct snd_pcm_substream *substream,
+ 	struct snd_pcm_hw_params *params)
+ {
+ 	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(params));
+ }
+ 
+-/* hw_free callback */
+ static int snd_bcm2835_pcm_hw_free(struct snd_pcm_substream *substream)
+ {
+ 	return snd_pcm_lib_free_pages(substream);
+ }
+ 
+-/* prepare callback */
+ static int snd_bcm2835_pcm_prepare(struct snd_pcm_substream *substream)
+ {
+ 	struct bcm2835_chip *chip = snd_pcm_substream_chip(substream);
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+index e44bc6e94684..b45759de6397 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835-vchiq.c
+@@ -94,9 +94,9 @@ static void audio_vchi_callback(void *param,
+ 				void *msg_handle)
+ {
+ 	struct bcm2835_audio_instance *instance = param;
+-	int status;
+-	int msg_len;
+ 	struct vc_audio_msg m;
++	int msg_len;
++	int status;
+ 
+ 	if (reason != VCHI_CALLBACK_MSG_AVAILABLE)
+ 		return;
+diff --git a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+index 0efae7068fef..6ee8334dfc81 100644
+--- a/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
++++ b/drivers/staging/vc04_services/bcm2835-audio/bcm2835.c
+@@ -161,8 +161,8 @@ static int snd_add_child_device(struct device *dev,
+ 				struct bcm2835_audio_driver *audio_driver,
+ 				u32 numchans)
+ {
+-	struct snd_card *card;
+ 	struct bcm2835_chip *chip;
++	struct snd_card *card;
+ 	int err;
+ 
+ 	err = snd_card_new(dev, -1, NULL, THIS_MODULE, sizeof(*chip), &card);
+@@ -225,12 +225,12 @@ static int snd_add_child_device(struct device *dev,
+ 
+ static int snd_add_child_devices(struct device *device, u32 numchans)
+ {
+-	int i;
+-	int count_devices = 0;
+-	int minchannels = 0;
+-	int extrachannels = 0;
+ 	int extrachannels_per_driver = 0;
+ 	int extrachannels_remainder = 0;
++	int count_devices = 0;
++	int extrachannels = 0;
++	int minchannels = 0;
++	int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(children_devices); i++)
+ 		if (*children_devices[i].is_enabled)
+@@ -258,9 +258,9 @@ static int snd_add_child_devices(struct device *device, u32 numchans)
+ 		extrachannels_remainder);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(children_devices); i++) {
+-		int err;
+-		int numchannels_this_device;
+ 		struct bcm2835_audio_driver *audio_driver;
++		int numchannels_this_device;
++		int err;
+ 
+ 		if (!*children_devices[i].is_enabled)
+ 			continue;
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1472_6d07e903cfa6855ea33837ccfa38a4b51a56058f.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1472_6d07e903cfa6855ea33837ccfa38a4b51a56058f.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

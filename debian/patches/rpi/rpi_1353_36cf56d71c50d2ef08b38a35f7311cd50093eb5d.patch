@@ -1,0 +1,54 @@
+commit 36cf56d71c50d2ef08b38a35f7311cd50093eb5d
+Author: Zahari Petkov <zahari@balena.io>
+Date:   Fri Feb 8 13:33:47 2019 +0200
+
+    configs: Add CONFIG_LEDS_PCA963X=m
+    
+    Enable support for PCA963x I2C chip.
+    
+    Needed for the balenaFin v1.1.0 carrier board for the
+    Raspberry Pi Compute Module 3/3+ Lite.
+    
+    Signed-off-by: Zahari Petkov <zahari@balena.io>
+
+diff --git a/arch/arm/configs/bcm2709_defconfig b/arch/arm/configs/bcm2709_defconfig
+index 0bb8d60c3bd4..eb19afcc8249 100644
+--- a/arch/arm/configs/bcm2709_defconfig
++++ b/arch/arm/configs/bcm2709_defconfig
+@@ -1124,6 +1124,7 @@ CONFIG_MMC_SDHCI_PLTFM=y
+ CONFIG_MMC_SPI=m
+ CONFIG_LEDS_CLASS=y
+ CONFIG_LEDS_GPIO=y
++CONFIG_LEDS_PCA963X=m
+ CONFIG_LEDS_TRIGGER_TIMER=y
+ CONFIG_LEDS_TRIGGER_ONESHOT=y
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+diff --git a/arch/arm/configs/bcmrpi_defconfig b/arch/arm/configs/bcmrpi_defconfig
+index cc92a2dacb71..66c67de30264 100644
+--- a/arch/arm/configs/bcmrpi_defconfig
++++ b/arch/arm/configs/bcmrpi_defconfig
+@@ -1117,6 +1117,7 @@ CONFIG_MMC_SDHCI_PLTFM=y
+ CONFIG_MMC_SPI=m
+ CONFIG_LEDS_CLASS=y
+ CONFIG_LEDS_GPIO=y
++CONFIG_LEDS_PCA963X=m
+ CONFIG_LEDS_TRIGGER_TIMER=y
+ CONFIG_LEDS_TRIGGER_ONESHOT=y
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+diff --git a/arch/arm64/configs/bcmrpi3_defconfig b/arch/arm64/configs/bcmrpi3_defconfig
+index 8b74e42c2273..2926a32f9697 100644
+--- a/arch/arm64/configs/bcmrpi3_defconfig
++++ b/arch/arm64/configs/bcmrpi3_defconfig
+@@ -984,6 +984,7 @@ CONFIG_MMC_SDHCI_IPROC=m
+ CONFIG_MMC_SPI=m
+ CONFIG_LEDS_CLASS=y
+ CONFIG_LEDS_GPIO=y
++CONFIG_LEDS_PCA963X=m
+ CONFIG_LEDS_TRIGGER_TIMER=y
+ CONFIG_LEDS_TRIGGER_ONESHOT=y
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1353_36cf56d71c50d2ef08b38a35f7311cd50093eb5d.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1353_36cf56d71c50d2ef08b38a35f7311cd50093eb5d.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.

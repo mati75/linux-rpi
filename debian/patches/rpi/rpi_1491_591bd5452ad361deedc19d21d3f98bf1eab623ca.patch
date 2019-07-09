@@ -1,0 +1,54 @@
+commit 591bd5452ad361deedc19d21d3f98bf1eab623ca
+Author: Phil Elwell <phil@raspberrypi.org>
+Date:   Thu May 2 22:14:34 2019 +0100
+
+    BCM270X_DT: Also set coherent_pool=1M for BT Pis
+    
+    See: https://github.com/raspberrypi/linux/issues/2924
+    
+    Signed-off-by: Phil Elwell <phil@raspberrypi.org>
+
+diff --git a/arch/arm/boot/dts/bcm2708-rpi-0-w.dts b/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
+index 68316404aab2..aa33646fcf53 100644
+--- a/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
++++ b/arch/arm/boot/dts/bcm2708-rpi-0-w.dts
+@@ -8,7 +8,7 @@
+ 	model = "Raspberry Pi Zero W";
+ 
+ 	chosen {
+-		bootargs = "8250.nr_uarts=1";
++		bootargs = "coherent_pool=1M 8250.nr_uarts=1";
+ 	};
+ 
+ 	aliases {
+diff --git a/arch/arm/boot/dts/bcm2710-rpi-3-b-plus.dts b/arch/arm/boot/dts/bcm2710-rpi-3-b-plus.dts
+index 898ab48479e3..b5f125296e1e 100644
+--- a/arch/arm/boot/dts/bcm2710-rpi-3-b-plus.dts
++++ b/arch/arm/boot/dts/bcm2710-rpi-3-b-plus.dts
+@@ -9,7 +9,7 @@
+ 	model = "Raspberry Pi 3 Model B+";
+ 
+ 	chosen {
+-		bootargs = "8250.nr_uarts=1";
++		bootargs = "coherent_pool=1M 8250.nr_uarts=1";
+ 	};
+ 
+ 	aliases {
+diff --git a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+index 61ecb46b9c06..d9d9505c6693 100644
+--- a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+@@ -9,7 +9,7 @@
+ 	model = "Raspberry Pi 3 Model B";
+ 
+ 	chosen {
+-		bootargs = "8250.nr_uarts=1";
++		bootargs = "coherent_pool=1M 8250.nr_uarts=1";
+ 	};
+ 
+ 	aliases {
+diff -uN a/1.txt b/1.txt
+--- a/dummy/rpi_1491_591bd5452ad361deedc19d21d3f98bf1eab623ca.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/dummy/rpi_1491_591bd5452ad361deedc19d21d3f98bf1eab623ca.txt	2013-12-23 04:07:40.000000000 +0000
+@@ -0,0 +1 @@
++dummy file to ensure patch has content.
